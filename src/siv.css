@@ -1,5 +1,4 @@
 /* BORDER BOX EVERYWHERE */
-
 html {
     box-sizing: border-box;    
 }
@@ -9,7 +8,6 @@ html {
 }
 
 /* PAGE SETUP */
-
 html, body {
     height: 100%;
 }
@@ -43,8 +41,8 @@ body {
     padding: 10%;
     font-size: 35px;
 }
-/* SIDEBAR */
 
+/* SIDEBAR */
 .Sidebar {
     float: left;
     height: calc(100% - 45px);
@@ -174,7 +172,6 @@ body {
 }
 
 /* TOOLBAR */
-
 .Toolbar {
     float: left;
     height: 45px;
@@ -198,21 +195,14 @@ body {
 
 .ExtensionsNav {
     padding-left: 30px;
-    width: calc(100% - 400px);
+    width: calc(100% - 280px);
 }
 
 .ExtensionsNav div[role=button] {
     margin-left: 5px;
 }
 
-.UserDisplay {
-    font-weight: 100;
-    font-size: 10px;
-    width: 120px;
-}
-
 /* VIEWER */
-
 .Viewer {
     float: left;
     height: calc(100% - 45px);
@@ -226,6 +216,7 @@ body {
     left: 0;
     font: inherit;
     height: 0px;
+    opacity: 0.7;
     outline: none;
     padding-top: 0;
     padding-bottom: 0;
@@ -280,7 +271,6 @@ body {
 }
 
 /* BUTTONS */
-
 .btn {
     border: 1px solid;
     border-radius: 2px;

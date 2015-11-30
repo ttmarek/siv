@@ -19,7 +19,6 @@ const FileComponent = React.createClass({
   },
   
   render() {
-
     let style = {};
     
     if (this.props.currentImg === this.props.filePath) {
@@ -91,52 +90,37 @@ const DirComponent = React.createClass({
 });
 
 const PathsComponent = React.createClass({
-
   propTypes: {
     pathsHierarchy: React.PropTypes.array.isRequired,
     pathsList: React.PropTypes.array.isRequired,
     onFileClick: React.PropTypes.func.isRequired,
     currentImg: React.PropTypes.string.isRequired,
-    onFirstRun: React.PropTypes.func,
   },
 
-  statics: {
-    setCurrentImg(filePath) {
-      const imgInspector = this;
-      Image.addLayerIfNeeded.bind(imgInspector)();
-      if (filePath) {
-        imgInspector.setState({currentImg: filePath});
-      }
-    }
-  },
-
-  componentWillMount() {
-    if (this.props.onFirstRun) {
-      this.props.onFirstRun(this.props.pathsList[0]);
-    }    
-  },
-  
   render() {
-    const components = this.props.pathsHierarchy.map(path => {
-      const pathTypes = {
-        // File
-        string: (
+    const components = this.props.pathsHierarchy.map((path, index) => {
+      switch (typeof path) {
+      case 'string':
+        return (
           <FileComponent
+             key={index}
              filePath={path}
              currentImg={this.props.currentImg}
-             onFileClick={this.props.onFileClick}/>
-        ),
-        // Directory
-        object: (
+             onFileClick={this.props.onFileClick} />
+        );
+      case 'object':
+        return (
           <DirComponent
+             key={index}
              dir={path}
              pathsList={this.props.pathsList}
              currentImg={this.props.currentImg}
              onDirClick={this.props.onDirClick}
-             onFileClick={this.props.onFileClick}/>
-        ),
-      };
-      return pathTypes[typeof path];
+             onFileClick={this.props.onFileClick} />
+        );
+      default:
+        return '';
+      }
     });
     
     return (

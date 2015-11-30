@@ -2,17 +2,15 @@ const React = require('react');
 const Image = require('./image');
 
 const PathInput = React.createClass({
-
   statics: {
     setCurrentImgOnEnter(keyPress) {
-      const ii = this;
+      const siv = this;
       if (keyPress.key === 'Enter') {
-        Image.addLayerIfNeeded.bind(ii)();
-        ii.setState({currentImg: keyPress.target.value});
+        Image.addLayerIfNeeded.bind(siv)();
+        siv.setState({currentImg: keyPress.target.value});
       }
     }
   },
-
 
   getInitialState() {
     return {

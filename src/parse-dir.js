@@ -75,7 +75,7 @@ function parsedir(inputPath, maxFiles = 300) {
       };
       resolve({hierarchy: makePaths(inputPath), list: filesList});
     } else {
-      reject();
+      reject('inputPathStats fails isDirectory() and isFile()');
     }
   });
 }

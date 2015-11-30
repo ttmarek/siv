@@ -32,7 +32,9 @@
     "minimist": "1.2.0",
     "react": "0.14.1",
     "react-dom": "0.14.1",
+    "redux": "3.0.4",
     "request": "2.65.0",
+    "victor": "1.1.0",
     "winston": "2.1.1"
   }
 }

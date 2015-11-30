@@ -1,4 +1,5 @@
 const React = require('react');
+const Redux = require('redux');
 
 const extButton = React.createClass({
   propTypes: {
@@ -6,15 +7,44 @@ const extButton = React.createClass({
   },
 
   statics: {
-    openExt(extID) {
+    handleClose(extId) {
       const siv = this;
-      const extObj = siv.state.extFiles.find(extObj => {
-        return extObj.id = extID;
+      const extStoresCopy = siv.state.extStores;
+      delete extStoresCopy[extId];
+      const extControls = siv.state.extControls.filter(Controls => {
+        return Controls.extId != extId;
       });
-      const Ext = require(extObj.path);
-      const extensions = siv.state.extensions;
-      extensions.unshift(<Ext/>);
-      siv.setState({extensions: extensions});
+      const layers = siv.state.layers.filter(Layer => {
+        return Layer.extId != extId;
+      });
+      const loadedExts = siv.state.loadedExts.filter(loadedExt => {
+        return loadedExt != extId;
+      });
+      siv.setState({
+        extStores: extStoresCopy,
+        extControls: extControls,
+        layers: layers,
+        loadedExts: loadedExts,
+      });
+    },
+    
+    onClick(extID) {
+      const siv = this;
+      siv.setState({filesShown: false});
+      if (siv.state.loadedExts.indexOf(extID) === -1) {
+        const extFileObj = siv.state.extFiles.find(extFileObj => {
+          return extFileObj.id = extID;
+        });
+        const ext = require(extFileObj.path);
+        const extStore = Redux.createStore(ext.reducer);
+        extStore.subscribe(siv.forceUpdate.bind(siv));
+        siv.setState({
+          extStores: Object.assign({}, siv.state.extStores, {[ext.extId]: extStore}),
+          extControls: [ext.Controls].concat(siv.state.extControls),
+          layers: siv.state.layers.concat(ext.Layer),
+          loadedExts: siv.state.loadedExts.concat(ext.extId),
+        });
+      }
     },
   },
   

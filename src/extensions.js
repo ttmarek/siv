@@ -8,7 +8,7 @@ function downloadAll(userObj) {
   if (userObj.id === 'developer') {
     const downloadedExts = [{
       id: 'GyMG',
-      path: '/media/Storage/Documents/projects/integritytools/siv-ruler/build/ruler.js'
+      path: '/media/Storage/Documents/projects/integritytools/siv-caliper/build/caliper.js'
     }];
     return Promise.resolve(downloadedExts);
   }

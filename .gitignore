@@ -29,3 +29,6 @@ node_modules
 
 # Build directory
 build
+
+# Test directory
+tests/test_dir
