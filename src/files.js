@@ -1,39 +1,36 @@
 const Path = require('path');
 const React = require('react');
 const Image = require('./image');
+const sivEvents = require('./siv-events');
 
 const FileComponent = React.createClass({
-
-  propTypes: {
-    filePath: React.PropTypes.string.isRequired,
-    onFileClick: React.PropTypes.func.isRequired,
-    currentImg: React.PropTypes.string.isRequired,
+  setCurrentImg(click) {
+    click.preventDefault();
+    const filePath = click.target.getAttribute('data-file-path');
+    this.props.sivDispatch(
+      sivEvents.setCurrentImg(filePath)
+    );
   },
 
-  statics: {
-    setCurrentImg(click) {
-      click.preventDefault();
-      const filePath = click.target.getAttribute('data-file-path');
-      this.setState({currentImg: filePath});
-    }
-  },
-  
   render() {
-    let style = {};
-    
-    if (this.props.currentImg === this.props.filePath) {
-      style = {
-        background: '#337ab7',
-        color: '#f1f1f1',
-      };
-    }
+    const style = (() => {
+      const currentImg = this.props.sivState.currentImg;
+      if (currentImg === this.props.filePath) {
+        return {
+          background: '#337ab7',
+          color: '#f1f1f1',
+        };
+      } else {
+        return {};
+      }
+    })();
 
     return (
       <li>
         <a href=""
            data-file-path={this.props.filePath}
            style={style}
-           onClick={this.props.onFileClick}>
+           onClick={this.setCurrentImg}>
           {Path.basename(this.props.filePath)}
         </a>
       </li>
@@ -43,31 +40,32 @@ const FileComponent = React.createClass({
 
 
 const DirComponent = React.createClass({
-  
-  propTypes: {
-    dir: React.PropTypes.object.isRequired,
-    pathsList: React.PropTypes.array.isRequired,
-    onFileClick: React.PropTypes.func.isRequired,
-    currentImg: React.PropTypes.string.isRequired,
-  },
-
   getInitialState() {
     return {
-      hidden: true,
+      hidden: false,
     };
-  },  
+  },
 
   toggleVisibility(click) {
     click.preventDefault();
     this.setState({hidden: !this.state.hidden});
   },
-  
+
   dirName(dir) {
     return dir.split(Path.sep).pop();
   },
-  
+
   render() {
-    
+    const children = this.props.dirObj.children.map((path, index) => {
+      return (
+        <FileComponent
+           key={index}
+           sivDispatch={this.props.sivDispatch}
+           sivState={this.props.sivState}
+           filePath={path}/>
+      );
+    });
+
     return (
       <li className="dir">
         <img style={this.state.hidden ? {transform: 'rotate(-90deg)'} : {}}
@@ -76,64 +74,48 @@ const DirComponent = React.createClass({
         <a href=""
            className="dir-link"
            onClick={this.toggleVisibility}>
-          {this.dirName(this.props.dir.path)}
-        </a>        
-        <PathsComponent
-           pathsHierarchy={this.props.dir.contents}
-           pathsList={this.props.pathsList}
-           hidden={this.state.hidden}
-           currentImg={this.props.currentImg}
-           onFileClick={this.props.onFileClick}/>
+          {this.dirName(this.props.dirObj.dir)}
+        </a>
+        <ul style={this.state.hidden ? {display: 'none'} : {}}>
+          {children}
+        </ul>
       </li>
     );
   }
 });
 
-const PathsComponent = React.createClass({
-  propTypes: {
-    pathsHierarchy: React.PropTypes.array.isRequired,
-    pathsList: React.PropTypes.array.isRequired,
-    onFileClick: React.PropTypes.func.isRequired,
-    currentImg: React.PropTypes.string.isRequired,
-  },
-
+const FilesComponent = React.createClass({
   render() {
-    const components = this.props.pathsHierarchy.map((path, index) => {
+    const pathsHierarchy = this.props.sivState.filePaths.hierarchy;
+    const components = pathsHierarchy.map((path, index) => {
       switch (typeof path) {
       case 'string':
         return (
           <FileComponent
              key={index}
              filePath={path}
-             currentImg={this.props.currentImg}
-             onFileClick={this.props.onFileClick} />
+             sivDispatch={this.props.sivDispatch}
+             sivState={this.props.sivState}/>
         );
       case 'object':
         return (
           <DirComponent
              key={index}
-             dir={path}
-             pathsList={this.props.pathsList}
-             currentImg={this.props.currentImg}
-             onDirClick={this.props.onDirClick}
-             onFileClick={this.props.onFileClick} />
+             dirObj={path}
+             sivDispatch={this.props.sivDispatch}
+             sivState={this.props.sivState}/>
         );
       default:
         return '';
       }
     });
-    
+
     return (
-      <ul style={this.props.hidden ? {display: 'none'} : {}}>
+      <ul>
         {components}
       </ul>
     );
   }
-
 });
 
-module.exports = {
-  Component: PathsComponent,
-  Dir: DirComponent,
-  File: FileComponent,
-};
+module.exports = FilesComponent;

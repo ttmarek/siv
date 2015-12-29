@@ -1,53 +1,43 @@
 const React = require('react');
-const Image = require('./image');
-
+const images = require('./images');
+const sivEvents = require('./siv-events');
 const PathInput = React.createClass({
-  statics: {
-    setCurrentImgOnEnter(keyPress) {
-      const siv = this;
-      if (keyPress.key === 'Enter') {
-        Image.addLayerIfNeeded.bind(siv)();
-        siv.setState({currentImg: keyPress.target.value});
-      }
-    }
-  },
-
   getInitialState() {
     return {
       value: '',
-      shown: false,
     };
   },
-
-  toggleVisibility() {
-    this.setState({shown: !this.state.shown});
-  },
-  
   updateValue(change) {
     this.setState({value: change.target.value});
   },
-  
   render() {
-    const toggleClass = ['PathInput-control',
-                         this.state.shown ? 'open' : ''].join(' ');
-    const inputClass = ['PathInput',
-                        this.state.shown ? 'open' : ''].join(' ');
+    const handlePathInputSubmit = (event) => {
+      event.preventDefault();
+      const filePath = event.target.pathInput.value;
+      images.load(filePath)
+        .then(img => {
+          this.props.sivDispatch(
+            sivEvents.imagesLoaded({[filePath]: img})
+          );
+          this.props.sivDispatch(
+            sivEvents.setCurrentImg(filePath)
+          );
+        });
+      this.setState({value: ''});
+    };
+    const currentImg = this.props.sivState.currentImg;
     return (
-      <div>
-        <div className={toggleClass}
-             role="button"
-             onClick={this.toggleVisibility}>
-          <img src="icons/ic_expand_more_black_24px.svg"/>
-        </div>
-        <input className={inputClass}
-             type="text"
-             placeholder="Image path..."
-             value={this.state.value || this.props.currentImg}
-             onChange={this.updateValue}
-             onKeyUp={this.props.onInputKeyUp}/>
+      <div id="PathInput"
+           className={this.props.pathInputShown ? 'open' : ''}>
+        <form onSubmit={handlePathInputSubmit}>
+          <input type="text"
+                 name="pathInput"
+                 placeholder="Image path..."
+                 value={this.state.value || currentImg}
+                 onChange={this.updateValue}/>
+        </form>
       </div>
     );
   }
 });
-
 module.exports = PathInput;

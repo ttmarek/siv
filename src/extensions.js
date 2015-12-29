@@ -2,30 +2,35 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const path = require('path');
 
-const extDir = path.join(__dirname, 'extensions'); 
+const extDir = path.resolve(__dirname, '../extensions');
 
 function downloadAll(userObj) {
   if (userObj.id === 'developer') {
     const downloadedExts = [{
       id: 'GyMG',
-      path: '/media/Storage/Documents/projects/integritytools/siv-caliper/build/caliper.js'
+      name: 'caliper',
+      path: path.join(extDir, 'caliper.js'),
+    }, {
+      id: 'G9Wd',
+      name: 'sccir',
+      path: path.join(extDir, 'sccir.js'),
     }];
     return Promise.resolve(downloadedExts);
   }
-  
+
   AWS.config.update({
-    accessKeyId: userObj.s3.accessKeyId,
-    secretAccessKey: userObj.s3.secretAccessKey,
     region: userObj.s3.region,
+    accessKeyId: userObj.s3.accessKeyId,
+    secretAccessKey: userObj.s3.accessKey,
   });
-  
+
   const s3 = new AWS.S3();
   return new Promise((resolve, reject) => {
     const extPromises = [];
     userObj.extensions.forEach(ext => {
-      extPromises.push(downloadExt(s3, userObj, ext.id));
+      extPromises.push(downloadExt(s3, userObj.s3, ext.extId, ext.name));
     });
-    
+
     Promise
       .all(extPromises)
       .then(resolve)
@@ -33,13 +38,13 @@ function downloadAll(userObj) {
   });
 }
 
-function downloadExt(s3, userObj, extID) {
+function downloadExt(s3, bucketInfo, extID, extName) {
   const extFileName = `${extID}.js`;
   const extFilePath = path.join(extDir, extFileName);
   const stream = fs.createWriteStream(extFilePath);
   return new Promise((resolve, reject) => {
     s3.getObject({
-      Bucket: userObj.s3.bucket,
+      Bucket: bucketInfo.extBucket,
       Key: extFileName,
     })
       .on('httpData', chunk => {
@@ -47,7 +52,7 @@ function downloadExt(s3, userObj, extID) {
       })
       .on('httpDone', () => {
         stream.end();
-        resolve({id: extID, path: extFilePath});
+        resolve({id: extID, path: extFilePath, name: extName});
       })
       .on('httpError', (error, resp) => {
         reject(error);

@@ -7,8 +7,8 @@ const userDir = path.join(__dirname, 'user');
 let ykinfo, ykchalresp;
 
 if (process.platform === 'win32') {
-  ykinfo = 'C:/Users/marek/Desktop/ykpers-1.17.2-win64/bin/ykinfo.exe';
-  ykchalresp = 'C:/Users/marek/Desktop/ykpers-1.17.2-win64/bin/ykchalresp.exe';
+  ykinfo = path.resolve(__dirname, '../ykpers/bin/ykinfo.exe');
+  ykchalresp = path.resolve(__dirname, '../ykpers/bin/ykchalresp.exe');
 } else {
   ykinfo = 'ykinfo';
   ykchalresp = 'ykchalresp';
@@ -24,38 +24,22 @@ function getUserObject() {
   });
 }
 
-// If something is wrong with the authentication
-// try and send a 'guest' user object before sending
-// an error message
-// GET http://siv.integritytools.com/api/v0/user/guest
 function requestUserObj(credentials) {
   return new Promise((resolve, reject) => {
-    if (credentials.id === 'guest') {
-      resolve({
-        id: credentials.id,
-        s3: {
-          bucket: 'imginspector.extensions',
-          accessKeyId: 'AKIAIBSUWOLBN25TT2GA',
-          secretAccessKey: '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',
-          region: 'us-west-2',
-        },
-        extensions: [{name: 'transform', id: 'qlJ6'},
-                     {name: 'layers', id: 'Gza6'}]
-      });
-    } else {
-      resolve({
-        id: credentials.id,
-        s3: {
-          bucket: 'imginspector.extensions',
-          accessKeyId: 'AKIAIBSUWOLBN25TT2GA',
-          secretAccessKey: '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',
-          region: 'us-west-2',
-        },
-        extensions: [{name: 'transform', id: 'qlJ6'},
-                     {name: 'layers', id: 'Gza6'},
-                     {name: 'ruler', id: 'GyMG'}]
-      });
-    }
+    const options = {
+      url: `https://siv-server.herokuapp.com/user/${credentials.id}`,
+      headers: {
+        authorization: credentials.hashedId,
+      },
+    };
+    request(options, (err, resp, body) => {
+      if (!err && resp.statusCode == 200) {
+        const user = JSON.parse(body);
+        resolve(user);
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -72,7 +56,7 @@ function getSerialInfo() {
       const serialNum = /\d+/.exec(serialInfo)[0];
       resolve(serialNum);
     });
-    
+
     getSerialInfo.stderr.on('data', output => {
       resolve('guest');
     });
@@ -88,7 +72,7 @@ function sendChallenge(serialNum) {
     getResp.stdout.on('data', output => {
       output = output.subarray(0, output.length - 1); // last char in output is \n
       const resp = String.fromCharCode(...output);
-      resolve({id: serialNum, hashedID: resp});
+      resolve({id: serialNum, hashedId: resp});
     });
 
     getResp.stderr.on('data', output => {
