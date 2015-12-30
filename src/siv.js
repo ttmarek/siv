@@ -89,19 +89,20 @@ const SIV = React.createClass({
       }, 50);
     });
     window.addEventListener('keydown', keyPress => {
-      keyPress.preventDefault();
       const keyIdentifier = {
-        Right: this.moveToNextImg,
-        Left: this.moveToPrevImg,
+        Right: this.moveToNextImg.bind(null, keyPress),
+        Left: this.moveToPrevImg.bind(null, keyPress),
       };
       const shortcut = keyIdentifier[keyPress.keyIdentifier];
       if (shortcut) shortcut();
     });
   },
-  moveToNextImg() {
+  moveToNextImg(event) {
+    event.preventDefault();
     this.props.store.dispatch(sivEvents.moveToNextImg());
   },
-  moveToPrevImg() {
+  moveToPrevImg(event) {
+    event.preventDefault();
     this.props.store.dispatch(sivEvents.moveToPrevImg());
   },
   render() {
