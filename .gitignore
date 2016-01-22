@@ -27,5 +27,8 @@ build/Release
 # https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
 node_modules
 
-# Build directory
-build
+# Link to package.json
+app/package.json
+
+# Icons folder
+app/icons/
