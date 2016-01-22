@@ -25,15 +25,17 @@ const FileComponent = React.createClass({
       }
     })();
 
-    return (
-      <li>
-        <a href=""
-           data-file-path={this.props.filePath}
-           style={style}
-           onClick={this.setCurrentImg}>
-          {Path.basename(this.props.filePath)}
-        </a>
-      </li>
+    return React.createElement(
+      'li',
+      null,
+      React.createElement(
+        'a',
+        { href: '',
+          'data-file-path': this.props.filePath,
+          style: style,
+          onClick: this.setCurrentImg },
+        Path.basename(this.props.filePath)
+      )
     );
   }
 });
@@ -57,29 +59,31 @@ const DirComponent = React.createClass({
 
   render() {
     const children = this.props.dirObj.children.map((path, index) => {
-      return (
-        <FileComponent
-           key={index}
-           sivDispatch={this.props.sivDispatch}
-           sivState={this.props.sivState}
-           filePath={path}/>
-      );
+      return React.createElement(FileComponent, {
+        key: index,
+        sivDispatch: this.props.sivDispatch,
+        sivState: this.props.sivState,
+        filePath: path });
     });
 
-    return (
-      <li className="dir">
-        <img style={this.state.hidden ? {transform: 'rotate(-90deg)'} : {}}
-             onClick={this.toggleVisibility}
-             src="icons/ic_arrow_drop_down_black_18px.svg"/>
-        <a href=""
-           className="dir-link"
-           onClick={this.toggleVisibility}>
-          {this.dirName(this.props.dirObj.dir)}
-        </a>
-        <ul style={this.state.hidden ? {display: 'none'} : {}}>
-          {children}
-        </ul>
-      </li>
+    return React.createElement(
+      'li',
+      { className: 'dir' },
+      React.createElement('img', { style: this.state.hidden ? { transform: 'rotate(-90deg)' } : {},
+        onClick: this.toggleVisibility,
+        src: 'icons/ic_arrow_drop_down_black_18px.svg' }),
+      React.createElement(
+        'a',
+        { href: '',
+          className: 'dir-link',
+          onClick: this.toggleVisibility },
+        this.dirName(this.props.dirObj.dir)
+      ),
+      React.createElement(
+        'ul',
+        { style: this.state.hidden ? { display: 'none' } : {} },
+        children
+      )
     );
   }
 });
@@ -90,30 +94,26 @@ const FilesComponent = React.createClass({
     const components = pathsHierarchy.map((path, index) => {
       switch (typeof path) {
       case 'string':
-        return (
-          <FileComponent
-             key={index}
-             filePath={path}
-             sivDispatch={this.props.sivDispatch}
-             sivState={this.props.sivState}/>
-        );
+        return React.createElement(FileComponent, {
+          key: index,
+          filePath: path,
+          sivDispatch: this.props.sivDispatch,
+          sivState: this.props.sivState });
       case 'object':
-        return (
-          <DirComponent
-             key={index}
-             dirObj={path}
-             sivDispatch={this.props.sivDispatch}
-             sivState={this.props.sivState}/>
-        );
+        return React.createElement(DirComponent, {
+          key: index,
+          dirObj: path,
+          sivDispatch: this.props.sivDispatch,
+          sivState: this.props.sivState });
       default:
         return '';
       }
     });
 
-    return (
-      <ul>
-        {components}
-      </ul>
+    return React.createElement(
+      'ul',
+      null,
+      components
     );
   }
 });

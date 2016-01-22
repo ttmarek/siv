@@ -9,10 +9,8 @@ const Sidebar = React.createClass({
     const extControls = sivState.extControls;
     const renderFiles = () => {
       if (pathsList.length > 0) {
-        return (
-          <Files sivState={sivState}
-                 sivDispatch={this.props.sivDispatch}/>
-        );
+        return React.createElement(Files, { sivState: sivState,
+          sivDispatch: this.props.sivDispatch });
       } else if (this.props.imagesLoading) {
         return 'Images Loading...';
       }
@@ -23,14 +21,12 @@ const Sidebar = React.createClass({
         return extControls.map((Controls, index) => {
           const extStore = sivState.extStores[Controls.extId];
           const isActive = index === 0;
-          return (
-            <Controls key={index}
-                      sivState={sivState}
-                      isActive={isActive}
-                      sivDispatch={this.props.sivDispatch}
-                      extState={extStore ? extStore.getState() : undefined}
-                      extDispatch={extStore ? extStore.dispatch : undefined}/>
-          );
+          return React.createElement(Controls, { key: index,
+            sivState: sivState,
+            isActive: isActive,
+            sivDispatch: this.props.sivDispatch,
+            extState: extStore ? extStore.getState() : undefined,
+            extDispatch: extStore ? extStore.dispatch : undefined });
         });
       } else {
         return 'No Extensions To Display';
@@ -58,24 +54,34 @@ const Sidebar = React.createClass({
       );
     };
 
-    return (
-      <div className="Sidebar">
-        <div className="Sidebar-toggle-container" onClick={showHideFiles}>
-          <div className="Sidebar-toggle-icon">
-            <img className={classNames.toggleIcon}
-                 src="icons/ic_chevron_left_black_24px.svg"/>
-          </div>
-          <div className="Sidebar-toggle-title">
-            files
-          </div>
-        </div>
-        <div className={classNames.filesContainer}>
-          {renderFiles()}
-        </div>
-        <div className={classNames.extContainer}>
-          {renderExtControls()}
-        </div>
-      </div>
+    return React.createElement(
+      'div',
+      { className: 'Sidebar' },
+      React.createElement(
+        'div',
+        { className: 'Sidebar-toggle-container', onClick: showHideFiles },
+        React.createElement(
+          'div',
+          { className: 'Sidebar-toggle-icon' },
+          React.createElement('img', { className: classNames.toggleIcon,
+            src: 'icons/ic_chevron_left_black_24px.svg' })
+        ),
+        React.createElement(
+          'div',
+          { className: 'Sidebar-toggle-title' },
+          'files'
+        )
+      ),
+      React.createElement(
+        'div',
+        { className: classNames.filesContainer },
+        renderFiles()
+      ),
+      React.createElement(
+        'div',
+        { className: classNames.extContainer },
+        renderExtControls()
+      )
     );
   },
 });

@@ -26,17 +26,19 @@ const PathInput = React.createClass({
       this.setState({value: ''});
     };
     const currentImg = this.props.sivState.currentImg;
-    return (
-      <div id="PathInput"
-           className={this.props.pathInputShown ? 'open' : ''}>
-        <form onSubmit={handlePathInputSubmit}>
-          <input type="text"
-                 name="pathInput"
-                 placeholder="Image path..."
-                 value={this.state.value || currentImg}
-                 onChange={this.updateValue}/>
-        </form>
-      </div>
+    return React.createElement(
+      'div',
+      { id: 'PathInput',
+        className: this.props.pathInputShown ? 'open' : '' },
+      React.createElement(
+        'form',
+        { onSubmit: handlePathInputSubmit },
+        React.createElement('input', { type: 'text',
+          name: 'pathInput',
+          placeholder: 'Image path...',
+          value: this.state.value || currentImg,
+          onChange: this.updateValue })
+      )
     );
   }
 });

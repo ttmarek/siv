@@ -116,20 +116,18 @@ const ImageLayer = React.createClass({
         zIndex: this.props.zIndex,
       };
     })();
-    return (
-      <canvas
-         ref="canvas"
-         data-extid={this.extId}
-         style={style}
-         width={this.props.sivState.viewerDimensions.width}
-         height={this.props.sivState.viewerDimensions.height}
-         onMouseMove={this.handleMouseMove}
-         onMouseDown={this.handleMouseDown}
-         onMouseUp={this.handleMouseUp}
-         onWheel={this.handleScroll}
-         className="Layer">
-      </canvas>
-    );
+    return React.createElement('canvas', {
+      ref: 'canvas',
+      'data-extid': this.extId,
+      style: style,
+      width: this.props.sivState.viewerDimensions.width,
+      height: this.props.sivState.viewerDimensions.height,
+      onMouseMove: this.handleMouseMove,
+      onMouseDown: this.handleMouseDown,
+      onMouseUp: this.handleMouseUp,
+      onWheel: this.handleScroll,
+      className: 'Layer' });
+  },
   },
   handleMouseMove(event) {
     if (this.state.mouseDown) {
