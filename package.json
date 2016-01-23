@@ -11,18 +11,16 @@
     "download-icons": "wget --input-file=icons.txt --directory-prefix=./app/icons",
     "setup": "mkdir -p ./extensions ./logs ./app/icons",
     "postsetup": "npm run download-icons && npm run make-logfile && npm run link-config",
-    "mocha": "mocha",
-    "eslint": "eslint"
+    "standard": "standard",
+    "mocha": "mocha"
   },
   "devDependencies": {
     "chai": "3.4.1",
     "electron-prebuilt": "0.36.1",
-    "eslint": "1.9.0",
-    "eslint-config-airbnb": "1.0.0",
-    "eslint-plugin-react": "3.8.0",
     "mocha": "2.3.3",
     "mock-fs": "3.5.0",
-    "react-addons-perf": "0.14.3"
+    "react-addons-perf": "0.14.3",
+    "standard": "5.4.1"
   },
   "dependencies": {
     "aws-sdk": "2.2.18",
