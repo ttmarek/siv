@@ -1,3 +1,4 @@
+'use strict';
 const React = require('react');
 const sivEvents = require('./siv-events');
 const ImageLayer = React.createClass({
@@ -86,7 +87,7 @@ const ImageLayer = React.createClass({
       }
       return current.scale;
     })();
-    const {dx, dy} = (() => {
+    const pos = (() => {
       if (img && (imgHasChanged || viewerHasResized)) {
         return this.center(scale, img,
                            next.viewerDimensions.width,
@@ -97,7 +98,7 @@ const ImageLayer = React.createClass({
         dy: current.dy,
       };
     })();
-    this.setState({img, scale, dx, dy, minScale: scale, lastScale: scale});
+    this.setState({img, scale, dx: pos.dx, dy: pos.dy, minScale: scale, lastScale: scale});
   },
   componentDidUpdate() {
     if (this.state.img) {
@@ -116,20 +117,17 @@ const ImageLayer = React.createClass({
         zIndex: this.props.zIndex,
       };
     })();
-    return (
-      <canvas
-         ref="canvas"
-         data-extid={this.extId}
-         style={style}
-         width={this.props.sivState.viewerDimensions.width}
-         height={this.props.sivState.viewerDimensions.height}
-         onMouseMove={this.handleMouseMove}
-         onMouseDown={this.handleMouseDown}
-         onMouseUp={this.handleMouseUp}
-         onWheel={this.handleScroll}
-         className="Layer">
-      </canvas>
-    );
+    return React.createElement('canvas', {
+      ref: 'canvas',
+      'data-extid': this.extId,
+      style: style,
+      width: this.props.sivState.viewerDimensions.width,
+      height: this.props.sivState.viewerDimensions.height,
+      onMouseMove: this.handleMouseMove,
+      onMouseDown: this.handleMouseDown,
+      onMouseUp: this.handleMouseUp,
+      onWheel: this.handleScroll,
+      className: 'Layer' });
   },
   handleMouseMove(event) {
     if (this.state.mouseDown) {
@@ -171,7 +169,7 @@ const ImageLayer = React.createClass({
       }
       return this.state.scale + zoomIncr.down;
     })();
-    const {dx, dy} = (() => {
+    const pos = (() => {
       if (nextScale === this.state.minScale) {
         return this.center(nextScale, this.state.img,
                            this.props.sivState.viewerDimensions.width,
@@ -182,7 +180,7 @@ const ImageLayer = React.createClass({
         dy: mousePos.y - (this.state.img.height * nextScale) * mousePosOnImgDrawn.y,
       };
     })();
-    this.setState({dx, dy, scale: nextScale});
+    this.setState({dx: pos.dx, dy: pos.dy, scale: nextScale});
   },
   getMousePos(mouseEvent) {
     // Returns the cursor position relative to the canvas origin
