@@ -1,3 +1,4 @@
+'use strict';
 const electron = require('electron');
 const minimist = require('minimist');
 const Table = require('cli-table2');
@@ -133,15 +134,8 @@ function openSIVWindow(showDevTools) {
 const existingInstance = electron.app.makeSingleInstance((argv) => {
   const sivCLI = minimist(argv.slice(2), {boolean: true});
   if (sivCLI.help) logHelp();
-  const {pathsToOpen, currentImg} = (() => {
-    if (sivCLI.singleFile) {
-      return {
-        pathsToOpen: [path.dirname(sivCLI._[0])],
-        currentImg: sivCLI._[0],
-      };
-    }
-    return {pathsToOpen: sivCLI._};
-  })();
+  const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._;
+  const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined;
   // CREATE AND OPEN THE NTH SIV WINDOW
   openSIVWindow((sivCLI.dev || sivCLI.devTools) &&
                 devToolsAuthorized(sivCLI.pass))
@@ -164,15 +158,8 @@ if (existingInstance) {
 
 const sivCLI = minimist(process.argv.slice(2), {boolean: true});
 if (sivCLI.help) logHelp();
-const {pathsToOpen, currentImg} = (() => {
-  if (sivCLI.singleFile) {
-    return {
-      pathsToOpen: [path.dirname(sivCLI._[0])],
-      currentImg: sivCLI._[0],
-    };
-  }
-  return {pathsToOpen: sivCLI._};
-})();
+const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._;
+const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined;
 
 electron.app.on('ready', () => {
   const sendFilePath = (focusedWindow, filePath) => {
@@ -217,10 +204,10 @@ electron.app.on('ready', () => {
   ]);
   electron.Menu.setApplicationMenu(menuBar);
   // ENABLE SIV WINDOWS TO SAVE IMAGES TO THE FILE SYSTEM
-  electron.ipcMain.on('write-image-to-filesystem', (event, {filePath, imageData}) => {
+  electron.ipcMain.on('write-image-to-filesystem', (event, img) => {
     // filePath will be undefined if the user cancels out of the save dialog:
-    if (filePath) {
-      fs.writeFile(filePath, imageData, 'base64');
+    if (img.filePath) {
+      fs.writeFile(img.filePath, img.imageData, 'base64');
     }
   });
   // CREATE AND OPEN THE FIRST SIV WINDOW

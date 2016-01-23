@@ -1,3 +1,4 @@
+'use strict';
 function makeErrorImg() {
   const canvas = document.createElement('canvas');
   canvas.height = 90;

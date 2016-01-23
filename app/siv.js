@@ -1,3 +1,4 @@
+'use strict';
 const ipcRenderer = require('electron').ipcRenderer;
 const React = require('react');
 const ReactDOM = require('react-dom');
@@ -33,24 +34,24 @@ const SIV = React.createClass({
         imageData,
       });
     });
-    ipcRenderer.on('file-paths-prepared', (event, {filePaths, currentImg}) => {
+    ipcRenderer.on('file-paths-prepared', (event, prepared) => {
       this.setState({imagesLoading: true});
-      images.loadMany(filePaths.pathsList)
+      images.loadMany(prepared.filePaths.pathsList)
         .then(images => {
           this.setState({imagesLoading: false});
           this.props.store.dispatch(
             sivEvents.imagesLoaded(images)
           );
           this.props.store.dispatch(
-            sivEvents.setFilePaths(filePaths)
+            sivEvents.setFilePaths(prepared.filePaths)
           );
-          if (currentImg) {
+          if (prepared.currentImg) {
             this.props.store.dispatch(
-              sivEvents.setCurrentImg(currentImg)
+              sivEvents.setCurrentImg(prepared.currentImg)
             );
           } else {
             this.props.store.dispatch(
-              sivEvents.setCurrentImg(filePaths.pathsList[0])
+              sivEvents.setCurrentImg(prepared.filePaths.pathsList[0])
             );
           }
         });
@@ -179,6 +180,9 @@ const SIV = React.createClass({
         return '';
       }
     };
+    const hideShowPathInput = () => {
+      this.setState({ pathInputShown: !this.state.pathInputShown });
+    };
     return React.createElement(
       'div',
       { className: 'siv' },
@@ -195,9 +199,8 @@ const SIV = React.createClass({
           { id: 'PathInput-control',
             className: this.state.pathInputShown ? 'open' : '',
             role: 'button',
-            onClick: function onClick() {
-              return _this3.setState({ pathInputShown: !_this3.state.pathInputShown });
-            } },
+            onClick: hideShowPathInput,
+          },
           React.createElement('img', { src: 'icons/ic_expand_more_black_24px.svg' })
         ),
         React.createElement(PathInput, {

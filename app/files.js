@@ -1,3 +1,4 @@
+'use strict';
 const Path = require('path');
 const React = require('react');
 const Image = require('./image');

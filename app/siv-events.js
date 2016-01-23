@@ -1,3 +1,4 @@
+'use strict';
 const sivActions = require('./siv-actions');
 module.exports = {
   imagesLoaded(images) {
@@ -18,13 +19,13 @@ module.exports = {
       extId,
     };
   },
-  newExtOpened({id, controls, layer, store}) {
+  newExtOpened(ext) {
     return {
       type: sivActions.REGISTER_NEW_EXTENSION,
-      id,
-      controls,
-      layer,
-      store,
+      id: ext.id,
+      controls: ext.controls,
+      layer: ext.layer,
+      store: ext.store,
     };
   },
   sidebarToggleClicked() {

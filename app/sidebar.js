@@ -1,3 +1,4 @@
+'use strict';
 const React = require('react');
 const Files = require('./files');
 const sivEvents = require('./siv-events');

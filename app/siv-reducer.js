@@ -1,3 +1,4 @@
+'use strict';
 const ImageLayer = require('./image');
 const sivActions = require('./siv-actions');
 const initialState = {
@@ -14,7 +15,8 @@ const initialState = {
   images: {},
   layers: [ImageLayer],
 };
-const sivReducer = (currentState = initialState, action) => {
+const sivReducer = (state, action) => {
+  const currentState = state || initialState;
   const update = (updates) => {
     return Object.assign({}, currentState, updates);
   };
