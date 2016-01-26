@@ -1,18 +1,18 @@
-'use strict';
-const React = require('react');
-const sivEvents = require('./siv-events');
+'use strict'
+const React = require('react')
+const sivEvents = require('./siv-events')
 const ImageLayer = React.createClass({
   extId: 'image',
   layerName: 'image',
   statics: {
-    layerName: 'image',
+    layerName: 'image'
   },
   propTypes: {
     zIndex: React.PropTypes.number.isRequired,
     sivState: React.PropTypes.object.isRequired,
-    sivDispatch: React.PropTypes.func.isRequired,
+    sivDispatch: React.PropTypes.func.isRequired
   },
-  getInitialState() {
+  getInitialState () {
     return {
       mouseDown: false,
       maxScale: 3,
@@ -21,102 +21,102 @@ const ImageLayer = React.createClass({
       img: undefined,
       scale: undefined,
       dx: undefined,
-      dy: undefined,
-    };
+      dy: undefined
+    }
   },
-  componentDidMount() {
+  componentDidMount () {
     this.props.sivDispatch(
       sivEvents.layerAdded(this.extId, this.refs.canvas)
-    );
+    )
   },
-  shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.sivState.currentImg !=
+  shouldComponentUpdate (nextProps, nextState) {
+    if (nextProps.sivState.currentImg !==
         this.props.sivState.currentImg ||
-        nextProps.sivState.viewerDimensions.width !=
+        nextProps.sivState.viewerDimensions.width !==
         this.props.sivState.viewerDimensions.width ||
-        nextProps.sivState.viewerDimensions.height !=
+        nextProps.sivState.viewerDimensions.height !==
         this.props.sivState.viewerDimensions.height ||
-        nextState.dx != this.state.dx ||
-        nextState.dy != this.state.dy ||
-        nextState.mouseDown != this.state.mouseDown ||
-        nextState.scale != this.state.scale) {
-      return true;
+        nextState.dx !== this.state.dx ||
+        nextState.dy !== this.state.dy ||
+        nextState.mouseDown !== this.state.mouseDown ||
+        nextState.scale !== this.state.scale) {
+      return true
     }
-    return false;
+    return false
   },
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     // Where you update the state based on the props coming in.
     const current = {
       viewerDimensions: this.props.sivState.viewerDimensions,
       img: this.state.img,
       scale: this.state.scale,
       dx: this.state.dx,
-      dy: this.state.dy,
-    };
+      dy: this.state.dy
+    }
     const next = {
       viewerDimensions: nextProps.sivState.viewerDimensions,
-      img: nextProps.sivState.images[nextProps.sivState.currentImg],
-    };
+      img: nextProps.sivState.images[nextProps.sivState.currentImg]
+    }
     const imgHasChanged = (() => {
       if (next.img && next.img.src && !current.img) {
-        return true;
+        return true
       }
-      if (next.img && current.img && next.img.src != current.img.src) {
-        return true;
+      if (next.img && current.img && next.img.src !== current.img.src) {
+        return true
       }
-      return false;
-    })();
+      return false
+    })()
     const viewerHasResized = (() => {
-      if (next.viewerDimensions.width != current.viewerDimensions.width ||
-          next.viewerDimensions.height != current.viewerDimensions.height) {
-        return true;
+      if (next.viewerDimensions.width !== current.viewerDimensions.width ||
+          next.viewerDimensions.height !== current.viewerDimensions.height) {
+        return true
       }
-      return false;
-    })();
+      return false
+    })()
     const img = (() => {
       if (imgHasChanged) {
-        return next.img;
+        return next.img
       }
-      return current.img;
-    })();
+      return current.img
+    })()
     const scale = (() => {
       if (img && (imgHasChanged || viewerHasResized)) {
         return this.scaleToFit(img,
                                next.viewerDimensions.width,
-                               next.viewerDimensions.height);
+                               next.viewerDimensions.height)
       }
-      return current.scale;
-    })();
+      return current.scale
+    })()
     const pos = (() => {
       if (img && (imgHasChanged || viewerHasResized)) {
         return this.center(scale, img,
                            next.viewerDimensions.width,
-                           next.viewerDimensions.height);
+                           next.viewerDimensions.height)
       }
       return {
         dx: current.dx,
-        dy: current.dy,
-      };
-    })();
-    this.setState({img, scale, dx: pos.dx, dy: pos.dy, minScale: scale, lastScale: scale});
+        dy: current.dy
+      }
+    })()
+    this.setState({img, scale, dx: pos.dx, dy: pos.dy, minScale: scale, lastScale: scale})
   },
-  componentDidUpdate() {
+  componentDidUpdate () {
     if (this.state.img) {
-      this.drawImg();
+      this.drawImg()
     }
   },
-  render() {
+  render () {
     const style = (() => {
       if (this.state.mouseDown) {
         return {
           zIndex: this.props.zIndex,
-          cursor: 'move',
-        };
+          cursor: 'move'
+        }
       }
       return {
-        zIndex: this.props.zIndex,
-      };
-    })();
+        zIndex: this.props.zIndex
+      }
+    })()
     return React.createElement('canvas', {
       ref: 'canvas',
       'data-extid': this.extId,
@@ -127,93 +127,93 @@ const ImageLayer = React.createClass({
       onMouseDown: this.handleMouseDown,
       onMouseUp: this.handleMouseUp,
       onWheel: this.handleScroll,
-      className: 'Layer' });
+      className: 'Layer' })
   },
-  handleMouseMove(event) {
+  handleMouseMove (event) {
     if (this.state.mouseDown) {
       this.setState({
         dx: this.state.dx + event.nativeEvent.movementX,
-        dy: this.state.dy + event.nativeEvent.movementY,
-      });
+        dy: this.state.dy + event.nativeEvent.movementY
+      })
     }
   },
-  handleMouseDown() {
+  handleMouseDown () {
     this.setState({
-      mouseDown: true,
-    });
+      mouseDown: true
+    })
   },
-  handleMouseUp() {
+  handleMouseUp () {
     this.setState({
-      mouseDown: false,
-    });
+      mouseDown: false
+    })
   },
-  handleScroll(event) {
+  handleScroll (event) {
     const zoomIncr = (() => {
       return {
         up: Math.min(0.25, (this.state.maxScale - this.state.scale)),
-        down: Math.max(-0.25, (this.state.minScale - this.state.scale)),
-      };
-    })();
-    const mousePos = this.getMousePos(event);
+        down: Math.max(-0.25, (this.state.minScale - this.state.scale))
+      }
+    })()
+    const mousePos = this.getMousePos(event)
     const imgDrawn = {
       width: this.state.img.width * this.state.scale,
-      height: this.state.img.height * this.state.scale,
-    };
+      height: this.state.img.height * this.state.scale
+    }
     const mousePosOnImgDrawn = {
       x: (mousePos.x - this.state.dx) / imgDrawn.width,
-      y: (mousePos.y - this.state.dy) / imgDrawn.height,
-    };
+      y: (mousePos.y - this.state.dy) / imgDrawn.height
+    }
     const nextScale = (() => {
       if (event.deltaY < 0) {
-        return this.state.scale + zoomIncr.up;
+        return this.state.scale + zoomIncr.up
       }
-      return this.state.scale + zoomIncr.down;
-    })();
+      return this.state.scale + zoomIncr.down
+    })()
     const pos = (() => {
       if (nextScale === this.state.minScale) {
         return this.center(nextScale, this.state.img,
                            this.props.sivState.viewerDimensions.width,
-                           this.props.sivState.viewerDimensions.height);
+                           this.props.sivState.viewerDimensions.height)
       }
       return {
         dx: mousePos.x - (this.state.img.width * nextScale) * mousePosOnImgDrawn.x,
-        dy: mousePos.y - (this.state.img.height * nextScale) * mousePosOnImgDrawn.y,
-      };
-    })();
-    this.setState({dx: pos.dx, dy: pos.dy, scale: nextScale});
+        dy: mousePos.y - (this.state.img.height * nextScale) * mousePosOnImgDrawn.y
+      }
+    })()
+    this.setState({dx: pos.dx, dy: pos.dy, scale: nextScale})
   },
-  getMousePos(mouseEvent) {
+  getMousePos (mouseEvent) {
     // Returns the cursor position relative to the canvas origin
     return {
       x: mouseEvent.clientX - this.props.sivState.viewerDimensions.left,
-      y: mouseEvent.clientY - this.props.sivState.viewerDimensions.top,
-    };
-  },
-  scaleToFit(img, viewerWidth, viewerHeight) {
-    if (img.width > viewerWidth || img.height > viewerHeight) {
-      const scaleX = viewerWidth / img.width;
-      const scaleY = viewerHeight / img.height;
-      return Math.min(scaleX, scaleY);
+      y: mouseEvent.clientY - this.props.sivState.viewerDimensions.top
     }
-    return 1;
   },
-  center(scale, img, viewerWidth, viewerHeight) {
-    const dx = viewerWidth * 0.5 - img.width * scale * 0.5;
-    const dy = viewerHeight * 0.5 - img.height * scale * 0.5;
-    return {dx, dy};
+  scaleToFit (img, viewerWidth, viewerHeight) {
+    if (img.width > viewerWidth || img.height > viewerHeight) {
+      const scaleX = viewerWidth / img.width
+      const scaleY = viewerHeight / img.height
+      return Math.min(scaleX, scaleY)
+    }
+    return 1
   },
-  drawImg() {
-    const img = this.state.img;
-    const dx = this.state.dx;
-    const dy = this.state.dy;
-    const scale = this.state.scale;
-    const scaledImgWidth = img.width * scale;
-    const scaledImgHeight = img.height * scale;
-    const canvas = this.refs.canvas;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, dx, dy, scaledImgWidth, scaledImgHeight);
+  center (scale, img, viewerWidth, viewerHeight) {
+    const dx = viewerWidth * 0.5 - img.width * scale * 0.5
+    const dy = viewerHeight * 0.5 - img.height * scale * 0.5
+    return {dx, dy}
   },
-});
+  drawImg () {
+    const img = this.state.img
+    const dx = this.state.dx
+    const dy = this.state.dy
+    const scale = this.state.scale
+    const scaledImgWidth = img.width * scale
+    const scaledImgHeight = img.height * scale
+    const canvas = this.refs.canvas
+    const ctx = canvas.getContext('2d')
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(img, dx, dy, scaledImgWidth, scaledImgHeight)
+  }
+})
 
-module.exports = ImageLayer;
+module.exports = ImageLayer

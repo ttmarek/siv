@@ -1,79 +1,79 @@
-'use strict';
-const sivActions = require('./siv-actions');
+'use strict'
+const sivActions = require('./siv-actions')
 module.exports = {
-  imagesLoaded(images) {
+  imagesLoaded (images) {
     return {
       type: sivActions.UPDATE_IMAGES,
-      images,
-    };
+      images
+    }
   },
-  extensionCloseRequest(extId) {
+  extensionCloseRequest (extId) {
     return {
       type: sivActions.CLOSE_EXTENSION,
-      extId,
-    };
+      extId
+    }
   },
-  activateLayerRequested(extId) {
+  activateLayerRequested (extId) {
     return {
       type: sivActions.ACTIVATE_LAYER,
-      extId,
-    };
+      extId
+    }
   },
-  newExtOpened(ext) {
+  newExtOpened (ext) {
     return {
       type: sivActions.REGISTER_NEW_EXTENSION,
       id: ext.id,
       controls: ext.controls,
       layer: ext.layer,
-      store: ext.store,
-    };
+      store: ext.store
+    }
   },
-  sidebarToggleClicked() {
+  sidebarToggleClicked () {
     return {
-      type: sivActions.SHOW_HIDE_FILES,
-    };
+      type: sivActions.SHOW_HIDE_FILES
+    }
   },
-  extsDownloaded(downloadedExts) {
+  extsDownloaded (downloadedExts) {
     return {
       type: sivActions.SET_DOWNLOADED_EXTS,
-      downloadedExts,
-    };
+      downloadedExts
+    }
   },
-  layerAdded(extId, canvasRef) {
+  layerAdded (extId, canvasRef) {
     return {
       type: sivActions.ADD_CANVAS_REF,
       canvasRef,
-      extId,
-    };
+      extId
+    }
   },
-  setViewerDimensions(boundingClientRect) {
+  setViewerDimensions (boundingClientRect) {
     return {
       type: sivActions.SET_VIEWER_DIMENSIONS,
-      dimensions: boundingClientRect,
-    };
+      dimensions: boundingClientRect
+    }
   },
-  moveToNextImg() {
+  moveToNextImg () {
     return {
       type: sivActions.NAVIGATE_TO_IMG,
-      navigateTo: 'next',
-    };
+      navigateTo: 'next'
+    }
   },
-  moveToPrevImg() {
+  moveToPrevImg () {
     return {
       type: sivActions.NAVIGATE_TO_IMG,
-      navigateTo: 'prev',
-    };
+      navigateTo: 'prev'
+    }
   },
-  setFilePaths(filePaths) {
+  setFilePaths (filePaths) {
     return {
       type: sivActions.SET_FILE_PATHS,
-      filePaths: filePaths,
-    };
+      filePaths: filePaths
+    }
   },
-  setCurrentImg(imgPath) {
+  setCurrentImg (imgPath) {
     return {
       type: sivActions.SET_CURRENT_IMG,
-      imgPath: imgPath,
-    };
-  },
-};
+      imgPath: imgPath
+    }
+  }
+}
