@@ -1,32 +1,38 @@
-'use strict';
-const React = require('react');
-const images = require('./images');
-const sivEvents = require('./siv-events');
+'use strict'
+const React = require('react')
+const images = require('./images')
+const sivEvents = require('./siv-events')
 const PathInput = React.createClass({
-  getInitialState() {
+  propTypes: {
+    sivDispatch: React.PropTypes.func.isRequired,
+    sivState: React.PropTypes.object.isRequired,
+    pathInputShown: React.PropTypes.bool.isRequired
+  },
+
+  getInitialState () {
     return {
-      value: '',
-    };
+      value: ''
+    }
   },
-  updateValue(change) {
-    this.setState({value: change.target.value});
+  updateValue (change) {
+    this.setState({value: change.target.value})
   },
-  render() {
+  render () {
     const handlePathInputSubmit = (event) => {
-      event.preventDefault();
-      const filePath = event.target.pathInput.value;
+      event.preventDefault()
+      const filePath = event.target.pathInput.value
       images.load(filePath)
         .then(img => {
           this.props.sivDispatch(
             sivEvents.imagesLoaded({[filePath]: img})
-          );
+          )
           this.props.sivDispatch(
             sivEvents.setCurrentImg(filePath)
-          );
-        });
-      this.setState({value: ''});
-    };
-    const currentImg = this.props.sivState.currentImg;
+          )
+        })
+      this.setState({value: ''})
+    }
+    const currentImg = this.props.sivState.currentImg
     return React.createElement(
       'div',
       { id: 'PathInput',
@@ -40,7 +46,7 @@ const PathInput = React.createClass({
           value: this.state.value || currentImg,
           onChange: this.updateValue })
       )
-    );
+    )
   }
-});
-module.exports = PathInput;
+})
+module.exports = PathInput

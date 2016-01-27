@@ -17,7 +17,7 @@ test('expandDirs given a mix of directory and file paths', (assert) => {
   mock({
     'path/to/dir1': {
       'child-dir': {
-        'some-image.png': new Buffer([8, 6, 7, 5, 3, 0, 9]),
+        'some-image.png': new Buffer([8, 6, 7, 5, 3, 0, 9])
       },
       'some-image.jpg': new Buffer([8, 6, 7, 5, 3, 0, 9]),
       'some-document.pdf': 'rubbish',
@@ -29,16 +29,16 @@ test('expandDirs given a mix of directory and file paths', (assert) => {
       'some-word-file.doc': 'a report or something',
       'some-image.jpeg': new Buffer([8, 6, 7, 5, 3, 0, 9]),
       'some-word-file.docx': 'a report or something',
-      'some-image.JPEG': new Buffer([8, 6, 7, 5, 3, 0, 9]),
+      'some-image.JPEG': new Buffer([8, 6, 7, 5, 3, 0, 9])
     },
     'path/to/dir2': {
       'image-a.jpg': new Buffer([8, 6, 7, 5, 3, 0, 9]),
       'image-b.jpg': new Buffer([8, 6, 7, 5, 3, 0, 9]),
       'image-c.jpg': new Buffer([8, 6, 7, 5, 3, 0, 9]),
-      'some-document.pdf': 'rubbish',
+      'some-document.pdf': 'rubbish'
     },
-    'path/to/dir3': {/** empty directory */},
-  });
+    'path/to/dir3': {/** empty directory */}
+  })
   expandDirs(['path/to/dir1',
               'path/to/dir3',
               'path/to/dir2/image-a.jpg',
@@ -70,6 +70,6 @@ test('expandDirs given a mix of directory and file paths', (assert) => {
         'path/to/dir2/image-c.jpg'
       ], 'generates the paths list correctly')
       assert.end()
-      mock.restore();
+      mock.restore()
     })
 })

@@ -1,47 +1,45 @@
-'use strict';
-const fs = require('fs');
-const path = require('path');
-const spawn = require('child_process').spawn;
-const request = require('request');
+'use strict'
+const path = require('path')
+const spawn = require('child_process').spawn
+const request = require('request')
 
-const userDir = path.join(__dirname, 'user');
-let ykinfo, ykchalresp;
+let ykinfo, ykchalresp
 
 if (process.platform === 'win32') {
-  ykinfo = path.resolve(__dirname, '../ykpers/bin/ykinfo.exe');
-  ykchalresp = path.resolve(__dirname, '../ykpers/bin/ykchalresp.exe');
+  ykinfo = path.resolve(__dirname, '../ykpers/bin/ykinfo.exe')
+  ykchalresp = path.resolve(__dirname, '../ykpers/bin/ykchalresp.exe')
 } else {
-  ykinfo = 'ykinfo';
-  ykchalresp = 'ykchalresp';
+  ykinfo = 'ykinfo'
+  ykchalresp = 'ykchalresp'
 }
 
-function getUserObject() {
+function getUserObject () {
   return new Promise((resolve, reject) => {
     getSerialInfo()
       .then(sendChallenge)
       .then(requestUserObj)
       .then(resolve)
-      .catch(reject);
-  });
+      .catch(reject)
+  })
 }
 
-function requestUserObj(credentials) {
+function requestUserObj (credentials) {
   return new Promise((resolve, reject) => {
     const options = {
       url: `https://siv-server.herokuapp.com/user/${credentials.id}`,
       headers: {
-        authorization: credentials.hashedId,
-      },
-    };
-    request(options, (err, resp, body) => {
-      if (!err && resp.statusCode == 200) {
-        const user = JSON.parse(body);
-        resolve(user);
-      } else {
-        reject(err);
+        authorization: credentials.hashedId
       }
-    });
-  });
+    }
+    request(options, (err, resp, body) => {
+      if (!err && resp.statusCode === 200) {
+        const user = JSON.parse(body)
+        resolve(user)
+      } else {
+        reject(err)
+      }
+    })
+  })
 }
 
 // Note: The messages recieved after calling ykinfo and ykchalresp
@@ -49,41 +47,41 @@ function requestUserObj(credentials) {
 // character code, so I used the String.fromCharCode function to
 // convert the array of ASCII codes into a string.
 
-function getSerialInfo() {
+function getSerialInfo () {
   return new Promise((resolve, reject) => {
-    const getSerialInfo = spawn(ykinfo, ['-s']);
+    const getSerialInfo = spawn(ykinfo, ['-s'])
     getSerialInfo.stdout.on('data', output => {
-      const serialInfo = String.fromCharCode(...output);
-      const serialNum = /\d+/.exec(serialInfo)[0];
-      resolve(serialNum);
-    });
+      const serialInfo = String.fromCharCode(...output)
+      const serialNum = /\d+/.exec(serialInfo)[0]
+      resolve(serialNum)
+    })
 
     getSerialInfo.stderr.on('data', output => {
-      resolve('guest');
-    });
-  });
+      resolve('guest')
+    })
+  })
 }
 
-function sendChallenge(serialNum) {
+function sendChallenge (serialNum) {
   if (serialNum === 'guest') {
-    return Promise.resolve({id: 'guest'});
+    return Promise.resolve({id: 'guest'})
   }
   return new Promise((resolve, reject) => {
-    const getResp = spawn(ykchalresp, ['-2', serialNum]);
+    const getResp = spawn(ykchalresp, ['-2', serialNum])
     getResp.stdout.on('data', output => {
-      output = output.subarray(0, output.length - 1); // last char in output is \n
-      const resp = String.fromCharCode(...output);
-      resolve({id: serialNum, hashedId: resp});
-    });
+      output = output.subarray(0, output.length - 1) // last char in output is \n
+      const resp = String.fromCharCode(...output)
+      resolve({id: serialNum, hashedId: resp})
+    })
 
     getResp.stderr.on('data', output => {
-      const msg = String.fromCharCode(...output);
-      reject(`ykchalresp error:\n${msg}`);
-    });
-  });
+      const msg = String.fromCharCode(...output)
+      reject(`ykchalresp error:\n${msg}`)
+    })
+  })
 }
 
 module.exports = {
   getUserObject,
-  getSerialInfo,
-};
+  getSerialInfo
+}
