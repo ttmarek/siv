@@ -9,6 +9,10 @@ const sivReducer = require('./siv-reducer')
 const sivEvents = require('./siv-events')
 const images = require('./images')
 const SIV = React.createClass({
+  propTypes: {
+    store: React.PropTypes.object.isRequired
+  },
+
   getInitialState () {
     return {
       keyFound: true,
@@ -27,8 +31,7 @@ const SIV = React.createClass({
       canvasElements.forEach(element => {
         ctx.drawImage(element, 0, 0)
       })
-      const dataURL = combinedCanvas.toDataURL()
-      const imageData = dataURL.replace('data:image/pngbase64,', '')
+      const imageData = combinedCanvas.toDataURL().replace('data:image/png;base64,', '')
       ipcRenderer.send('write-image-to-filesystem', {
         filePath,
         imageData

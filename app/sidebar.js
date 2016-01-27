@@ -4,6 +4,12 @@ const Files = require('./files')
 const sivEvents = require('./siv-events')
 
 const Sidebar = React.createClass({
+  propTypes: {
+    sivDispatch: React.PropTypes.func.isRequired,
+    sivState: React.PropTypes.object.isRequired,
+    imagesLoading: React.PropTypes.bool.isRequired
+  },
+
   render () {
     const sivState = this.props.sivState
     const pathsList = sivState.filePaths.pathsList

@@ -32,7 +32,7 @@ function requestUserObj (credentials) {
       }
     }
     request(options, (err, resp, body) => {
-      if (!err && resp.statusCode == 200) {
+      if (!err && resp.statusCode === 200) {
         const user = JSON.parse(body)
         resolve(user)
       } else {

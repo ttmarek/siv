@@ -4,6 +4,12 @@ const React = require('react')
 const sivEvents = require('./siv-events')
 
 const FileComponent = React.createClass({
+  propTypes: {
+    sivDispatch: React.PropTypes.func.isRequired,
+    sivState: React.PropTypes.object.isRequired,
+    filePath: React.PropTypes.string.isRequired
+  },
+
   setCurrentImg (click) {
     click.preventDefault()
     const filePath = click.target.getAttribute('data-file-path')
@@ -41,6 +47,12 @@ const FileComponent = React.createClass({
 })
 
 const DirComponent = React.createClass({
+  propTypes: {
+    sivDispatch: React.PropTypes.func.isRequired,
+    sivState: React.PropTypes.object.isRequired,
+    dirObj: React.PropTypes.object.isRequired
+  },
+
   getInitialState () {
     return {
       hidden: false
@@ -88,6 +100,11 @@ const DirComponent = React.createClass({
 })
 
 const FilesComponent = React.createClass({
+  propTypes: {
+    sivDispatch: React.PropTypes.func.isRequired,
+    sivState: React.PropTypes.object.isRequired
+  },
+
   render () {
     const pathsHierarchy = this.props.sivState.filePaths.hierarchy
     const components = pathsHierarchy.map((path, index) => {

@@ -121,6 +121,7 @@ const sivReducer = (state, action) => {
           currentImg: pathsList[index]
         })
       }
+      return currentState
     case sivActions.SET_FILE_PATHS:
       return update({
         filePaths: action.filePaths

@@ -3,6 +3,12 @@ const React = require('react')
 const images = require('./images')
 const sivEvents = require('./siv-events')
 const PathInput = React.createClass({
+  propTypes: {
+    sivDispatch: React.PropTypes.func.isRequired,
+    sivState: React.PropTypes.object.isRequired,
+    pathInputShown: React.PropTypes.bool.isRequired
+  },
+
   getInitialState () {
     return {
       value: ''
