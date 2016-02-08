@@ -183,23 +183,23 @@ const SIV = React.createClass({
     const hideShowPathInput = () => {
       this.setState({ pathInputShown: !this.state.pathInputShown })
     }
-    return React.createElement(
-      'div', {
+    return React.DOM.div(
+      {
         className: 'siv'
       },
       this.state.keyFound ? '' : renderKeyNotFoundMsg(),
-      React.createElement(
-        Sidebar, {
-          sivState: sivState,
-          sivDispatch: sivDispatch
-        }),
-      React.createElement(
-        'div',
-        { className: 'Viewer',
-          ref: 'viewerNode' },
-        React.createElement(
-          'div',
-          { id: 'PathInput-control',
+      React.createElement(Sidebar, {
+        sivState: sivState,
+        sivDispatch: sivDispatch
+      }),
+      React.DOM.div(
+        {
+          className: 'Viewer',
+          ref: 'viewerNode'
+        },
+        React.DOM.div(
+          {
+            id: 'PathInput-control',
             className: this.state.pathInputShown ? 'open' : '',
             role: 'button',
             onClick: hideShowPathInput
@@ -209,37 +209,53 @@ const SIV = React.createClass({
         React.createElement(PathInput, {
           pathInputShown: this.state.pathInputShown,
           sivState: sivState,
-          sivDispatch: sivDispatch }),
-        React.createElement(
-          'div',
-          { className: 'LayerContainer' },
+          sivDispatch: sivDispatch
+        }),
+        React.DOM.div(
+          {
+            className: 'LayerContainer'
+          },
           renderLayers()
         )
       ),
-      React.createElement(
-        'div',
-        { className: 'Toolbar' },
-        React.createElement(
-          'div',
-          { className: 'Toolbar-section FileNav' },
-          React.createElement(
-            'div',
-            { role: 'button', className: 'btn btn-blue', onClick: this.moveToPrevImg },
+      React.DOM.div(
+        {
+          className: 'Toolbar'
+        },
+        React.DOM.div(
+          {
+            className: 'Toolbar-section FileNav'
+          },
+          React.DOM.div(
+            {
+              role: 'button',
+              className: 'btn btn-blue',
+              onClick: this.moveToPrevImg
+            },
             'prev'
           ),
-          React.createElement(
-            'div',
-            { role: 'button', className: 'btn btn-blue', onClick: this.moveToNextImg },
+          React.DOM.div(
+            {
+              role: 'button',
+              className: 'btn btn-blue',
+              onClick: this.moveToNextImg
+            },
             'next'
           )
         ),
-        React.createElement(
-          'div',
-          { className: 'Toolbar-section ExtensionsNav' },
+        React.DOM.div(
+          {
+            className: 'Toolbar-section ExtensionsNav'
+          },
           renderExtButtons()
         )
       )
     )
   }
 })
-ReactDOM.render(React.createElement(SIV, { store: Redux.createStore(sivReducer) }), document.getElementById('siv'))
+
+const sivComponent = React.createElement(SIV, {
+  store: Redux.createStore(sivReducer)
+})
+
+ReactDOM.render(sivComponent, document.getElementById('siv'))
