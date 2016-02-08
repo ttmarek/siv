@@ -6,8 +6,7 @@ const sivEvents = require('./siv-events')
 const Sidebar = React.createClass({
   propTypes: {
     sivDispatch: React.PropTypes.func.isRequired,
-    sivState: React.PropTypes.object.isRequired,
-    imagesLoading: React.PropTypes.bool.isRequired
+    sivState: React.PropTypes.object.isRequired
   },
 
   render () {
@@ -18,8 +17,6 @@ const Sidebar = React.createClass({
       if (pathsList.length > 0) {
         return React.createElement(Files, { sivState: sivState,
           sivDispatch: this.props.sivDispatch })
-      } else if (this.props.imagesLoading) {
-        return 'Images Loading...'
       }
       return 'No File To Display'
     }

@@ -16,8 +16,7 @@ const SIV = React.createClass({
   getInitialState () {
     return {
       keyFound: true,
-      pathInputShown: false,
-      imagesLoading: false
+      pathInputShown: false
     }
   },
   componentWillMount () {
@@ -38,10 +37,8 @@ const SIV = React.createClass({
       })
     })
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
-      this.setState({imagesLoading: true})
       images.loadMany(prepared.filePaths.pathsList)
         .then(images => {
-          this.setState({imagesLoading: false})
           this.props.store.dispatch(
             sivEvents.imagesLoaded(images)
           )
@@ -187,12 +184,15 @@ const SIV = React.createClass({
       this.setState({ pathInputShown: !this.state.pathInputShown })
     }
     return React.createElement(
-      'div',
-      { className: 'siv' },
+      'div', {
+        className: 'siv'
+      },
       this.state.keyFound ? '' : renderKeyNotFoundMsg(),
-      React.createElement(Sidebar, { imagesLoading: this.state.imagesLoading,
-        sivState: sivState,
-        sivDispatch: sivDispatch }),
+      React.createElement(
+        Sidebar, {
+          sivState: sivState,
+          sivDispatch: sivDispatch
+        }),
       React.createElement(
         'div',
         { className: 'Viewer',
