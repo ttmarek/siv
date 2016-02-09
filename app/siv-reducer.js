@@ -2,7 +2,7 @@
 const ImageLayer = require('./image')
 const sivActions = require('./siv-actions')
 const initialState = {
-  currentImg: '',
+  currentImg: undefined,
   user: null,
   filesShown: true,
   filePaths: {hierarchy: [], pathsList: []},
@@ -12,19 +12,15 @@ const initialState = {
   extControls: [],
   extStores: {},
   canvasRefs: [],
-  images: {},
   layers: [ImageLayer]
 }
 const sivReducer = (state, action) => {
+  console.log(action.type)
   const currentState = state || initialState
   const update = (updates) => {
     return Object.assign({}, currentState, updates)
   }
   switch (action.type) {
-    case sivActions.UPDATE_IMAGES:
-      return update({
-        images: Object.assign({}, currentState.images, action.images)
-      })
     case sivActions.CLOSE_EXTENSION:
       const extId = action.extId
       return update({

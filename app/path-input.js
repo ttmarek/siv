@@ -1,6 +1,6 @@
 'use strict'
 const React = require('react')
-const images = require('./images')
+const setImage = require('./setImage')
 const sivEvents = require('./siv-events')
 const PathInput = React.createClass({
   propTypes: {
@@ -21,15 +21,7 @@ const PathInput = React.createClass({
     const handlePathInputSubmit = (event) => {
       event.preventDefault()
       const filePath = event.target.pathInput.value
-      images.load(filePath)
-        .then(img => {
-          this.props.sivDispatch(
-            sivEvents.imagesLoaded({[filePath]: img})
-          )
-          this.props.sivDispatch(
-            sivEvents.setCurrentImg(filePath)
-          )
-        })
+      setImage(filePath, this.props.sivDispatch)
       this.setState({value: ''})
     }
     const currentImg = this.props.sivState.currentImg

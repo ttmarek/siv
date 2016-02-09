@@ -1,6 +1,7 @@
 'use strict'
 const Path = require('path')
 const React = require('react')
+const setImage = require('./setImage')
 const sivEvents = require('./siv-events')
 
 const FileComponent = React.createClass({
@@ -13,9 +14,7 @@ const FileComponent = React.createClass({
   setCurrentImg (click) {
     click.preventDefault()
     const filePath = click.target.getAttribute('data-file-path')
-    this.props.sivDispatch(
-      sivEvents.setCurrentImg(filePath)
-    )
+    setImage(filePath, this.props.sivDispatch)
   },
 
   render () {

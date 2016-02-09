@@ -7,7 +7,8 @@ const Sidebar = require('./sidebar')
 const PathInput = require('./path-input')
 const sivReducer = require('./siv-reducer')
 const sivEvents = require('./siv-events')
-const images = require('./images')
+const setImage = require('./setImage')
+const navigateImages = require('./navigateImages')
 const SIV = React.createClass({
   propTypes: {
     store: React.PropTypes.object.isRequired
@@ -37,24 +38,16 @@ const SIV = React.createClass({
       })
     })
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
-      images.loadMany(prepared.filePaths.pathsList)
-        .then(images => {
-          this.props.store.dispatch(
-            sivEvents.imagesLoaded(images)
-          )
-          this.props.store.dispatch(
-            sivEvents.setFilePaths(prepared.filePaths)
-          )
-          if (prepared.currentImg) {
-            this.props.store.dispatch(
-              sivEvents.setCurrentImg(prepared.currentImg)
-            )
-          } else {
-            this.props.store.dispatch(
-              sivEvents.setCurrentImg(prepared.filePaths.pathsList[0])
-            )
-          }
-        })
+      this.props.store.dispatch(
+        sivEvents.setFilePaths(prepared.filePaths)
+      )
+      const currentImgPath = (() => {
+        if (prepared.currentImg) {
+          return prepared.currentImg
+        }
+        return prepared.filePaths.pathsList[0]
+      })()
+      setImage(currentImgPath, this.props.store.dispatch)
     })
     ipcRenderer.on('extensions-downloaded', (event, downloadedExts) => {
       this.props.store.dispatch(
@@ -100,11 +93,11 @@ const SIV = React.createClass({
   },
   moveToNextImg (event) {
     event.preventDefault()
-    this.props.store.dispatch(sivEvents.moveToNextImg())
+    navigateImages('next', this.props.store)
   },
   moveToPrevImg (event) {
     event.preventDefault()
-    this.props.store.dispatch(sivEvents.moveToPrevImg())
+    navigateImages('prev', this.props.store)
   },
   render () {
     const sivState = this.props.store.getState()
