@@ -15,7 +15,6 @@ const initialState = {
   layers: [ImageLayer]
 }
 const sivReducer = (state, action) => {
-  console.log(action.type)
   const currentState = state || initialState
   const update = (updates) => {
     return Object.assign({}, currentState, updates)
