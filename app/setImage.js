@@ -15,6 +15,6 @@ function setImage (src, sivDispatch) {
       )
     })
     .catch(err => {
-      console.log('error loading image')
+      console.log('Error loading image', err)
     })
 }

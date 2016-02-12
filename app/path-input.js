@@ -1,7 +1,7 @@
 'use strict'
 const React = require('react')
 const setImage = require('./setImage')
-const sivEvents = require('./siv-events')
+
 const PathInput = React.createClass({
   propTypes: {
     sivDispatch: React.PropTypes.func.isRequired,

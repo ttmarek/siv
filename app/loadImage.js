@@ -7,7 +7,7 @@ function loadImage (imgSrc) {
       resolve(imgSrc)
     }
     img.onerror = (err) => {
-      reject()
+      reject(err)
     }
     img.src = imgSrc
   })

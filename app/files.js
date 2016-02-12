@@ -2,7 +2,6 @@
 const Path = require('path')
 const React = require('react')
 const setImage = require('./setImage')
-const sivEvents = require('./siv-events')
 
 const FileComponent = React.createClass({
   propTypes: {
