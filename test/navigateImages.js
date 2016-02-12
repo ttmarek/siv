@@ -12,7 +12,7 @@ const testReducer = (state, action) => {
 
 const testStore = Redux.createStore(testReducer)
 
-test("Simple navigation", assert => {
+test('Simple navigation', assert => {
   testStore.dispatch({
     type: 'UPDATE_STATE',
     newState: {
@@ -29,13 +29,13 @@ test("Simple navigation", assert => {
   const nextPath = navigateImages('next', testStore)
   const prevPath = navigateImages('prev', testStore)
   assert.equal(nextPath, '/path/to/img3.jpg',
-               "navigateImages('next', reduxStore) returns the next path in the path list")
+               'navigateImages("next", reduxStore) returns the next path in the path list')
   assert.equal(prevPath, '/path/to/img1.jpg',
-               "navigateImages('prev', reduxStore) returns the previous path in the path list")
+               'navigateImages("prev", reduxStore) returns the previous path in the path list')
   assert.end()
 })
 
-test("Navigate forward when at the end of the path list", assert => {
+test('Navigate forward when at the end of the path list', assert => {
   testStore.dispatch({
     type: 'UPDATE_STATE',
     newState: {
@@ -55,7 +55,7 @@ test("Navigate forward when at the end of the path list", assert => {
   assert.end()
 })
 
-test("Navigate backward when at the top of the path list", assert => {
+test('Navigate backward when at the top of the path list', assert => {
   testStore.dispatch({
     type: 'UPDATE_STATE',
     newState: {
@@ -98,7 +98,7 @@ test("Navigate when the current path isn't in the path list", assert => {
   assert.end()
 })
 
-test("Navigate when the path list is empty", assert => {
+test('Navigate when the path list is empty', assert => {
   testStore.dispatch({
     type: 'UPDATE_STATE',
     newState: {

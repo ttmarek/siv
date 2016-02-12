@@ -93,11 +93,13 @@ const SIV = React.createClass({
   },
   moveToNextImg (event) {
     event.preventDefault()
-    navigateImages('next', this.props.store)
+    const nextPath = navigateImages('next', this.props.store)
+    setImage(nextPath, this.props.store.dispatch)
   },
   moveToPrevImg (event) {
     event.preventDefault()
-    navigateImages('prev', this.props.store)
+    const prevPath = navigateImages('prev', this.props.store)
+    setImage(prevPath, this.props.store.dispatch)
   },
   render () {
     const sivState = this.props.store.getState()
