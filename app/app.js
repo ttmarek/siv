@@ -113,9 +113,10 @@ function openReportAPPWindow () {
 function openSIVWindow (showDevTools) {
   return new Promise(resolve => {
     const browserWindow = new electron.BrowserWindow({
-      title: 'SIV Image Viewer'
+      title: 'SIV Image Viewer',
+      width: 1260,
+      height: 800
     })
-    browserWindow.maximize()
     const winId = browserWindow.id
     appState.windows = Object.assign({}, appState.windows, {[winId]: browserWindow})
     browserWindow.on('closed', () => {
