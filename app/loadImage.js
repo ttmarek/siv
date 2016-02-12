@@ -1,4 +1,10 @@
 'use strict'
+
+/**
+ * Loads an image into the http cache
+ * @param {string} imgSrc image path
+ * @returns {string} loaded image path
+ */
 function loadImage (imgSrc) {
   imgSrc = imgSrc.replace(/#/g, '%23')
   return new Promise((resolve, reject) => {
