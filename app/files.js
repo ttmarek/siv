@@ -29,16 +29,16 @@ const FileComponent = React.createClass({
       }
     })()
 
-    return React.createElement(
-      'li',
+    return React.DOM.li(
       null,
-      React.createElement(
-        'a',
-        { href: '',
+      React.DOM.a(
+        {
+          href: '',
           'data-file-path': this.props.filePath,
           style: style,
-          onClick: this.setCurrentImg },
-        Path.basename(this.props.filePath)
+          onClick: this.setCurrentImg
+        },
+        Path.basename(this.props.filePath, Path.extname(this.props.filePath))
       )
     )
   }
@@ -75,22 +75,29 @@ const DirComponent = React.createClass({
         filePath: path })
     })
 
-    return React.createElement(
-      'li',
-      { className: 'dir' },
-      React.createElement('img', { style: this.state.hidden ? { transform: 'rotate(-90deg)' } : {},
-                                   onClick: this.toggleVisibility,
-                                   src: 'icons/ic_arrow_drop_down_black_18px.svg' }),
-      React.createElement(
-        'a',
-        { href: '',
+    return React.DOM.li(
+      {
+        className: 'dir'
+      },
+      React.DOM.img(
+        {
+          style: this.state.hidden ? {transform: 'rotate(-90deg)'} : {},
+          onClick: this.toggleVisibility,
+          src: 'icons/ic_arrow_drop_down_black_18px.svg'
+        }
+      ),
+      React.DOM.a(
+        {
+          href: '',
           className: 'dir-link',
-          onClick: this.toggleVisibility },
+          onClick: this.toggleVisibility
+        },
         this.dirName(this.props.dirObj.dir)
       ),
-      React.createElement(
-        'ul',
-        { style: this.state.hidden ? { display: 'none' } : {} },
+      React.DOM.ul(
+        {
+          style: this.state.hidden ? {display: 'none'} : {}
+        },
         children
       )
     )
@@ -126,8 +133,7 @@ const FilesComponent = React.createClass({
       }
     })
 
-    return React.createElement(
-      'ul',
+    return React.DOM.ul(
       null,
       components
     )
