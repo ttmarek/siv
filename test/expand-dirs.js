@@ -2,18 +2,18 @@ const test = require('tape')
 const expandDirs = require('../app/expand-dirs.js')
 const mock = require('mock-fs')
 
-test('expandDirs given an empty list', (assert) => {
+test('Nothing to expand', (assert) => {
   expandDirs([])
     .then(paths => {
       assert.deepEqual(paths, {
         hierarchy: [],
         pathsList: []
-      }, 'returns {hierarchy:[], pathsList:[]}')
+      }, 'expandDirs([]) returns {hierarchy:[], pathsList:[]}')
       assert.end()
     })
 })
 
-test('expandDirs given a mix of directory and file paths', (assert) => {
+test('Expand a mix of directory and file paths', (assert) => {
   mock({
     'path/to/dir1': {
       'child-dir': {
@@ -57,7 +57,7 @@ test('expandDirs given a mix of directory and file paths', (assert) => {
         'path/to/dir2/image-a.jpg',
         'path/to/dir2/image-b.jpg',
         'path/to/dir2/image-c.jpg'
-      ], 'generates the hierarchy correctly')
+      ], 'Generates the hierarchy correctly')
       assert.deepEqual(paths.pathsList, [
         'path/to/dir1/some-image.BMP',
         'path/to/dir1/some-image.JPEG',
@@ -68,7 +68,7 @@ test('expandDirs given a mix of directory and file paths', (assert) => {
         'path/to/dir2/image-a.jpg',
         'path/to/dir2/image-b.jpg',
         'path/to/dir2/image-c.jpg'
-      ], 'generates the paths list correctly')
+      ], 'Generates the paths list correctly')
       assert.end()
       mock.restore()
     })
