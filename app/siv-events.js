@@ -1,12 +1,6 @@
 'use strict'
 const sivActions = require('./siv-actions')
 module.exports = {
-  imagesLoaded (images) {
-    return {
-      type: sivActions.UPDATE_IMAGES,
-      images
-    }
-  },
   extensionCloseRequest (extId) {
     return {
       type: sivActions.CLOSE_EXTENSION,

@@ -30,16 +30,22 @@ const ImageLayer = React.createClass({
     )
   },
   shouldComponentUpdate (nextProps, nextState) {
-    if (nextProps.sivState.currentImg !==
-        this.props.sivState.currentImg ||
-        nextProps.sivState.viewerDimensions.width !==
-        this.props.sivState.viewerDimensions.width ||
-        nextProps.sivState.viewerDimensions.height !==
-        this.props.sivState.viewerDimensions.height ||
-        nextState.dx !== this.state.dx ||
-        nextState.dy !== this.state.dy ||
-        nextState.mouseDown !== this.state.mouseDown ||
-        nextState.scale !== this.state.scale) {
+    // This component should only render if there is a new image to
+    // draw, or if an already-drawn image is zoomed or panned.
+    // Note: React ignores shouldComponentUpdate on the first render.
+    const propsChange = (nextProps.sivState.currentImg !==
+                         this.props.sivState.currentImg ||
+                         nextProps.sivState.viewerDimensions.width !==
+                         this.props.sivState.viewerDimensions.width ||
+                         nextProps.sivState.viewerDimensions.height !==
+                         this.props.sivState.viewerDimensions.height
+                        )
+    const stateChange = (nextState.dx !== this.state.dx ||
+                         nextState.dy !== this.state.dy ||
+                         nextState.mouseDown !== this.state.mouseDown ||
+                         nextState.scale !== this.state.scale
+                        )
+    if (propsChange || stateChange) {
       return true
     }
     return false
@@ -55,7 +61,14 @@ const ImageLayer = React.createClass({
     }
     const next = {
       viewerDimensions: nextProps.sivState.viewerDimensions,
-      img: nextProps.sivState.images[nextProps.sivState.currentImg]
+      img: (() => {
+        if (nextProps.sivState.currentImg) {
+          const img = document.createElement('img')
+          img.src = nextProps.sivState.currentImg
+          return img
+        }
+        return undefined
+      })()
     }
     const imgHasChanged = (() => {
       if (next.img && next.img.src && !current.img) {

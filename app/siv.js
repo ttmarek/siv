@@ -7,7 +7,8 @@ const Sidebar = require('./sidebar')
 const PathInput = require('./path-input')
 const sivReducer = require('./siv-reducer')
 const sivEvents = require('./siv-events')
-const images = require('./images')
+const setImage = require('./setImage')
+const navigateImages = require('./navigateImages')
 const SIV = React.createClass({
   propTypes: {
     store: React.PropTypes.object.isRequired
@@ -16,8 +17,7 @@ const SIV = React.createClass({
   getInitialState () {
     return {
       keyFound: true,
-      pathInputShown: false,
-      imagesLoading: false
+      pathInputShown: false
     }
   },
   componentWillMount () {
@@ -38,26 +38,16 @@ const SIV = React.createClass({
       })
     })
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
-      this.setState({imagesLoading: true})
-      images.loadMany(prepared.filePaths.pathsList)
-        .then(images => {
-          this.setState({imagesLoading: false})
-          this.props.store.dispatch(
-            sivEvents.imagesLoaded(images)
-          )
-          this.props.store.dispatch(
-            sivEvents.setFilePaths(prepared.filePaths)
-          )
-          if (prepared.currentImg) {
-            this.props.store.dispatch(
-              sivEvents.setCurrentImg(prepared.currentImg)
-            )
-          } else {
-            this.props.store.dispatch(
-              sivEvents.setCurrentImg(prepared.filePaths.pathsList[0])
-            )
-          }
-        })
+      this.props.store.dispatch(
+        sivEvents.setFilePaths(prepared.filePaths)
+      )
+      const currentImgPath = (() => {
+        if (prepared.currentImg) {
+          return prepared.currentImg
+        }
+        return prepared.filePaths.pathsList[0]
+      })()
+      setImage(currentImgPath, this.props.store.dispatch)
     })
     ipcRenderer.on('extensions-downloaded', (event, downloadedExts) => {
       this.props.store.dispatch(
@@ -103,11 +93,13 @@ const SIV = React.createClass({
   },
   moveToNextImg (event) {
     event.preventDefault()
-    this.props.store.dispatch(sivEvents.moveToNextImg())
+    const nextPath = navigateImages('next', this.props.store)
+    setImage(nextPath, this.props.store.dispatch)
   },
   moveToPrevImg (event) {
     event.preventDefault()
-    this.props.store.dispatch(sivEvents.moveToPrevImg())
+    const prevPath = navigateImages('prev', this.props.store)
+    setImage(prevPath, this.props.store.dispatch)
   },
   render () {
     const sivState = this.props.store.getState()
@@ -186,20 +178,23 @@ const SIV = React.createClass({
     const hideShowPathInput = () => {
       this.setState({ pathInputShown: !this.state.pathInputShown })
     }
-    return React.createElement(
-      'div',
-      { className: 'siv' },
+    return React.DOM.div(
+      {
+        className: 'siv'
+      },
       this.state.keyFound ? '' : renderKeyNotFoundMsg(),
-      React.createElement(Sidebar, { imagesLoading: this.state.imagesLoading,
+      React.createElement(Sidebar, {
         sivState: sivState,
-        sivDispatch: sivDispatch }),
-      React.createElement(
-        'div',
-        { className: 'Viewer',
-          ref: 'viewerNode' },
-        React.createElement(
-          'div',
-          { id: 'PathInput-control',
+        sivDispatch: sivDispatch
+      }),
+      React.DOM.div(
+        {
+          className: 'Viewer',
+          ref: 'viewerNode'
+        },
+        React.DOM.div(
+          {
+            id: 'PathInput-control',
             className: this.state.pathInputShown ? 'open' : '',
             role: 'button',
             onClick: hideShowPathInput
@@ -209,37 +204,53 @@ const SIV = React.createClass({
         React.createElement(PathInput, {
           pathInputShown: this.state.pathInputShown,
           sivState: sivState,
-          sivDispatch: sivDispatch }),
-        React.createElement(
-          'div',
-          { className: 'LayerContainer' },
+          sivDispatch: sivDispatch
+        }),
+        React.DOM.div(
+          {
+            className: 'LayerContainer'
+          },
           renderLayers()
         )
       ),
-      React.createElement(
-        'div',
-        { className: 'Toolbar' },
-        React.createElement(
-          'div',
-          { className: 'Toolbar-section FileNav' },
-          React.createElement(
-            'div',
-            { role: 'button', className: 'btn btn-blue', onClick: this.moveToPrevImg },
+      React.DOM.div(
+        {
+          className: 'Toolbar'
+        },
+        React.DOM.div(
+          {
+            className: 'Toolbar-section FileNav'
+          },
+          React.DOM.div(
+            {
+              role: 'button',
+              className: 'btn btn-blue',
+              onClick: this.moveToPrevImg
+            },
             'prev'
           ),
-          React.createElement(
-            'div',
-            { role: 'button', className: 'btn btn-blue', onClick: this.moveToNextImg },
+          React.DOM.div(
+            {
+              role: 'button',
+              className: 'btn btn-blue',
+              onClick: this.moveToNextImg
+            },
             'next'
           )
         ),
-        React.createElement(
-          'div',
-          { className: 'Toolbar-section ExtensionsNav' },
+        React.DOM.div(
+          {
+            className: 'Toolbar-section ExtensionsNav'
+          },
           renderExtButtons()
         )
       )
     )
   }
 })
-ReactDOM.render(React.createElement(SIV, { store: Redux.createStore(sivReducer) }), document.getElementById('siv'))
+
+const sivComponent = React.createElement(SIV, {
+  store: Redux.createStore(sivReducer)
+})
+
+ReactDOM.render(sivComponent, document.getElementById('siv'))
