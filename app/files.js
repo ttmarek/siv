@@ -38,7 +38,7 @@ const FileComponent = React.createClass({
           style: style,
           onClick: this.setCurrentImg
         },
-        Path.basename(this.props.filePath)
+        Path.basename(this.props.filePath, Path.extname(this.props.filePath))
       )
     )
   }
