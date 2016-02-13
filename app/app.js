@@ -2,11 +2,13 @@
 const electron = require('electron')
 const minimist = require('minimist')
 const Table = require('cli-table2')
+const path = require('path')
+const fs = require('fs')
 const auth = require('./auth')
 const exts = require('./extensions')
 const expandDirs = require('./expand-dirs')
-const path = require('path')
-const fs = require('fs')
+const sivWindow = require('./siv-window')
+const menuBar = require('./menu-bar')
 
 function logHelp () {
   const version = `SIV v${electron.app.getVersion()}\n`
@@ -48,7 +50,6 @@ function devToolsAuthorized (pass) {
 const appState = {
   userId: null,                 // for checkForKey
   trayIcon: null,
-  windows: {},
   downloadedExts: []
 }
 
@@ -80,66 +81,14 @@ function checkForKey () {
     })
 }
 
-function openReportABugWindow () {
-  const reportABugWindow = new electron.BrowserWindow({
-    title: 'Report A Bug',
-    width: 750,
-    height: 800,
-    autoHideMenuBar: true
-  })
-  const winId = reportABugWindow.id
-  appState.windows = Object.assign({}, appState.windows, {[winId]: reportABugWindow})
-  reportABugWindow.on('closed', () => {
-    appState.windows = Object.assign({}, appState.windows, {[winId]: undefined})
-  })
-  reportABugWindow.loadURL('https://docs.google.com/forms/d/1cJSMfQInc7lv-iW3vf6SkU581c6KXFuyF6wx8oZ4h_g/viewform?usp=send_form')
-}
-
-function openReportAPPWindow () {
-  const reportAPPWindow = new electron.BrowserWindow({
-    title: 'Report A Pain Point',
-    width: 750,
-    height: 800,
-    autoHideMenuBar: true
-  })
-  const winId = reportAPPWindow.id
-  appState.windows = Object.assign({}, appState.windows, {[winId]: reportAPPWindow})
-  reportAPPWindow.on('closed', () => {
-    appState.windows = Object.assign({}, appState.windows, {[winId]: undefined})
-  })
-  reportAPPWindow.loadURL('https://docs.google.com/forms/d/1rR5Rxr_t3qoS0HacB3TDzw5tLRXx8vimekUljTb1XS0/viewform?usp=send_form')
-}
-
-function openSIVWindow (showDevTools) {
-  return new Promise(resolve => {
-    const browserWindow = new electron.BrowserWindow({
-      title: 'SIV Image Viewer',
-      width: 1260,
-      height: 800
-    })
-    const winId = browserWindow.id
-    appState.windows = Object.assign({}, appState.windows, {[winId]: browserWindow})
-    browserWindow.on('closed', () => {
-      appState.windows = Object.assign({}, appState.windows, {[winId]: undefined})
-    })
-    browserWindow.loadURL(`file://${__dirname}/siv.html`)
-    if (showDevTools) {
-      browserWindow.webContents.openDevTools()
-    }
-    browserWindow.webContents.on('did-finish-load', () => {
-      resolve(browserWindow)
-    })
-  })
-}
-
 const existingInstance = electron.app.makeSingleInstance((argv) => {
   const sivCLI = minimist(argv.slice(2), {boolean: true})
   if (sivCLI.help) logHelp()
   const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
   const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
   // CREATE AND OPEN THE NTH SIV WINDOW
-  openSIVWindow((sivCLI.dev || sivCLI.devTools) &&
-                devToolsAuthorized(sivCLI.pass))
+  sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
+                 devToolsAuthorized(sivCLI.pass))
     .then(browserWindow => {
       expandDirs(pathsToOpen)
         .then(filePaths => {
@@ -163,50 +112,10 @@ const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
 const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
 
 electron.app.on('ready', () => {
-  const sendFilePath = (focusedWindow, filePath) => {
-    // filePath will be undefined if the user cancels out of the save dialog:
-    if (filePath) {
-      focusedWindow.webContents.send('save-image', filePath)
-    }
-  }
-  const saveDialogOpts = {
-    filters: [
-      {name: 'Images', extensions: ['png']}
-    ]
-  }
-  // CREATE AND APPLY THE MENU BAR FOR ALL WINDOWS
-  const menuBar = electron.Menu.buildFromTemplate([
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'Save',
-          accelerator: 'CmdOrCtrl+S',
-          click: (item, focusedWindow) => {
-            electron.dialog.showSaveDialog(saveDialogOpts,
-                                           sendFilePath.bind(null, focusedWindow))
-          }
-        }
-      ]
-    },
-    {
-      label: 'Help',
-      submenu: [
-        {
-          label: 'Report a Bug',
-          click: openReportABugWindow
-        },
-        {
-          label: 'Report a Pain Point',
-          click: openReportAPPWindow
-        }
-      ]
-    }
-  ])
   electron.Menu.setApplicationMenu(menuBar)
   // CREATE AND OPEN THE FIRST SIV WINDOW
-  openSIVWindow((sivCLI.dev || sivCLI.devTools) &&
-                devToolsAuthorized(sivCLI.pass))
+  sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
+                 devToolsAuthorized(sivCLI.pass))
     .then(browserWindow => {
       expandDirs(pathsToOpen)
         .then(filePaths => {

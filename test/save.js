@@ -12,7 +12,7 @@ test('save.updatedFilePaths', assert => {
        children: ['path/to/dir1/some-image.BMP',
                   'path/to/dir1/some-image.JPEG']},
       'path/to/dir2/image-a.jpg',
-      'path/to/dir2/image-b.jpg',
+      'path/to/dir2/image-b.jpg'
     ],
     pathsList: [
       'path/to/dir1/some-image.BMP',
@@ -29,7 +29,7 @@ test('save.updatedFilePaths', assert => {
        children: ['path/to/dir1/some-image.BMP',
                   'path/to/dir1/some-image.JPEG']},
       'path/to/dir2/image-a.jpg',
-      'path/to/dir2/image-b.jpg',
+      'path/to/dir2/image-b.jpg'
     ],
     pathsList: [
       savedFile1,
@@ -47,7 +47,7 @@ test('save.updatedFilePaths', assert => {
        children: ['path/to/dir1/some-image.BMP',
                   'path/to/dir1/some-image.JPEG']},
       'path/to/dir2/image-a.jpg',
-      'path/to/dir2/image-b.jpg',
+      'path/to/dir2/image-b.jpg'
     ],
     pathsList: [
       savedFile2,

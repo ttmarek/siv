@@ -8,7 +8,7 @@ module.exports = {
   updateFilePaths
 }
 
-function combineLayers(canvasElements, dimensions) {
+function combineLayers (canvasElements, dimensions) {
   const combinedCanvas = document.createElement('canvas')
   combinedCanvas.height = dimensions.height
   combinedCanvas.width = dimensions.width
@@ -31,7 +31,7 @@ function image (filePath, store) {
   })
 }
 
-function updateFilePaths(filePath, filePaths) {
+function updateFilePaths (filePath, filePaths) {
   const updatedPathsList = [filePath].concat(filePaths.pathsList)
 
   const savedFolderIndex = (() => {

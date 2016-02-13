@@ -69,7 +69,7 @@ test('Expand a mix of directory and file paths', (assert) => {
         'path/to/dir2/image-a.jpg',
         'path/to/dir2/image-b.jpg',
         'path/to/dir2/image-c.jpg'
-      ],'Generates the hierarchy correctly')
+      ], 'Generates the hierarchy correctly')
       assert.deepEqual(paths.pathsList, [
         'path/to/dir1/some-image.BMP',
         'path/to/dir1/some-image.JPEG',
