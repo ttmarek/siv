@@ -66,7 +66,7 @@ function makeTrayIcon (userId) {
     {type: 'normal', label: `User: ${userId}`}
   ])
 
-  const trayIcon = new electron.Tray(path.join(__dirname, 'icons', 'icon.png'))
+  const trayIcon = new electron.Tray(path.join(__dirname, 'icons', 'siv-icon-32x32.png'))
   trayIcon.setToolTip('SIV Image Viewer')
   trayIcon.setContextMenu(contextMenu)
   appState.trayIcon = trayIcon
