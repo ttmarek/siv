@@ -80,36 +80,6 @@ function checkForKey () {
     })
 }
 
-function openReportABugWindow () {
-  const reportABugWindow = new electron.BrowserWindow({
-    title: 'Report A Bug',
-    width: 750,
-    height: 800,
-    autoHideMenuBar: true
-  })
-  const winId = reportABugWindow.id
-  appState.windows = Object.assign({}, appState.windows, {[winId]: reportABugWindow})
-  reportABugWindow.on('closed', () => {
-    appState.windows = Object.assign({}, appState.windows, {[winId]: undefined})
-  })
-  reportABugWindow.loadURL('https://docs.google.com/forms/d/1cJSMfQInc7lv-iW3vf6SkU581c6KXFuyF6wx8oZ4h_g/viewform?usp=send_form')
-}
-
-function openReportAPPWindow () {
-  const reportAPPWindow = new electron.BrowserWindow({
-    title: 'Report A Pain Point',
-    width: 750,
-    height: 800,
-    autoHideMenuBar: true
-  })
-  const winId = reportAPPWindow.id
-  appState.windows = Object.assign({}, appState.windows, {[winId]: reportAPPWindow})
-  reportAPPWindow.on('closed', () => {
-    appState.windows = Object.assign({}, appState.windows, {[winId]: undefined})
-  })
-  reportAPPWindow.loadURL('https://docs.google.com/forms/d/1rR5Rxr_t3qoS0HacB3TDzw5tLRXx8vimekUljTb1XS0/viewform?usp=send_form')
-}
-
 const existingInstance = electron.app.makeSingleInstance((argv) => {
   const sivCLI = minimist(argv.slice(2), {boolean: true})
   if (sivCLI.help) logHelp()
@@ -164,19 +134,6 @@ electron.app.on('ready', () => {
             electron.dialog.showSaveDialog(saveDialogOpts,
                                            sendFilePath.bind(null, focusedWindow))
           }
-        }
-      ]
-    },
-    {
-      label: 'Help',
-      submenu: [
-        {
-          label: 'Report a Bug',
-          click: openReportABugWindow
-        },
-        {
-          label: 'Report a Pain Point',
-          click: openReportAPPWindow
         }
       ]
     }
