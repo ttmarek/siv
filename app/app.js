@@ -141,7 +141,7 @@ electron.app.on('ready', () => {
       } else {
         auth.getUserObject()
           .then(userObj => {
-            if (userObj.id !== 'guest') {
+            if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
               appState.userId = userObj.id
               setInterval(checkForKey, 3000)
             }
