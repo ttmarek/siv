@@ -204,13 +204,6 @@ electron.app.on('ready', () => {
     }
   ])
   electron.Menu.setApplicationMenu(menuBar)
-  // ENABLE SIV WINDOWS TO SAVE IMAGES TO THE FILE SYSTEM
-  electron.ipcMain.on('write-image-to-filesystem', (event, img) => {
-    // filePath will be undefined if the user cancels out of the save dialog:
-    if (img.filePath) {
-      fs.writeFile(img.filePath, img.imageData, 'base64')
-    }
-  })
   // CREATE AND OPEN THE FIRST SIV WINDOW
   openSIVWindow((sivCLI.dev || sivCLI.devTools) &&
                 devToolsAuthorized(sivCLI.pass))

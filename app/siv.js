@@ -9,6 +9,7 @@ const sivReducer = require('./siv-reducer')
 const sivEvents = require('./siv-events')
 const setImage = require('./setImage')
 const navigateImages = require('./navigateImages')
+const save = require('./save')
 const SIV = React.createClass({
   propTypes: {
     store: React.PropTypes.object.isRequired
@@ -22,20 +23,10 @@ const SIV = React.createClass({
   },
   componentWillMount () {
     ipcRenderer.on('save-image', (event, filePath) => {
-      const sivState = this.props.store.getState()
-      const canvasElements = sivState.canvasRefs
-      const combinedCanvas = document.createElement('canvas')
-      combinedCanvas.height = sivState.viewerDimensions.height
-      combinedCanvas.width = sivState.viewerDimensions.width
-      const ctx = combinedCanvas.getContext('2d')
-      canvasElements.forEach(element => {
-        ctx.drawImage(element, 0, 0)
-      })
-      const imageData = combinedCanvas.toDataURL().replace('data:image/png;base64,', '')
-      ipcRenderer.send('write-image-to-filesystem', {
-        filePath,
-        imageData
-      })
+      // filePath will be undefined if the user cancels out of the save dialog:
+      if (filePath) {
+        save.image(filePath, this.props.store)
+      }
     })
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
       this.props.store.dispatch(
