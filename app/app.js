@@ -28,7 +28,8 @@ function logHelp () {
   })
   options.push(['--help', 'Show this message and exit.'],
                ['--singleFile', ["Opens all image files under the path's folder.",
-                                'Ignores all but the first provided path.'].join('\n')],
+                                 'Ignores all but the first provided path.'].join('\n')],
+               ['--login', "Start SIV, log in, don't open any windows."],
                ['--devTools', 'Open dev tools in each window.'],
                ['--dev', 'Run SIV in dev mode.'],
                ['--pass=[pass]', 'Password required for --dev and --devTools.'])
@@ -112,49 +113,65 @@ const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
 const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
 
 electron.app.on('ready', () => {
-  electron.Menu.setApplicationMenu(menuBar)
-  // CREATE AND OPEN THE FIRST SIV WINDOW
-  sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
-                 devToolsAuthorized(sivCLI.pass))
-    .then(browserWindow => {
-      expandDirs(pathsToOpen)
-        .then(filePaths => {
-          browserWindow.webContents.send('file-paths-prepared', {
-            filePaths,
-            currentImg
-          })
-        })
-        .catch(logError)
-
-      if (sivCLI.dev) {
-        const user = {
-          id: 'developer',
-          extensions: [{name: 'caliper', id: 'GyMG'},
-                       {name: 'sccir', id: 'G9Wd'}]
+  if (sivCLI.login) {
+    auth.getUserObject()
+      .then(userObj => {
+        if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
+          appState.userId = userObj.id
+          setInterval(checkForKey, 3000)
         }
-        makeTrayIcon(user.id)
-        exts.download(user)
-          .then(downloadedExts => {
-            browserWindow.webContents.send('extensions-downloaded', downloadedExts)
-            appState.downloadedExts = downloadedExts
-          })
-      } else {
-        auth.getUserObject()
-          .then(userObj => {
-            if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
-              appState.userId = userObj.id
-              setInterval(checkForKey, 3000)
-            }
-            makeTrayIcon(userObj.id)
-            return exts.download(userObj)
-          })
-          .then(downloadedExts => {
-            browserWindow.webContents.send('extensions-downloaded', downloadedExts)
-            appState.downloadedExts = downloadedExts
+        makeTrayIcon(userObj.id)
+        return exts.download(userObj)
+      })
+      .then(downloadedExts => {
+        appState.downloadedExts = downloadedExts
+      })
+      .catch(logError)
+  } else {
+    electron.Menu.setApplicationMenu(menuBar)
+    // CREATE AND OPEN THE FIRST SIV WINDOW
+    sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
+                   devToolsAuthorized(sivCLI.pass))
+      .then(browserWindow => {
+        expandDirs(pathsToOpen)
+          .then(filePaths => {
+            browserWindow.webContents.send('file-paths-prepared', {
+              filePaths,
+              currentImg
+            })
           })
           .catch(logError)
-      }
-    })
+
+        if (sivCLI.dev) {
+          const user = {
+            id: 'developer',
+            extensions: [{name: 'caliper', id: 'GyMG'},
+                         {name: 'sccir', id: 'G9Wd'}]
+          }
+          makeTrayIcon(user.id)
+          exts.download(user)
+            .then(downloadedExts => {
+              browserWindow.webContents.send('extensions-downloaded', downloadedExts)
+              appState.downloadedExts = downloadedExts
+            })
+        } else {
+          auth.getUserObject()
+            .then(userObj => {
+              if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
+                appState.userId = userObj.id
+                setInterval(checkForKey, 3000)
+              }
+              makeTrayIcon(userObj.id)
+              return exts.download(userObj)
+            })
+            .then(downloadedExts => {
+              browserWindow.webContents.send('extensions-downloaded', downloadedExts)
+              appState.downloadedExts = downloadedExts
+            })
+            .catch(logError)
+        }
+      })
+  }
 })
 
 electron.app.on('quit', () => {
