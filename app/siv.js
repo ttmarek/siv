@@ -9,7 +9,7 @@ const sivReducer = require('./siv-reducer')
 const sivEvents = require('./siv-events')
 const setImage = require('./setImage')
 const navigateImages = require('./navigateImages')
-const saveImage = require('./saveImage')
+const save = require('./save')
 const SIV = React.createClass({
   propTypes: {
     store: React.PropTypes.object.isRequired
@@ -25,7 +25,7 @@ const SIV = React.createClass({
     ipcRenderer.on('save-image', (event, filePath) => {
       // filePath will be undefined if the user cancels out of the save dialog:
       if (filePath) {
-        saveImage(filePath, this.props.store.getState())
+        save.image(filePath, this.props.store)
       }
     })
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
