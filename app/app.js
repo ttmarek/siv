@@ -8,6 +8,7 @@ const auth = require('./auth')
 const exts = require('./extensions')
 const expandDirs = require('./expand-dirs')
 const sivWindow = require('./siv-window')
+const menuBar = require('./menu-bar')
 
 function logHelp () {
   const version = `SIV v${electron.app.getVersion()}\n`
@@ -111,33 +112,6 @@ const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
 const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
 
 electron.app.on('ready', () => {
-  const sendFilePath = (focusedWindow, filePath) => {
-    // filePath will be undefined if the user cancels out of the save dialog:
-    if (filePath) {
-      focusedWindow.webContents.send('save-image', filePath)
-    }
-  }
-  const saveDialogOpts = {
-    filters: [
-      {name: 'Images', extensions: ['png']}
-    ]
-  }
-  // CREATE AND APPLY THE MENU BAR FOR ALL WINDOWS
-  const menuBar = electron.Menu.buildFromTemplate([
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'Save',
-          accelerator: 'CmdOrCtrl+S',
-          click: (item, focusedWindow) => {
-            electron.dialog.showSaveDialog(saveDialogOpts,
-                                           sendFilePath.bind(null, focusedWindow))
-          }
-        }
-      ]
-    }
-  ])
   electron.Menu.setApplicationMenu(menuBar)
   // CREATE AND OPEN THE FIRST SIV WINDOW
   sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
