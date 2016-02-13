@@ -37,27 +37,39 @@ test('Expand a mix of directory and file paths', (assert) => {
       'image-c.jpg': new Buffer([8, 6, 7, 5, 3, 0, 9]),
       'some-document.pdf': 'rubbish'
     },
-    'path/to/dir3': {/** empty directory */}
+    'path/to/dir3': {/** empty directory */},
+    'path/to/dir4': {
+      '26 LI 1.jpg': new Buffer([8, 6, 7, 5, 3, 0, 9]),
+      '259 GF 17.jpg': new Buffer([8, 6, 7, 5, 3, 0, 9])
+    }
   })
   expandDirs(['path/to/dir1',
               'path/to/dir3',
+              'path/to/dir4',
               'path/to/dir2/image-a.jpg',
               'path/to/dir2/image-b.jpg',
               'path/to/dir2/image-c.jpg',
               'path/to/dir2/some-document.pdf'])
     .then(paths => {
       assert.deepEqual(paths.hierarchy, [
-        {dir: 'path/to/dir1',
-         children: ['path/to/dir1/some-image.BMP',
-                    'path/to/dir1/some-image.JPEG',
-                    'path/to/dir1/some-image.JPG',
-                    'path/to/dir1/some-image.bmp',
-                    'path/to/dir1/some-image.jpeg',
-                    'path/to/dir1/some-image.jpg']},
+        {
+          dir: 'path/to/dir1',
+          children: ['path/to/dir1/some-image.BMP',
+                     'path/to/dir1/some-image.JPEG',
+                     'path/to/dir1/some-image.JPG',
+                     'path/to/dir1/some-image.bmp',
+                     'path/to/dir1/some-image.jpeg',
+                     'path/to/dir1/some-image.jpg']
+        },
+        {
+          dir: 'path/to/dir4',
+          children: ['path/to/dir4/26 LI 1.jpg',
+                     'path/to/dir4/259 GF 17.jpg']
+        },
         'path/to/dir2/image-a.jpg',
         'path/to/dir2/image-b.jpg',
         'path/to/dir2/image-c.jpg'
-      ], 'Generates the hierarchy correctly')
+      ],'Generates the hierarchy correctly')
       assert.deepEqual(paths.pathsList, [
         'path/to/dir1/some-image.BMP',
         'path/to/dir1/some-image.JPEG',
@@ -65,6 +77,8 @@ test('Expand a mix of directory and file paths', (assert) => {
         'path/to/dir1/some-image.bmp',
         'path/to/dir1/some-image.jpeg',
         'path/to/dir1/some-image.jpg',
+        'path/to/dir4/26 LI 1.jpg',
+        'path/to/dir4/259 GF 17.jpg',
         'path/to/dir2/image-a.jpg',
         'path/to/dir2/image-b.jpg',
         'path/to/dir2/image-c.jpg'

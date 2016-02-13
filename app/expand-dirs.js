@@ -1,6 +1,7 @@
 'use strict'
 const fs = require('fs')
 const Path = require('path')
+const naturalSort = require('javascript-natural-sort')
 
 function isValidFile (path) {
   const fileTypes = ['jpg', 'jpeg', 'bmp', 'png']
@@ -23,7 +24,7 @@ function expandDirs (pathsToOpen) {
         hierarchy.push(path)
         pathsList.push(path)
       } else if (isValidDir(path)) {
-        const children = fs.readdirSync(path).map(name => {
+        const children = fs.readdirSync(path).sort(naturalSort).map(name => {
           return Path.join(path, name)
         })
         const filteredPaths = children.filter(isValidFile)
