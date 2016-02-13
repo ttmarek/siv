@@ -2,11 +2,12 @@
 const electron = require('electron')
 const minimist = require('minimist')
 const Table = require('cli-table2')
+const path = require('path')
+const fs = require('fs')
 const auth = require('./auth')
 const exts = require('./extensions')
 const expandDirs = require('./expand-dirs')
-const path = require('path')
-const fs = require('fs')
+const sivWindow = require('./siv-window')
 
 function logHelp () {
   const version = `SIV v${electron.app.getVersion()}\n`
@@ -48,7 +49,6 @@ function devToolsAuthorized (pass) {
 const appState = {
   userId: null,                 // for checkForKey
   trayIcon: null,
-  windows: {},
   downloadedExts: []
 }
 
@@ -110,36 +110,14 @@ function openReportAPPWindow () {
   reportAPPWindow.loadURL('https://docs.google.com/forms/d/1rR5Rxr_t3qoS0HacB3TDzw5tLRXx8vimekUljTb1XS0/viewform?usp=send_form')
 }
 
-function openSIVWindow (showDevTools) {
-  return new Promise(resolve => {
-    const browserWindow = new electron.BrowserWindow({
-      title: 'SIV Image Viewer',
-      width: 1260,
-      height: 800
-    })
-    const winId = browserWindow.id
-    appState.windows = Object.assign({}, appState.windows, {[winId]: browserWindow})
-    browserWindow.on('closed', () => {
-      appState.windows = Object.assign({}, appState.windows, {[winId]: undefined})
-    })
-    browserWindow.loadURL(`file://${__dirname}/siv.html`)
-    if (showDevTools) {
-      browserWindow.webContents.openDevTools()
-    }
-    browserWindow.webContents.on('did-finish-load', () => {
-      resolve(browserWindow)
-    })
-  })
-}
-
 const existingInstance = electron.app.makeSingleInstance((argv) => {
   const sivCLI = minimist(argv.slice(2), {boolean: true})
   if (sivCLI.help) logHelp()
   const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
   const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
   // CREATE AND OPEN THE NTH SIV WINDOW
-  openSIVWindow((sivCLI.dev || sivCLI.devTools) &&
-                devToolsAuthorized(sivCLI.pass))
+  sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
+                 devToolsAuthorized(sivCLI.pass))
     .then(browserWindow => {
       expandDirs(pathsToOpen)
         .then(filePaths => {
@@ -205,8 +183,8 @@ electron.app.on('ready', () => {
   ])
   electron.Menu.setApplicationMenu(menuBar)
   // CREATE AND OPEN THE FIRST SIV WINDOW
-  openSIVWindow((sivCLI.dev || sivCLI.devTools) &&
-                devToolsAuthorized(sivCLI.pass))
+  sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
+                 devToolsAuthorized(sivCLI.pass))
     .then(browserWindow => {
       expandDirs(pathsToOpen)
         .then(filePaths => {
