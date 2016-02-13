@@ -77,8 +77,8 @@ test('Expand a mix of directory and file paths', (assert) => {
         'path/to/dir1/some-image.bmp',
         'path/to/dir1/some-image.jpeg',
         'path/to/dir1/some-image.jpg',
-        'path/to/dir1/26 LI 1.jpg',
-        'path/to/dir1/259 GF 17.jpg',
+        'path/to/dir4/26 LI 1.jpg',
+        'path/to/dir4/259 GF 17.jpg',
         'path/to/dir2/image-a.jpg',
         'path/to/dir2/image-b.jpg',
         'path/to/dir2/image-c.jpg'
