@@ -17,6 +17,8 @@ function downloadAll (userObj) {
       path: path.join(extDir, 'sccir.js')
     }]
     return Promise.resolve(downloadedExts)
+  } else if (userObj.id === 'no-connection') {
+    return Promise.resolve([])
   }
 
   AWS.config.update({

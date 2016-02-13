@@ -36,7 +36,10 @@ function requestUserObj (credentials) {
         const user = JSON.parse(body)
         resolve(user)
       } else {
-        reject(err)
+        resolve({
+          id: 'no-connection',
+          extensions: []
+        })
       }
     })
   })
