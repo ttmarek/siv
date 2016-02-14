@@ -113,6 +113,7 @@ const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
 const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
 
 electron.app.on('ready', () => {
+  electron.Menu.setApplicationMenu(menuBar)
   if (sivCLI.login) {
     auth.getUserObject()
       .then(userObj => {
@@ -128,7 +129,6 @@ electron.app.on('ready', () => {
       })
       .catch(logError)
   } else {
-    electron.Menu.setApplicationMenu(menuBar)
     // CREATE AND OPEN THE FIRST SIV WINDOW
     sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
                    devToolsAuthorized(sivCLI.pass))
