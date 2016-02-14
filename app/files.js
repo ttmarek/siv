@@ -1,0 +1,143 @@
+'use strict'
+const Path = require('path')
+const React = require('react')
+const setImage = require('./setImage')
+
+const FileComponent = React.createClass({
+  propTypes: {
+    sivDispatch: React.PropTypes.func.isRequired,
+    sivState: React.PropTypes.object.isRequired,
+    filePath: React.PropTypes.string.isRequired
+  },
+
+  setCurrentImg (click) {
+    click.preventDefault()
+    const filePath = click.target.getAttribute('data-file-path')
+    setImage(filePath, this.props.sivDispatch)
+  },
+
+  render () {
+    const style = (() => {
+      const currentImg = this.props.sivState.currentImg
+      if (currentImg === this.props.filePath) {
+        return {
+          background: '#337ab7',
+          color: '#f1f1f1'
+        }
+      } else {
+        return {}
+      }
+    })()
+
+    return React.DOM.li(
+      null,
+      React.DOM.a(
+        {
+          href: '',
+          'data-file-path': this.props.filePath,
+          style: style,
+          onClick: this.setCurrentImg
+        },
+        Path.basename(this.props.filePath, Path.extname(this.props.filePath))
+      )
+    )
+  }
+})
+
+const DirComponent = React.createClass({
+  propTypes: {
+    sivDispatch: React.PropTypes.func.isRequired,
+    sivState: React.PropTypes.object.isRequired,
+    dirObj: React.PropTypes.object.isRequired
+  },
+
+  getInitialState () {
+    return {
+      hidden: false
+    }
+  },
+
+  toggleVisibility (click) {
+    click.preventDefault()
+    this.setState({hidden: !this.state.hidden})
+  },
+
+  dirName (dir) {
+    return dir.split(Path.sep).pop()
+  },
+
+  render () {
+    const children = this.props.dirObj.children.map((path, index) => {
+      return React.createElement(FileComponent, {
+        key: index,
+        sivDispatch: this.props.sivDispatch,
+        sivState: this.props.sivState,
+        filePath: path })
+    })
+
+    return React.DOM.li(
+      {
+        className: 'dir'
+      },
+      React.DOM.img(
+        {
+          style: this.state.hidden ? {transform: 'rotate(-90deg)'} : {},
+          onClick: this.toggleVisibility,
+          src: 'icons/ic_arrow_drop_down_black_18px.svg'
+        }
+      ),
+      React.DOM.a(
+        {
+          href: '',
+          className: 'dir-link',
+          onClick: this.toggleVisibility
+        },
+        this.dirName(this.props.dirObj.dir)
+      ),
+      React.DOM.ul(
+        {
+          style: this.state.hidden ? {display: 'none'} : {}
+        },
+        children
+      )
+    )
+  }
+})
+
+const FilesComponent = React.createClass({
+  propTypes: {
+    sivDispatch: React.PropTypes.func.isRequired,
+    sivState: React.PropTypes.object.isRequired
+  },
+
+  render () {
+    const pathsHierarchy = this.props.sivState.filePaths.hierarchy
+    const components = pathsHierarchy.map((path, index) => {
+      switch (typeof path) {
+        case 'string':
+          return React.createElement(FileComponent, {
+            key: index,
+            filePath: path,
+            sivDispatch: this.props.sivDispatch,
+            sivState: this.props.sivState
+          })
+        case 'object':
+          return React.createElement(DirComponent, {
+            key: index,
+            dirObj: path,
+            sivDispatch: this.props.sivDispatch,
+            sivState: this.props.sivState
+          })
+        default:
+          return ''
+      }
+    })
+
+    return React.DOM.ul(
+      null,
+      components
+    )
+  }
+})
+
+module.exports = FilesComponent
