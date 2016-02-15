@@ -1,6 +1,6 @@
 /* BORDER BOX EVERYWHERE */
 html {
-    box-sizing: border-box;    
+    box-sizing: border-box;
 }
 
 *, *:before, *:after {
@@ -25,6 +25,7 @@ body {
 
 .siv {
     height: 100%;
+    background-color: #212121;
 }
 
 input:disabled {
@@ -83,7 +84,7 @@ input:disabled {
     float: left;
     font-size: 12px;
     height: 30px;
-    line-height: 30px;    
+    line-height: 30px;
     text-transform: uppercase;
     width: calc(100% - 30px);
 }
@@ -248,7 +249,7 @@ input:disabled {
     top: 0;
     height: 30px;
     width: 30px;
-    z-index: 11;    
+    z-index: 11;
 }
 
 #PathInput-control:hover {
