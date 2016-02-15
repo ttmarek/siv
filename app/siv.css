@@ -1,6 +1,6 @@
 /* BORDER BOX EVERYWHERE */
 html {
-    box-sizing: border-box;    
+    box-sizing: border-box;
 }
 
 *, *:before, *:after {
@@ -25,6 +25,7 @@ body {
 
 .siv {
     height: 100%;
+    background-color: #212121;
 }
 
 input:disabled {
@@ -83,7 +84,7 @@ input:disabled {
     float: left;
     font-size: 12px;
     height: 30px;
-    line-height: 30px;    
+    line-height: 30px;
     text-transform: uppercase;
     width: calc(100% - 30px);
 }
@@ -248,7 +249,7 @@ input:disabled {
     top: 0;
     height: 30px;
     width: 30px;
-    z-index: 11;    
+    z-index: 11;
 }
 
 #PathInput-control:hover {
@@ -294,18 +295,19 @@ input:disabled {
 }
 
 .btn-default {
-    background-color: white;
-    border-color: #ccc;
+    color: #BFBFBF;
+    border-color: #7D7D7D;
+    background-color: transparent;
 }
 
 .btn-active {
-    border-color: #2e6da4;
-    color: #337ab7;
+    border-color: #7CC0FB;
+    color: #7CC0FB;
 }
 
 .btn-default:hover {
-    background-color: #e6e6e6;
-    border-color: #adadad;
+    background-color: #f1f1f1;
+    color: #212121;
 }
 
 .btn-blue {
