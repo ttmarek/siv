@@ -144,11 +144,13 @@ input:disabled {
 }
 
 .ext-container {
+    margin-top: 10px;
     padding-left: 10px;
     padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #f1f1f1;
+    border: 1px solid #505050;
+    border-radius: 2px;
 }
 
 .ext-title {
@@ -167,6 +169,11 @@ input:disabled {
 
 .ext-title span {
     font-weight: bold;
+    color: #F1F1F1;
+}
+
+.ext-title.active span {
+    color: #337AB7;
 }
 
 /* TOOLBAR */
@@ -304,17 +311,17 @@ input:disabled {
 }
 
 .btn-default:hover {
-    background-color: #f1f1f1;
+    background-color: #F1F1F1;
     color: #212121;
 }
 
 .btn-blue {
-    background-color: #337ab7;
-    border-color: #2e6da4;
+    background-color: #337AB7;
+    border-color: #2E6DA4;
     color: white;
 }
 
 .btn-blue:hover {
     background-color: #286090;
-    border-color:#204d74;
+    border-color: #204D74;
 }
