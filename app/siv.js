@@ -4,6 +4,7 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 const Redux = require('redux')
 const Sidebar = require('./sidebar')
+const Btn = require('./component/button')
 const PathInput = require('./path-input')
 const sivReducer = require('./siv-reducer')
 const sivEvents = require('./siv-events')
@@ -212,21 +213,11 @@ const SIV = React.createClass({
           {
             className: 'Toolbar-section FileNav'
           },
-          React.DOM.div(
-            {
-              role: 'button',
-              className: 'btn btn-blue',
-              onClick: this.moveToPrevImg
-            },
-            'prev'
+          React.createElement(
+            Btn, {btnType: 'blue', btnName: 'prev', onClick: this.moveToPrevImg}
           ),
-          React.DOM.div(
-            {
-              role: 'button',
-              className: 'btn btn-blue',
-              onClick: this.moveToNextImg
-            },
-            'next'
+          React.createElement(
+            Btn, {btnType: 'blue', btnName: 'next', onClick: this.moveToNextImg}
           )
         ),
         React.DOM.div(
