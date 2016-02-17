@@ -148,19 +148,12 @@ const SIV = React.createClass({
               )
             }
           }
-          const className = (() => {
-            if (activeLayer.extId === extInfo.id) {
-              return 'btn btn-default btn-active'
-            }
-            return 'btn btn-default'
-          })()
           return React.createElement(
-            'div',
-            { key: index,
-              role: 'button',
-              onClick: openExtension,
-              className: className },
-            extInfo.name
+            Btn, { key: index,
+                   btnType: 'regular',
+                   btnName: extInfo.name,
+                   onClick: openExtension,
+                   active: activeLayer.extId === extInfo.id }
           )
         })
       } else {

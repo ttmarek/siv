@@ -16,7 +16,7 @@ const Button = React.createClass({
       classes.push('btn-default')
     }
     if (this.props.active) {
-      classes.push('active')
+      classes.push('btn-active')
     }
     return React.DOM.button(
       {

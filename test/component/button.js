@@ -31,7 +31,7 @@ test('component/button', assert => {
                'Attaches the click event handler properly')
   assert.equal(blueBtnComponent.props.children, 'blue btn',
                'Assigns the name correctly')
-  assert.equal(activeBtnComponent.props.className, 'btn btn-default active',
+  assert.equal(activeBtnComponent.props.className, 'btn btn-default btn-active',
                'Assigns the "active" class correctly')
   assert.end()
 })
