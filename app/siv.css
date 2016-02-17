@@ -282,6 +282,8 @@ input:disabled {
 
 /* BUTTONS */
 .btn {
+    margin-left: 5px;
+    outline: none;
     border: 1px solid;
     border-radius: 2px;
     display: inline-block;
