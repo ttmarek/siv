@@ -68,7 +68,7 @@ const Sidebar = React.createClass({
           'div',
           { className: 'Sidebar-toggle-icon' },
           React.createElement('img', { className: classNames.toggleIcon,
-            src: 'icons/ic_chevron_left_black_24px.svg' })
+            src: 'icons/ic_chevron_right_black_24px.svg' })
         ),
         React.createElement(
           'div',

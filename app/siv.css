@@ -56,14 +56,14 @@ input:disabled {
 }
 
 .Sidebar-toggle-container {
-    background-color: #f1f1f1;
-    color: #888;
+    background-color: #5D5D5D;
+    color: #212121;
     height: 30px;
 }
 
 .Sidebar-toggle-container:hover {
     cursor: pointer;
-    color: inherit;
+    color: #f1f1f1;
 }
 
 .Sidebar-toggle-icon {
@@ -144,11 +144,13 @@ input:disabled {
 }
 
 .ext-container {
+    margin-top: 10px;
     padding-left: 10px;
     padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #f1f1f1;
+    border: 1px solid #505050;
+    border-radius: 2px;
 }
 
 .ext-title {
@@ -167,6 +169,11 @@ input:disabled {
 
 .ext-title span {
     font-weight: bold;
+    color: #F1F1F1;
+}
+
+.ext-title.active span {
+    color: #337AB7;
 }
 
 /* TOOLBAR */
@@ -217,8 +224,7 @@ input:disabled {
     width: calc(100% - 30px);
     overflow: hidden;
     z-index: 100;
-    background: white;
-    opacity: 0.8;
+    background: #f1f1f1;
 }
 
 #PathInput input[type=text] {
@@ -239,10 +245,9 @@ input:disabled {
 }
 
 #PathInput-control {
-    background-color: white;
+    background-color: #5D5D5D;
     font-size: 27px;
     left: 0;
-    opacity: 0.2;
     padding-top: 3px;
     position: absolute;
     text-align: center;
@@ -253,7 +258,7 @@ input:disabled {
 }
 
 #PathInput-control:hover {
-    opacity: 1;
+    background-color: #F1F1F1;
     cursor: pointer;
 }
 
@@ -306,17 +311,17 @@ input:disabled {
 }
 
 .btn-default:hover {
-    background-color: #f1f1f1;
+    background-color: #F1F1F1;
     color: #212121;
 }
 
 .btn-blue {
-    background-color: #337ab7;
-    border-color: #2e6da4;
+    background-color: #337AB7;
+    border-color: #2E6DA4;
     color: white;
 }
 
 .btn-blue:hover {
     background-color: #286090;
-    border-color:#204d74;
+    border-color: #204D74;
 }

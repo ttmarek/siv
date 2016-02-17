@@ -1,5 +1,5 @@
 https://storage.googleapis.com/material-icons/external-assets/v2/icons/svg/ic_expand_more_black_24px.svg
-https://storage.googleapis.com/material-icons/external-assets/v2/icons/svg/ic_chevron_left_black_24px.svg
+https://storage.googleapis.com/material-icons/external-assets/v2/icons/svg/ic_chevron_right_black_24px.svg
 https://storage.googleapis.com/material-icons/external-assets/v2/icons/svg/ic_arrow_drop_down_black_18px.svg
-https://storage.googleapis.com/material-icons/external-assets/v2/icons/svg/ic_close_black_18px.svg
+https://storage.googleapis.com/material-icons/external-assets/v2/icons/svg/ic_close_white_18px.svg
 https://s3-us-west-2.amazonaws.com/siv.assets/siv-icon-32x32.png
