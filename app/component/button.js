@@ -4,23 +4,23 @@ const Button = React.createClass({
   propTypes: {
     btnType: React.PropTypes.string.isRequired,
     btnName: React.PropTypes.string.isRequired,
-    onClick: React.PropTypes.func.isRequired
+    onClick: React.PropTypes.func.isRequired,
+    active: React.PropTypes.bool
   },
 
   render () {
-    const className = (() => {
-      switch (this.props.btnType) {
-        case 'blue':
-          return 'btn btn-blue'
-        case 'regular':
-          return 'btn btn-default'
-        default:
-          return 'btn'
-      }
-    })()
+    const classes = ['btn']
+    if (this.props.btnType === 'blue') {
+      classes.push('btn-blue')
+    } else if (this.props.btnType === 'regular') {
+      classes.push('btn-default')
+    }
+    if (this.props.active) {
+      classes.push('active')
+    }
     return React.DOM.button(
       {
-        className,
+        className: classes.join(' '),
         onClick: this.props.onClick
       },
       this.props.btnName
