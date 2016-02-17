@@ -194,7 +194,7 @@ input:disabled {
     width: 240px;
 }
 
-.FileNav div[role=button] {
+.FileNav button {
     margin-left: 5px;
 }
 
@@ -203,7 +203,7 @@ input:disabled {
     width: calc(100% - 240px);
 }
 
-.ExtensionsNav div[role=button] {
+.ExtensionsNav button {
     margin-left: 5px;
 }
 
@@ -282,6 +282,7 @@ input:disabled {
 
 /* BUTTONS */
 .btn {
+    outline: none;
     border: 1px solid;
     border-radius: 2px;
     display: inline-block;
