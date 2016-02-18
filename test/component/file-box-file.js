@@ -7,7 +7,6 @@ const FileBoxFile = require('../../app/component/file-box-file')
 const renderer = ReactTestUtils.createRenderer()
 
 test('component/file-box-file', assert => {
-
   renderer.render(
     React.createElement(
       FileBoxFile,
