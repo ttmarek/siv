@@ -21,7 +21,6 @@ const FileBoxDir = React.createClass({
     }
 
     const dirName = this.props.dirObj.dir.split(Path.sep).pop()
-
     const children = this.props.dirObj.children.map((path, index) => {
       return React.createElement(
         FileBoxFile,

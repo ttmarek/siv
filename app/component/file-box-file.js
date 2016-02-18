@@ -16,16 +16,19 @@ const FileBoxFile = React.createClass({
       return ''
     })()
 
+    const handleFileClick = (click) => {
+      click.preventDefault()
+      this.props.onImgClick(this.props.path)
+    }
+
     return React.DOM.li(
+      null,
       React.DOM.a(
         {
           href: '',
           className,
           'data-file-path': this.props.path,
-          onClick (click) {
-            click.preventDefault()
-            this.props.onImgClick(this.props.path)
-          }
+          onClick: handleFileClick
         },
         Path.basename(this.props.path, Path.extname(this.props.path))
       )

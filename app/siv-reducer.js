@@ -2,7 +2,7 @@
 const ImageLayer = require('./image')
 const sivActions = require('./siv-actions')
 const initialState = {
-  currentImg: undefined,
+  currentImg: '',
   user: null,
   filesShown: true,
   filePaths: {hierarchy: [], pathsList: []},

@@ -11,7 +11,7 @@ const FileBox = React.createClass({
     onClose: React.PropTypes.func.isRequired,
     onImgClick: React.PropTypes.func.isRequired,
     currentImg: React.PropTypes.string.isRequired,
-    paths: React.PropTypes.object.isRequired
+    paths: React.PropTypes.array.isRequired
   },
   render () {
     const filesAndDirs = this.props.paths.map((path, index) => {
