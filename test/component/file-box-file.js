@@ -34,9 +34,6 @@ test('component/file-box-file', assert => {
   assert.equal(testInactive.props.props.children, 'img1',
                'Displays the file name without a file extension.')
 
-  assert.equal(testInactive.props.props.onClick(), '/path/to/img1.jpg',
-               'Calls the provided onImgClick function onClick, and passes it the path to the file')
-
   renderer.render(
     React.createElement(
       FileBoxFile,
