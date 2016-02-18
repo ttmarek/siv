@@ -16,7 +16,7 @@ const FileBoxDir = React.createClass({
   },
   render () {
     const toggleVisibility = (click) => {
-      click && click.preventDefault() // click is undefined when testing
+      click.preventDefault()
       this.setState({hidden: !this.state.hidden})
     }
 
