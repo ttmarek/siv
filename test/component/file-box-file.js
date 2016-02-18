@@ -23,16 +23,19 @@ test('component/file-box-file', assert => {
 
   const testInactive = renderer.getRenderOutput()
 
-  assert.equal(testInactive.type, 'a',
-               'Returns an anchor (<a>) element.')
+  assert.equal(testInactive.type, 'li',
+               'Returns an list (<li>) element.')
 
-  assert.equal(testInactive.props['data-file-path'], '/path/to/img1.jpg',
-              'Sets a "data-file-path" attribute to the file path.')
+  assert.equal(testInactive.props.type, 'a',
+               'Returns an anchor (<a>) within the list element')
 
-  assert.equal(testInactive.props.children, 'img1',
+  assert.equal(testInactive.props.props['data-file-path'], '/path/to/img1.jpg',
+              'Adds a "data-file-path" attribute to the anchor element.')
+
+  assert.equal(testInactive.props.props.children, 'img1',
                'Displays the file name without a file extension.')
 
-  assert.equal(testInactive.props.onClick(), '/path/to/img1.jpg',
+  assert.equal(testInactive.props.props.onClick(), '/path/to/img1.jpg',
                'Calls the provided onImgClick function onClick, and passes it the path to the file')
 
   renderer.render(
@@ -49,8 +52,8 @@ test('component/file-box-file', assert => {
   )
   const testActive = renderer.getRenderOutput()
 
-  assert.true(testInactive.props.className === '' &&
-              testActive.props.className === 'active',
+  assert.true(testInactive.props.props.className === '' &&
+              testActive.props.props.className === 'active',
               'Adds class "active" when the current image matches the file path')
 
   assert.end()

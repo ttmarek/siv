@@ -16,14 +16,16 @@ const FileBoxFile = React.createClass({
       return ''
     })()
 
-    return React.DOM.a(
-      {
-        href: '',
-        className,
-        onClick: () => this.props.onImgClick(this.props.path),
-        'data-file-path': this.props.path
-      },
-      Path.basename(this.props.path, Path.extname(this.props.path))
+    return React.DOM.li(
+      React.DOM.a(
+        {
+          href: '',
+          className,
+          onClick: () => this.props.onImgClick(this.props.path),
+          'data-file-path': this.props.path
+        },
+        Path.basename(this.props.path, Path.extname(this.props.path))
+      )
     )
   }
 })
