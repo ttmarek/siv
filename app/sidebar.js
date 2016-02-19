@@ -16,7 +16,6 @@ const Sidebar = React.createClass({
 
     const renderFiles = () => {
       if (pathsList.length > 0) {
-        console.log(sivState)
         return React.createElement(FileBox, {
           Id: 0,
           height: 300,
