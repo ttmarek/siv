@@ -3,6 +3,7 @@ const React = require('react')
 const FileBox = require('./component/file-box')
 const sivEvents = require('./siv-events')
 const loadImage = require('./loadImage')
+const fileBoxHeight = require('./file-box-height')
 
 const Sidebar = React.createClass({
   propTypes: {
@@ -15,12 +16,13 @@ const Sidebar = React.createClass({
     const extControls = sivState.extControls
 
     const renderFiles = () => {
+      const sidebarHeight = sivState.viewerDimensions.height - 30
       if (sivState.fileBoxes.length > 0) {
         return sivState.fileBoxes.map((fileBox, index) => {
           return React.createElement(FileBox, {
             key: index,
             Id: index,
-            height: 300,
+            height: fileBoxHeight(sivState.fileBoxes.length, sidebarHeight),
             onClose: (id) => {
               this.props.sivDispatch({
                 type: 'CLOSE_FILE_BOX',
