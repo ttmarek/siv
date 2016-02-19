@@ -88,17 +88,21 @@ const SIV = React.createClass({
     event.preventDefault()
     const sivState = this.props.store.getState()
     const currentImg = sivState.currentImg
-    const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
-    const nextPath = navigateImages('next', currentImg, currentFileBox.pathsList)
-    setImage(nextPath, this.props.store.dispatch)
+    if (sivState.fileBoxes.length > 0) {
+      const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
+      const nextPath = navigateImages('next', currentImg, currentFileBox.pathsList)
+      setImage(nextPath, this.props.store.dispatch)
+    }
   },
   moveToPrevImg (event) {
     event.preventDefault()
     const sivState = this.props.store.getState()
     const currentImg = sivState.currentImg
-    const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
-    const nextPath = navigateImages('prev', currentImg, currentFileBox.pathsList)
-    setImage(nextPath, this.props.store.dispatch)
+    if (sivState.fileBoxes.length > 0) {
+      const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
+      const nextPath = navigateImages('prev', currentImg, currentFileBox.pathsList)
+      setImage(nextPath, this.props.store.dispatch)
+    }
   },
   render () {
     const sivState = this.props.store.getState()

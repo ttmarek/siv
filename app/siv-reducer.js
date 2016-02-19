@@ -22,6 +22,11 @@ const sivReducer = (state, action) => {
     return Object.assign({}, currentState, updates)
   }
   switch (action.type) {
+    case 'CLOSE_FILE_BOX':
+      return update({
+        fileBoxes: currentState.fileBoxes.filter((val, index) => index !== action.index),
+        currentFileBox: 0
+      })
     case 'ADD_NEW_FILE_BOX':
       return update({
         fileBoxes: currentState.fileBoxes.concat(action.fileBox),

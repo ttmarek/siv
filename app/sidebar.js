@@ -20,7 +20,12 @@ const Sidebar = React.createClass({
             key: index,
             Id: index,
             height: 300,
-            onClose: (id) => {console.log('close filebox ', id)},
+            onClose: (id) => {
+              this.props.sivDispatch({
+                type: 'CLOSE_FILE_BOX',
+                index: id
+              })
+            },
             onImgClick: (path) => {console.log('set current img', path)},
             currentImg: sivState.currentImg,
             paths: fileBox.hierarchy
