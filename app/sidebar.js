@@ -11,18 +11,20 @@ const Sidebar = React.createClass({
 
   render () {
     const sivState = this.props.sivState
-    const pathsList = sivState.filePaths.pathsList
     const extControls = sivState.extControls
 
     const renderFiles = () => {
-      if (pathsList.length > 0) {
-        return React.createElement(FileBox, {
-          Id: 0,
-          height: 300,
-          onClose: (id) => {console.log('close filebox ', id)},
-          onImgClick: (path) => {console.log('set current img', path)},
-          currentImg: sivState.currentImg,
-          paths: sivState.filePaths.hierarchy
+      if (sivState.fileBoxes.length > 0) {
+        return sivState.fileBoxes.map((fileBox, index) => {
+          return React.createElement(FileBox, {
+            key: index,
+            Id: index,
+            height: 300,
+            onClose: (id) => {console.log('close filebox ', id)},
+            onImgClick: (path) => {console.log('set current img', path)},
+            currentImg: sivState.currentImg,
+            paths: fileBox.hierarchy
+          })
         })
       }
       return 'No Files To Display'

@@ -30,9 +30,10 @@ const SIV = React.createClass({
       }
     })
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
-      this.props.store.dispatch(
-        sivEvents.setFilePaths(prepared.filePaths)
-      )
+      this.props.store.dispatch({
+        type: 'ADD_NEW_FILE_BOX',
+        fileBox: prepared.filePaths
+      })
       const currentImgPath = (() => {
         if (prepared.currentImg) {
           return prepared.currentImg
@@ -85,13 +86,19 @@ const SIV = React.createClass({
   },
   moveToNextImg (event) {
     event.preventDefault()
-    const nextPath = navigateImages('next', this.props.store)
+    const sivState = this.props.store.getState()
+    const currentImg = sivState.currentImg
+    const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
+    const nextPath = navigateImages('next', currentImg, currentFileBox.pathsList)
     setImage(nextPath, this.props.store.dispatch)
   },
   moveToPrevImg (event) {
     event.preventDefault()
-    const prevPath = navigateImages('prev', this.props.store)
-    setImage(prevPath, this.props.store.dispatch)
+    const sivState = this.props.store.getState()
+    const currentImg = sivState.currentImg
+    const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
+    const nextPath = navigateImages('prev', currentImg, currentFileBox.pathsList)
+    setImage(nextPath, this.props.store.dispatch)
   },
   render () {
     const sivState = this.props.store.getState()

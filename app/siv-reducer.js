@@ -3,6 +3,8 @@ const ImageLayer = require('./image')
 const sivActions = require('./siv-actions')
 const initialState = {
   currentImg: '',
+  fileBoxes: [],
+  currentFileBox: 0,
   user: null,
   filesShown: true,
   filePaths: {hierarchy: [], pathsList: []},
@@ -20,6 +22,11 @@ const sivReducer = (state, action) => {
     return Object.assign({}, currentState, updates)
   }
   switch (action.type) {
+    case 'ADD_NEW_FILE_BOX':
+      return update({
+        fileBoxes: currentState.fileBoxes.concat(action.fileBox),
+        currentFileBox: currentState.fileBoxes.length
+      })
     case sivActions.CLOSE_EXTENSION:
       const extId = action.extId
       return update({
