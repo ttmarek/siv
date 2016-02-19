@@ -2,6 +2,7 @@
 const React = require('react')
 const FileBox = require('./component/file-box')
 const sivEvents = require('./siv-events')
+const loadImage = require('./loadImage')
 
 const Sidebar = React.createClass({
   propTypes: {
@@ -26,7 +27,18 @@ const Sidebar = React.createClass({
                 index: id
               })
             },
-            onImgClick: (path) => {console.log('set current img', path)},
+            onImgClick: (path) => {
+              loadImage(path)
+                .then(imgSrc => {
+                  this.props.sivDispatch({
+                    type: 'SET_CURRENT_IMG',
+                    imgPath: imgSrc
+                  })
+                })
+                .catch(err => {
+                  console.log('Error loading image:', err)
+                })
+            },
             currentImg: sivState.currentImg,
             paths: fileBox.hierarchy
           })
