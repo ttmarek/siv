@@ -29,6 +29,11 @@ const SIV = React.createClass({
         save.image(filePath, this.props.store)
       }
     })
+    ipcRenderer.on('clear-file-paths', () => {
+      this.props.store.dispatch({
+        type: 'CLEAR_FILE_BOXES'
+      })
+    })
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
       this.props.store.dispatch({
         type: 'ADD_NEW_FILE_BOX',

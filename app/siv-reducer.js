@@ -22,6 +22,11 @@ const sivReducer = (state, action) => {
     return Object.assign({}, currentState, updates)
   }
   switch (action.type) {
+    case 'CLEAR_FILE_BOXES':
+      return update({
+        fileBoxes: [],
+        currentFileBox: 0
+      })
     case 'CLOSE_FILE_BOX':
       return update({
         fileBoxes: currentState.fileBoxes.filter((val, index) => index !== action.index),

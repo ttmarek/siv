@@ -6,7 +6,6 @@ const fs = require('fs')
 const auth = require('./auth')
 const exts = require('./extensions')
 const expandDirs = require('./expand-dirs')
-// const sivWindow = require('./siv-window')
 const menuBar = require('./menu-bar')
 
 function devToolsAuthorized (pass) {
@@ -67,7 +66,7 @@ const existingInstance = electron.app.makeSingleInstance((argv) => {
       if (sivWindow.isMinimized()) {
         sivWindow.restore()
       }
-      sivWindow.focus()
+      sivWindow.show()
     })
     .catch(err => {
       console.log('Error expanding dirs: ', err)
@@ -96,8 +95,10 @@ electron.app.on('ready', () => {
     height: 800,
     show: false
   })
-  sivWindow.on('closed', () => {
-    sivWindow = null
+  sivWindow.on('close', event => {
+    event.preventDefault()
+    sivWindow.webContents.send('clear-file-paths')
+    sivWindow.hide()
   })
   sivWindow.loadURL(`file://${__dirname}/siv.html`)
 
@@ -149,65 +150,6 @@ electron.app.on('ready', () => {
     .catch(err => {
       console.log('Error signing in or downloading extensions', err)
     })
-
-  // if (sivCLI.start) {
-  //   auth.getUserObject()
-  //     .then(userObj => {
-  //       if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
-  //         appState.userId = userObj.id
-  //         setInterval(checkForKey, 3000)
-  //       }
-  //       makeTrayIcon(userObj.id)
-  //       return exts.download(userObj)
-  //     })
-  //     .then(downloadedExts => {
-  //       appState.downloadedExts = downloadedExts
-  //     })
-  //     .catch(logError)
-  // } else {
-  //   // CREATE AND OPEN THE FIRST SIV WINDOW
-  //   sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
-  //                  devToolsAuthorized(sivCLI.pass))
-  //     .then(browserWindow => {
-  //       expandDirs(pathsToOpen)
-  //         .then(filePaths => {
-  //           browserWindow.webContents.send('file-paths-prepared', {
-  //             filePaths,
-  //             currentImg
-  //           })
-  //         })
-  //         .catch(logError)
-
-  //       if (sivCLI.dev) {
-  //         const user = {
-  //           id: 'developer',
-  //           extensions: [{name: 'caliper', id: 'GyMG'},
-  //                        {name: 'sccir', id: 'G9Wd'}]
-  //         }
-  //         makeTrayIcon(user.id)
-  //         exts.download(user)
-  //           .then(downloadedExts => {
-  //             browserWindow.webContents.send('extensions-downloaded', downloadedExts)
-  //             appState.downloadedExts = downloadedExts
-  //           })
-  //       } else {
-  //         auth.getUserObject()
-  //           .then(userObj => {
-  //             if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
-  //               appState.userId = userObj.id
-  //               setInterval(checkForKey, 3000)
-  //             }
-  //             makeTrayIcon(userObj.id)
-  //             return exts.download(userObj)
-  //           })
-  //           .then(downloadedExts => {
-  //             browserWindow.webContents.send('extensions-downloaded', downloadedExts)
-  //             appState.downloadedExts = downloadedExts
-  //           })
-  //           .catch(logError)
-  //       }
-  //     })
-  // }
 })
 
 electron.app.on('quit', () => {
