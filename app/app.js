@@ -1,47 +1,12 @@
 'use strict'
 const electron = require('electron')
 const minimist = require('minimist')
-const Table = require('cli-table2')
 const path = require('path')
 const fs = require('fs')
 const auth = require('./auth')
 const exts = require('./extensions')
 const expandDirs = require('./expand-dirs')
-const sivWindow = require('./siv-window')
 const menuBar = require('./menu-bar')
-
-function logHelp () {
-  const version = `SIV v${electron.app.getVersion()}\n`
-  const usage = `Usage: "" (options) path1 path2 ...\n`
-  const description = [`SIV accepts paths to folders or image files. To open`,
-                       `multiple paths enter them one after another`,
-                       `with a space between each path.`].join('\n')
-  const options = new Table({
-    head: ['Options', 'Description'],
-    colWidths: [15, 50],
-    chars: {
-      'top': '-', 'top-mid': '+', 'top-left': '+', 'top-right': '+',
-      'bottom': '-', 'bottom-mid': '+', 'bottom-left': '+', 'bottom-right': '+',
-      'left': '|', 'left-mid': '+', 'mid': '-', 'mid-mid': '+',
-      'right': '|', 'right-mid': '+', 'middle': '|'
-    }
-  })
-  options.push(['--help', 'Show this message and exit.'],
-               ['--singleFile', ["Opens all image files under the path's folder.",
-                                 'Ignores all but the first provided path.'].join('\n')],
-               ['--login', "Start SIV, log in, don't open any windows."],
-               ['--devTools', 'Open dev tools in each window.'],
-               ['--dev', 'Run SIV in dev mode.'],
-               ['--pass=[pass]', 'Password required for --dev and --devTools.'])
-  process.stdout.write(version)
-  process.stdout.write(usage)
-  process.stdout.write('\n')
-  process.stdout.write(description)
-  process.stdout.write('\n\n')
-  process.stdout.write(options.toString())
-  process.stdout.write('\n')
-  electron.app.quit()
-}
 
 function devToolsAuthorized (pass) {
   return pass === 'marek8'
@@ -59,15 +24,23 @@ function logError (err) {
   require('./logger').error(err)
 }
 
+var sivWindow = null
+
 function makeTrayIcon (userId) {
   const contextMenu = electron.Menu.buildFromTemplate([
-    {type: 'normal', label: 'Shutdown SIV', click: () => electron.app.quit()},
+    {
+      type: 'normal',
+      label: 'Shutdown SIV',
+      click() {
+        sivWindow.destroy()
+        electron.app.quit()
+      }
+    },
     {type: 'separator'},
     {type: 'normal', label: `User: ${userId}`}
   ])
 
   const trayIcon = new electron.Tray(path.join(__dirname, 'icons', 'siv-icon-32x32.png'))
-  trayIcon.setToolTip('SIV Image Viewer')
   trayIcon.setContextMenu(contextMenu)
   appState.trayIcon = trayIcon
 }
@@ -84,94 +57,106 @@ function checkForKey () {
 
 const existingInstance = electron.app.makeSingleInstance((argv) => {
   const sivCLI = minimist(argv.slice(2), {boolean: true})
-  if (sivCLI.help) logHelp()
+  if (sivCLI.help) {
+    const logHelp = require('./cli-help')
+    logHelp()
+  }
   const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
   const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
-  // CREATE AND OPEN THE NTH SIV WINDOW
-  sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
-                 devToolsAuthorized(sivCLI.pass))
-    .then(browserWindow => {
-      expandDirs(pathsToOpen)
-        .then(filePaths => {
-          browserWindow.webContents.send('file-paths-prepared', {
-            filePaths,
-            currentImg
-          })
-        })
-        .catch(logError)
-      browserWindow.webContents.send('extensions-downloaded', appState.downloadedExts)
+
+  expandDirs(pathsToOpen)
+    .then(filePaths => {
+      sivWindow.webContents.send('file-paths-prepared', {
+        filePaths,
+        currentImg
+      })
+      if (sivWindow.isMinimized()) {
+        sivWindow.restore()
+      }
+      sivWindow.show()
+    })
+    .catch(err => {
+      console.log('Error expanding dirs: ', err)
     })
 })
 
 if (existingInstance) {
   electron.app.quit()
+  return                        // not sure what this is for, but it was in the docs
 }
 
 const sivCLI = minimist(process.argv.slice(2), {boolean: true})
-if (sivCLI.help) logHelp()
+if (sivCLI.help) {
+  const logHelp = require('./cli-help')
+  logHelp()
+}
 const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
 const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
 
 electron.app.on('ready', () => {
+  // PREPARE SIV WINDOW
   electron.Menu.setApplicationMenu(menuBar)
-  if (sivCLI.login) {
-    auth.getUserObject()
-      .then(userObj => {
-        if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
-          appState.userId = userObj.id
-          setInterval(checkForKey, 3000)
-        }
-        makeTrayIcon(userObj.id)
-        return exts.download(userObj)
-      })
-      .then(downloadedExts => {
-        appState.downloadedExts = downloadedExts
-      })
-      .catch(logError)
-  } else {
-    // CREATE AND OPEN THE FIRST SIV WINDOW
-    sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
-                   devToolsAuthorized(sivCLI.pass))
-      .then(browserWindow => {
-        expandDirs(pathsToOpen)
-          .then(filePaths => {
-            browserWindow.webContents.send('file-paths-prepared', {
-              filePaths,
-              currentImg
-            })
-          })
-          .catch(logError)
+  sivWindow = new electron.BrowserWindow({
+    title: 'SIV',
+    width: 1260,
+    height: 800,
+    show: false
+  })
+  sivWindow.on('close', event => {
+    event.preventDefault()
+    sivWindow.webContents.send('clear-file-paths')
+    sivWindow.hide()
+  })
+  sivWindow.loadURL(`file://${__dirname}/siv.html`)
 
-        if (sivCLI.dev) {
-          const user = {
-            id: 'developer',
-            extensions: [{name: 'caliper', id: 'GyMG'},
-                         {name: 'sccir', id: 'G9Wd'}]
-          }
-          makeTrayIcon(user.id)
-          exts.download(user)
-            .then(downloadedExts => {
-              browserWindow.webContents.send('extensions-downloaded', downloadedExts)
-              appState.downloadedExts = downloadedExts
-            })
-        } else {
-          auth.getUserObject()
-            .then(userObj => {
-              if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
-                appState.userId = userObj.id
-                setInterval(checkForKey, 3000)
-              }
-              makeTrayIcon(userObj.id)
-              return exts.download(userObj)
-            })
-            .then(downloadedExts => {
-              browserWindow.webContents.send('extensions-downloaded', downloadedExts)
-              appState.downloadedExts = downloadedExts
-            })
-            .catch(logError)
+  // SEND FILE PATHS AND OPEN SIV IF APPLICABLE
+  if (!sivCLI.start) {
+    expandDirs(pathsToOpen)
+      .then(filePaths => {
+        sivWindow.webContents.on('did-finish-load', () => {
+          sivWindow.webContents.send('file-paths-prepared', {
+            filePaths,
+            currentImg
+          })
+        })
+        sivWindow.show()
+        if ((sivCLI.dev || sivCLI.devTools) &&
+            devToolsAuthorized(sivCLI.pass)) {
+          sivWindow.webContents.openDevTools()
         }
+      })
+      .catch(err => {
+        console.log('Error expanding dirs: ', err)
       })
   }
+
+  // SIGN IN AND DOWNLOAD EXTENSIONS
+  auth.getUserObject()
+    .then(userObj => {
+      if (sivCLI.dev) {
+        userObj = {
+          id: 'developer',
+          extensions: [{name: 'caliper', id: 'GyMG'},
+                       {name: 'sccir', id: 'G9Wd'}]
+        }
+      }
+      if (userObj.id !== 'guest' &&
+          userObj.id !== 'no-connection' &&
+          userObj.id !== 'developer') {
+        appState.userId = userObj.id
+        setInterval(checkForKey, 3000)
+      }
+      makeTrayIcon(userObj.id)
+      return userObj
+    })
+    .then(exts.download)
+    .then(downloadedExts => {
+      sivWindow.webContents.send('extensions-downloaded', downloadedExts)
+      appState.downloadedExts = downloadedExts
+    })
+    .catch(err => {
+      console.log('Error signing in or downloading extensions', err)
+    })
 })
 
 electron.app.on('quit', () => {

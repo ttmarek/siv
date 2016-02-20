@@ -8,7 +8,7 @@ module.exports = {
 function open (showDevTools) {
   return new Promise(resolve => {
     let window = new electron.BrowserWindow({
-      title: 'SIV Image Viewer',
+      title: 'SIV',
       width: 1260,
       height: 800
     })
