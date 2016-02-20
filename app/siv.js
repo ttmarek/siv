@@ -35,17 +35,20 @@ const SIV = React.createClass({
       })
     })
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
-      this.props.store.dispatch({
-        type: 'ADD_NEW_FILE_BOX',
-        fileBox: prepared.filePaths
-      })
-      const currentImgPath = (() => {
-        if (prepared.currentImg) {
-          return prepared.currentImg
-        }
-        return prepared.filePaths.pathsList[0]
-      })()
-      setImage(currentImgPath, this.props.store.dispatch)
+      const sivState = this.props.store.getState()
+      if (sivState.fileBoxes.length <= 4) {
+        this.props.store.dispatch({
+          type: 'ADD_NEW_FILE_BOX',
+          fileBox: prepared.filePaths
+        })
+        const currentImgPath = (() => {
+          if (prepared.currentImg) {
+            return prepared.currentImg
+          }
+          return prepared.filePaths.pathsList[0]
+        })()
+        setImage(currentImgPath, this.props.store.dispatch)
+      }
     })
     ipcRenderer.on('extensions-downloaded', (event, downloadedExts) => {
       this.props.store.dispatch(
