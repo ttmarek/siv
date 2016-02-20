@@ -1,5 +1,4 @@
 'use strict'
-const Path = require('path')
 const React = require('react')
 const FileBoxDir = require('./file-box-dir')
 const FileBoxFile = require('./file-box-file')
@@ -42,7 +41,7 @@ const FileBox = React.createClass({
     const ul = React.DOM.ul
     return div({ className: 'file-box',
                  style: {height: this.props.height}},
-               div({ className: 'file-box-controls'},
+               div({className: 'file-box-controls'},
                    img({ src: 'icons/ic_close_black_18px.svg',
                          onClick: () => this.props.onClose(this.props.Id)})),
                div({ className: 'file-box-content' },

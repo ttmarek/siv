@@ -8,7 +8,7 @@ test('component/button', assert => {
   const renderer = ReactTestUtils.createRenderer()
   const returnHey = () => 'hey'
   const regBtn = React.createElement(
-    Btn,{btnType: 'regular', btnName: 'reg btn', onClick: returnHey}
+    Btn, {btnType: 'regular', btnName: 'reg btn', onClick: returnHey}
   )
   const blueBtn = React.createElement(
     Btn, {btnType: 'blue', btnName: 'blue btn', onClick: returnHey}

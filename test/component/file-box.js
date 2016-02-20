@@ -12,10 +12,11 @@ test('component/file-box', assert => {
       FileBox,
       {
         Id: 0,
-        onClose(Id) {
+        height: 600,
+        onClose (Id) {
           return Id
         },
-        onImgClick(path) {
+        onImgClick (path) {
           return path
         },
         currentImg: '/path/to/img1.jpg',
@@ -24,7 +25,7 @@ test('component/file-box', assert => {
             dir: 'path/to/dir1',
             children: ['path/to/dir1/some-image.BMP']
           },
-          'path/to/dir2/image-a.jpg',
+          'path/to/dir2/image-a.jpg'
         ]
       }
     )

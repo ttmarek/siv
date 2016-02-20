@@ -31,7 +31,7 @@ function makeTrayIcon (userId) {
     {
       type: 'normal',
       label: 'Shutdown SIV',
-      click() {
+      click () {
         sivWindow.destroy()
         electron.app.quit()
       }
@@ -84,7 +84,6 @@ const existingInstance = electron.app.makeSingleInstance((argv) => {
 
 if (existingInstance) {
   electron.app.quit()
-  return                        // not sure what this is for, but it was in the docs
 }
 
 const sivCLI = minimist(process.argv.slice(2), {boolean: true})

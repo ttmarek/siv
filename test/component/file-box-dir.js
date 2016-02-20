@@ -11,6 +11,7 @@ test('component/file-box-dir', assert => {
     React.createElement(
       FileBoxDir,
       {
+        Id: 0,
         dirObj: {
           dir: 'path/to/some-dir',
           children: ['path/to/some-dir/img1.jpg',
@@ -29,16 +30,7 @@ test('component/file-box-dir', assert => {
   assert.equal(result.type, 'li',
                'Returns a list element (<li>)')
 
-  assert.equal(result.props.className, 'dir',
-               'Gives the list element a "dir" class (<li class="dir">)')
-
   const icon = result.props.children[0]
-  assert.true(icon.type === 'img' &&
-              icon.props.src === 'icons/ic_arrow_drop_down_black_18px.svg' &&
-              icon.props.className === '' &&
-              typeof icon.props.onClick === 'function',
-              'Adds an icon before the directory name.')
-
   const dirLink = result.props.children[1]
   assert.true(dirLink.type === 'a' &&
               dirLink.props.className === 'dir-link' &&

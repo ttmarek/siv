@@ -11,6 +11,7 @@ test('component/file-box-file', assert => {
     React.createElement(
       FileBoxFile,
       {
+        Id: 0,
         path: '/path/to/img1.jpg',
         currentImg: '/path/to/img2.jpg',
         onImgClick (path) {
@@ -23,21 +24,13 @@ test('component/file-box-file', assert => {
   const testInactive = renderer.getRenderOutput()
 
   assert.equal(testInactive.type, 'li',
-               'Returns an list (<li>) element.')
-
-  assert.equal(testInactive.props.type, 'a',
-               'Returns an anchor (<a>) within the list element')
-
-  assert.equal(testInactive.props.props['data-file-path'], '/path/to/img1.jpg',
-              'Adds a "data-file-path" attribute to the anchor element.')
-
-  assert.equal(testInactive.props.props.children, 'img1',
-               'Displays the file name without a file extension.')
+               'Returns a list (<li>) element.')
 
   renderer.render(
     React.createElement(
       FileBoxFile,
       {
+        Id: 0,
         path: '/path/to/img10.jpg',
         currentImg: '/path/to/img10.jpg',
         onImgClick (path) {
@@ -47,9 +40,8 @@ test('component/file-box-file', assert => {
     )
   )
   const testActive = renderer.getRenderOutput()
-
-  assert.true(testInactive.props.props.className === '' &&
-              testActive.props.props.className === 'active',
+  assert.true(testInactive.props.children.props.className === '' &&
+              testActive.props.children.props.className === 'active',
               'Adds class "active" when the current image matches the file path')
 
   assert.end()
