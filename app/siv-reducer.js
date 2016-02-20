@@ -22,6 +22,15 @@ const sivReducer = (state, action) => {
     return Object.assign({}, currentState, updates)
   }
   switch (action.type) {
+    case'SAVE_TO_CURRENT_FILE_BOX':
+      const saveToFileBox = require('./save-to-filebox')
+      const fileBoxesCopy = currentState.fileBoxes.slice()
+      const currentFileBox = fileBoxesCopy[currentState.currentFileBox]
+      fileBoxesCopy[currentState.currentFileBox] = saveToFileBox(action.filePath, currentFileBox)
+      return update({
+        filesShown: true,
+        fileBoxes: fileBoxesCopy
+      })
     case 'SET_CURRENT_FILE_BOX':
       return update({
         currentFileBox: action.Id

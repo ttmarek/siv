@@ -1,8 +1,8 @@
 'use strict'
 const test = require('tape')
-const save = require('../app/save')
+const saveToFileBox = require('../app/save-to-filebox')
 
-test('save.updatedFilePaths', assert => {
+test('saveToFileBox', assert => {
   // adds new saved folder for the first exported image
   const savedFile1 = 'path/to/exported/img1.png'
   const savedFile2 = 'path/to/exported/img2.png'
@@ -60,10 +60,10 @@ test('save.updatedFilePaths', assert => {
   }
 
   assert.deepEqual(updatedFilePaths1,
-                   save.updateFilePaths(savedFile1, filePaths),
+                   saveToFileBox(savedFile1, filePaths),
                    'Adds new saved folder correctly')
   assert.deepEqual(updatedFilePaths2,
-                   save.updateFilePaths(savedFile2, updatedFilePaths1),
+                   saveToFileBox(savedFile2, updatedFilePaths1),
                    'Adds second saved image correctly')
   assert.end()
 })
