@@ -6,7 +6,8 @@ const FileBoxFile = React.createClass({
   propTypes: {
     onImgClick: React.PropTypes.func.isRequired,
     currentImg: React.PropTypes.string.isRequired,
-    path: React.PropTypes.string.isRequired
+    path: React.PropTypes.string.isRequired,
+    Id: React.PropTypes.number.isRequired
   },
   render () {
     const className = (() => {
@@ -18,7 +19,7 @@ const FileBoxFile = React.createClass({
 
     const handleFileClick = (click) => {
       click.preventDefault()
-      this.props.onImgClick(this.props.path)
+      this.props.onImgClick(this.props.path, this.props.Id)
     }
 
     return React.DOM.li(

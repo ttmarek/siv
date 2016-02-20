@@ -29,12 +29,16 @@ const Sidebar = React.createClass({
                 index: id
               })
             },
-            onImgClick: (path) => {
+            onImgClick: (path, Id) => {
               loadImage(path)
                 .then(imgSrc => {
                   this.props.sivDispatch({
                     type: 'SET_CURRENT_IMG',
                     imgPath: imgSrc
+                  })
+                  this.props.sivDispatch({
+                    type: 'SET_CURRENT_FILE_BOX',
+                    Id: Id
                   })
                 })
                 .catch(err => {

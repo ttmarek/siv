@@ -7,7 +7,8 @@ const FileBoxDir = React.createClass({
   propTypes: {
     onImgClick: React.PropTypes.func.isRequired,
     currentImg: React.PropTypes.string.isRequired,
-    dirObj: React.PropTypes.object.isRequired
+    dirObj: React.PropTypes.object.isRequired,
+    Id: React.PropTypes.number.isRequired
   },
   getInitialState () {
     return {
@@ -26,6 +27,7 @@ const FileBoxDir = React.createClass({
         FileBoxFile,
         {
           key: index,
+          Id: this.props.Id,
           path,
           currentImg: this.props.currentImg,
           onImgClick: this.props.onImgClick
