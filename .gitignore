@@ -32,3 +32,6 @@ app/package.json
 
 # Icons folder
 app/icons/
+
+# Extensions folder
+extensions/
