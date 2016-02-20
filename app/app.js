@@ -72,8 +72,10 @@ const existingInstance = electron.app.makeSingleInstance((argv) => {
       })
       if (sivWindow.isMinimized()) {
         sivWindow.restore()
+        sivWindow.focus()
+      } else {
+        sivWindow.show()
       }
-      sivWindow.show()
     })
     .catch(err => {
       console.log('Error expanding dirs: ', err)
