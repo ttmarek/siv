@@ -23,7 +23,7 @@ function logHelp () {
   options.push(['--help', 'Show this message and exit.'],
                ['--singleFile', ["Opens all image files under the path's folder.",
                                  'Ignores all but the first provided path.'].join('\n')],
-               ['--login', "Start SIV, log in, don't open any windows."],
+               ['--start', "Start SIV, log in, don't open any windows."],
                ['--devTools', 'Open dev tools in each window.'],
                ['--dev', 'Run SIV in dev mode.'],
                ['--pass=[pass]', 'Password required for --dev and --devTools.'])
