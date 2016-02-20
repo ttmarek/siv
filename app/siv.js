@@ -10,7 +10,8 @@ const sivReducer = require('./siv-reducer')
 const sivEvents = require('./siv-events')
 const setImage = require('./setImage')
 const navigateImages = require('./navigateImages')
-const save = require('./save')
+const saveImage = require('./save-image')
+
 const SIV = React.createClass({
   propTypes: {
     store: React.PropTypes.object.isRequired
@@ -24,16 +25,30 @@ const SIV = React.createClass({
   },
   componentWillMount () {
     ipcRenderer.on('save-image', (event, filePath) => {
-      // filePath will be undefined if the user cancels out of the save dialog:
+      // filePath equals undefined on Cancel
       if (filePath) {
-        save.image(filePath, this.props.store)
+        const sivState = this.props.store.getState()
+        const sivDispatch = this.props.store.dispatch
+        const onSave = () => {
+          console.log('on save called')
+          sivDispatch({
+            type: 'SAVE_TO_CURRENT_FILE_BOX',
+            filePath: filePath
+          })
+        }
+        saveImage(filePath,
+                  sivState.canvasRefs,
+                  sivState.viewerDimensions,
+                  onSave)
       }
     })
+
     ipcRenderer.on('clear-file-paths', () => {
       this.props.store.dispatch({
         type: 'CLEAR_FILE_BOXES'
       })
     })
+
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
       const sivState = this.props.store.getState()
       if (sivState.fileBoxes.length <= 4) {
@@ -50,17 +65,20 @@ const SIV = React.createClass({
         setImage(currentImgPath, this.props.store.dispatch)
       }
     })
+
     ipcRenderer.on('extensions-downloaded', (event, downloadedExts) => {
       this.props.store.dispatch(
         sivEvents.extsDownloaded(downloadedExts)
       )
     })
+
     ipcRenderer.on('access-key-checked', (event, keyFound) => {
       if (keyFound !== this.state.keyFound) {
         this.setState({keyFound})
       }
     })
   },
+
   componentDidMount () {
     this.props.store.subscribe(() => { this.forceUpdate() })
     const setDimensions = () => {
