@@ -24,9 +24,18 @@ function logError (err) {
   require('./logger').error(err)
 }
 
+var sivWindow = null
+
 function makeTrayIcon (userId) {
   const contextMenu = electron.Menu.buildFromTemplate([
-    {type: 'normal', label: 'Shutdown SIV', click: () => electron.app.quit()},
+    {
+      type: 'normal',
+      label: 'Shutdown SIV',
+      click() {
+        sivWindow.destroy()
+        electron.app.quit()
+      }
+    },
     {type: 'separator'},
     {type: 'normal', label: `User: ${userId}`}
   ])
@@ -45,8 +54,6 @@ function checkForKey () {
       })
     })
 }
-
-var sivWindow = null
 
 const existingInstance = electron.app.makeSingleInstance((argv) => {
   const sivCLI = minimist(argv.slice(2), {boolean: true})
