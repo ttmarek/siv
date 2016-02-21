@@ -1,4 +1,5 @@
 'use strict'
+console.log('Just made it to app.js ', Date.now())
 const electron = require('electron')
 const path = require('path')
 const fs = require('fs')

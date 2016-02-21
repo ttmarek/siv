@@ -11,6 +11,7 @@ function loadImage (imgSrc) {
     const img = document.createElement('img')
     img.onload = () => {
       resolve(imgSrc)
+      console.log('Image loaded ', Date.now())
     }
     img.onerror = (err) => {
       reject(err)

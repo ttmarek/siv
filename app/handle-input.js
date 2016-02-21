@@ -5,6 +5,7 @@ const expandDirs = require('./expand-dirs')
 const path = require('path')
 
 function handleInput (cliArgs) {
+  console.log('Made it to handleInput ', Date.now())
   const parsedArgs = minimist(cliArgs.slice(2), {boolean: true})
   if (parsedArgs.help) {
     require('./cli-help')(electron.app.getVersion())
@@ -21,8 +22,10 @@ function handleInput (cliArgs) {
     if (!parsedArgs.start) {
       const pathsToOpen = parsedArgs.singleFile ? [path.dirname(parsedArgs._[0])] : parsedArgs._
       const currentImg = parsedArgs.singleFile ? parsedArgs._[0] : undefined
+      console.log('CLI args parsed ', Date.now())
       expandDirs(pathsToOpen)
         .then(filePaths => {
+          console.log('filePaths prepared', Date.now())
           const siv = electron.app.sivWindow.webContents
           const sendSIVPaths = () => {
             siv.send('file-paths-prepared', {

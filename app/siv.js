@@ -1,4 +1,5 @@
 'use strict'
+console.log('Made it to SIV ', Date.now())
 const ipcRenderer = require('electron').ipcRenderer
 const React = require('react')
 const ReactDOM = require('react-dom')
@@ -50,6 +51,7 @@ const SIV = React.createClass({
     })
 
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
+      console.log('FilePaths received by SIV ', Date.now())
       const sivState = this.props.store.getState()
       if (sivState.fileBoxes.length <= 4) {
         this.props.store.dispatch({
