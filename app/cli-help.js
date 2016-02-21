@@ -1,11 +1,10 @@
 'use strict'
-const electron = require('electron')
 const Table = require('cli-table2')
 
 module.exports = logHelp
 
-function logHelp () {
-  const version = `SIV v${electron.app.getVersion()}\n`
+function logHelp (versionNumber) {
+  const version = `SIV v${versionNumber}\n`
   const usage = `Usage: "" (options) path1 path2 ...\n`
   const description = [`SIV accepts paths to folders or image files. To open`,
                        `multiple paths enter them one after another`,
@@ -34,5 +33,4 @@ function logHelp () {
   process.stdout.write('\n\n')
   process.stdout.write(options.toString())
   process.stdout.write('\n')
-  electron.app.quit()
 }
