@@ -8,6 +8,8 @@ function handleInput (cliArgs) {
   const parsedArgs = minimist(cliArgs.slice(2), {boolean: true})
   if (parsedArgs.help) {
     require('./cli-help')(electron.app.getVersion())
+  } else if (parsedArgs.quit) {
+    electron.app.sivWindow.destroy()
     electron.app.quit()
   } else {
     if (parsedArgs.dev) {

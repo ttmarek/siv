@@ -13,7 +13,7 @@ singleInstance.init()
 electron.app.sivWindow = null
 electron.app.userId = null      // for checkForKey
 electron.app.trayIcon = null
-electron.app.downloadedExts = null
+electron.app.downloadedExts = []
 
 electron.app.on('ready', () => {
   // PREPARE SIV WINDOW
