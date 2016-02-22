@@ -23,9 +23,7 @@ function handleInput (cliArgs) {
       const pathsToOpen = parsedArgs.singleFile ? [path.dirname(parsedArgs._[0])] : parsedArgs._
       const currentImg = parsedArgs.singleFile ? parsedArgs._[0] : undefined
       console.log('CLI args parsed ', Date.now())
-      console.time('expand-dirs-outside')
       const filePaths = expandDirs(pathsToOpen)
-      console.timeEnd('expand-dirs-outside')
       console.log('filePaths prepared', Date.now())
       const siv = electron.app.sivWindow.webContents
       const sendSIVPaths = () => {
