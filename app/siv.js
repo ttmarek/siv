@@ -30,7 +30,6 @@ const SIV = React.createClass({
         const sivState = this.props.store.getState()
         const sivDispatch = this.props.store.dispatch
         const onSave = () => {
-          console.log('on save called')
           sivDispatch({
             type: 'SAVE_TO_CURRENT_FILE_BOX',
             filePath: filePath

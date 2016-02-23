@@ -21,30 +21,25 @@ function handleInput (cliArgs) {
     if (!parsedArgs.start) {
       const pathsToOpen = parsedArgs.singleFile ? [path.dirname(parsedArgs._[0])] : parsedArgs._
       const currentImg = parsedArgs.singleFile ? parsedArgs._[0] : undefined
-      expandDirs(pathsToOpen)
-        .then(filePaths => {
-          const siv = electron.app.sivWindow.webContents
-          const sendSIVPaths = () => {
-            siv.send('file-paths-prepared', {
-              filePaths,
-              currentImg
-            })
-          }
-          if (siv.isLoading()) {
-            siv.on('did-finish-load', sendSIVPaths)
-          } else {
-            sendSIVPaths()
-          }
-          electron.app.sivWindow.show()
-          // Open dev tools if required and authorized
-          if ((parsedArgs.dev || parsedArgs.devTools)  &&
-              parsedArgs.pass && devToolsAuthorized(parsedArgs.pass)) {
-            electron.app.sivWindow.openDevTools()
-          }
+      const filePaths = expandDirs(pathsToOpen)
+      const siv = electron.app.sivWindow.webContents
+      const sendSIVPaths = () => {
+        siv.send('file-paths-prepared', {
+          filePaths,
+          currentImg
         })
-        .catch(err => {
-          console.log('Error expanding dirs: ', err)
-        })
+      }
+      if (siv.isLoading()) {
+        siv.on('did-finish-load', sendSIVPaths)
+      } else {
+        sendSIVPaths()
+      }
+      electron.app.sivWindow.show()
+      // Open dev tools if required and authorized
+      if ((parsedArgs.dev || parsedArgs.devTools)  &&
+          parsedArgs.pass && devToolsAuthorized(parsedArgs.pass)) {
+        electron.app.sivWindow.openDevTools()
+      }
     }
   }
 }
