@@ -77,7 +77,7 @@ function getSerialInfo () {
 
 function sendChallenge (serialNum) {
   if (serialNum === 'guest') {
-    return Promise.resolve({id: 'guest'})
+    return Promise.resolve({id: 'guest', hashedId: ''})
   }
   return new Promise((resolve, reject) => {
     const getResp = spawn(ykchalresp, ['-2', serialNum])
