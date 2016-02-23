@@ -1,10 +1,8 @@
 'use strict'
-console.log('Just made it to app.js ', Date.now())
 const electron = require('electron')
 const handleInput = require('./handle-input')
 
 const shouldQuit = electron.app.makeSingleInstance(argv => {
-  console.log('Single instance callback called ', Date.now())
   handleInput(argv)
   return true
 })
