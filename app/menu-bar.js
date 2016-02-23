@@ -34,12 +34,9 @@ const menuBar = electron.Menu.buildFromTemplate([
             },
             dirsToOpen => {
               if (dirsToOpen) { // dirsToOpen is undefined on Cancel
-                expandDirs(dirsToOpen)
-                  .then(filePaths => {
-                    focusedWindow.webContents.send('file-paths-prepared', {
-                      filePaths
-                    })
-                  })
+                focusedWindow.webContents.send('file-paths-prepared', {
+                  filePaths: expandDirs(dirsToOpen)
+                })
               }
             }
           )
