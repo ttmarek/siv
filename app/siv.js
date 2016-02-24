@@ -4,12 +4,14 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 const Redux = require('redux')
 const Sidebar = require('./sidebar')
+const Btn = require('./component/button')
 const PathInput = require('./path-input')
 const sivReducer = require('./siv-reducer')
 const sivEvents = require('./siv-events')
 const setImage = require('./setImage')
 const navigateImages = require('./navigateImages')
-const save = require('./save')
+const saveImage = require('./save-image')
+
 const SIV = React.createClass({
   propTypes: {
     store: React.PropTypes.object.isRequired
@@ -23,34 +25,59 @@ const SIV = React.createClass({
   },
   componentWillMount () {
     ipcRenderer.on('save-image', (event, filePath) => {
-      // filePath will be undefined if the user cancels out of the save dialog:
+      // filePath equals undefined on Cancel
       if (filePath) {
-        save.image(filePath, this.props.store)
+        const sivState = this.props.store.getState()
+        const sivDispatch = this.props.store.dispatch
+        const onSave = () => {
+          sivDispatch({
+            type: 'SAVE_TO_CURRENT_FILE_BOX',
+            filePath: filePath
+          })
+        }
+        saveImage(filePath,
+                  sivState.canvasRefs,
+                  sivState.viewerDimensions,
+                  onSave)
       }
     })
-    ipcRenderer.on('file-paths-prepared', (event, prepared) => {
-      this.props.store.dispatch(
-        sivEvents.setFilePaths(prepared.filePaths)
-      )
-      const currentImgPath = (() => {
-        if (prepared.currentImg) {
-          return prepared.currentImg
-        }
-        return prepared.filePaths.pathsList[0]
-      })()
-      setImage(currentImgPath, this.props.store.dispatch)
+
+    ipcRenderer.on('clear-file-paths', () => {
+      this.props.store.dispatch({
+        type: 'CLEAR_FILE_BOXES'
+      })
     })
+
+    ipcRenderer.on('file-paths-prepared', (event, prepared) => {
+      const sivState = this.props.store.getState()
+      if (sivState.fileBoxes.length <= 4) {
+        this.props.store.dispatch({
+          type: 'ADD_NEW_FILE_BOX',
+          fileBox: prepared.filePaths
+        })
+        const currentImgPath = (() => {
+          if (prepared.currentImg) {
+            return prepared.currentImg
+          }
+          return prepared.filePaths.pathsList[0]
+        })()
+        setImage(currentImgPath, this.props.store.dispatch)
+      }
+    })
+
     ipcRenderer.on('extensions-downloaded', (event, downloadedExts) => {
       this.props.store.dispatch(
         sivEvents.extsDownloaded(downloadedExts)
       )
     })
+
     ipcRenderer.on('access-key-checked', (event, keyFound) => {
       if (keyFound !== this.state.keyFound) {
         this.setState({keyFound})
       }
     })
   },
+
   componentDidMount () {
     this.props.store.subscribe(() => { this.forceUpdate() })
     const setDimensions = () => {
@@ -84,13 +111,23 @@ const SIV = React.createClass({
   },
   moveToNextImg (event) {
     event.preventDefault()
-    const nextPath = navigateImages('next', this.props.store)
-    setImage(nextPath, this.props.store.dispatch)
+    const sivState = this.props.store.getState()
+    const currentImg = sivState.currentImg
+    if (sivState.fileBoxes.length > 0) {
+      const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
+      const nextPath = navigateImages('next', currentImg, currentFileBox.pathsList)
+      setImage(nextPath, this.props.store.dispatch)
+    }
   },
   moveToPrevImg (event) {
     event.preventDefault()
-    const prevPath = navigateImages('prev', this.props.store)
-    setImage(prevPath, this.props.store.dispatch)
+    const sivState = this.props.store.getState()
+    const currentImg = sivState.currentImg
+    if (sivState.fileBoxes.length > 0) {
+      const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
+      const nextPath = navigateImages('prev', currentImg, currentFileBox.pathsList)
+      setImage(nextPath, this.props.store.dispatch)
+    }
   },
   render () {
     const sivState = this.props.store.getState()
@@ -147,19 +184,12 @@ const SIV = React.createClass({
               )
             }
           }
-          const className = (() => {
-            if (activeLayer.extId === extInfo.id) {
-              return 'btn btn-default btn-active'
-            }
-            return 'btn btn-default'
-          })()
           return React.createElement(
-            'div',
-            { key: index,
-              role: 'button',
-              onClick: openExtension,
-              className: className },
-            extInfo.name
+            Btn, { key: index,
+                   btnType: 'regular',
+                   btnName: extInfo.name,
+                   onClick: openExtension,
+                   active: activeLayer.extId === extInfo.id }
           )
         })
       } else {
@@ -212,21 +242,11 @@ const SIV = React.createClass({
           {
             className: 'Toolbar-section FileNav'
           },
-          React.DOM.div(
-            {
-              role: 'button',
-              className: 'btn btn-blue',
-              onClick: this.moveToPrevImg
-            },
-            'prev'
+          React.createElement(
+            Btn, {btnType: 'blue', btnName: 'prev', onClick: this.moveToPrevImg}
           ),
-          React.DOM.div(
-            {
-              role: 'button',
-              className: 'btn btn-blue',
-              onClick: this.moveToNextImg
-            },
-            'next'
+          React.createElement(
+            Btn, {btnType: 'blue', btnName: 'next', onClick: this.moveToNextImg}
           )
         ),
         React.DOM.div(

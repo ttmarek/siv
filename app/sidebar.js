@@ -1,7 +1,9 @@
 'use strict'
 const React = require('react')
-const Files = require('./files')
+const FileBox = require('./component/file-box')
 const sivEvents = require('./siv-events')
+const loadImage = require('./loadImage')
+const fileBoxHeight = require('./file-box-height')
 
 const Sidebar = React.createClass({
   propTypes: {
@@ -11,16 +13,47 @@ const Sidebar = React.createClass({
 
   render () {
     const sivState = this.props.sivState
-    const pathsList = sivState.filePaths.pathsList
     const extControls = sivState.extControls
+
     const renderFiles = () => {
-      if (pathsList.length > 0) {
-        return React.createElement(Files, { sivState: sivState,
-          sivDispatch: this.props.sivDispatch })
+      const sidebarHeight = sivState.viewerDimensions.height - 30
+      if (sivState.fileBoxes.length > 0) {
+        return sivState.fileBoxes.map((fileBox, index) => {
+          return React.createElement(FileBox, {
+            key: index,
+            Id: index,
+            height: fileBoxHeight(sivState.fileBoxes.length, sidebarHeight),
+            onClose: (id) => {
+              this.props.sivDispatch({
+                type: 'CLOSE_FILE_BOX',
+                index: id
+              })
+            },
+            onImgClick: (path, Id) => {
+              loadImage(path)
+                .then(imgSrc => {
+                  this.props.sivDispatch({
+                    type: 'SET_CURRENT_IMG',
+                    imgPath: imgSrc
+                  })
+                  this.props.sivDispatch({
+                    type: 'SET_CURRENT_FILE_BOX',
+                    Id: Id
+                  })
+                })
+                .catch(err => {
+                  console.log('Error loading image:', err)
+                })
+            },
+            currentImg: sivState.currentImg,
+            paths: fileBox.hierarchy
+          })
+        })
       }
-      return 'No File To Display'
+      return 'No Files To Display'
     }
-    const renderExtControls = () => {
+
+    const renderControls = () => {
       if (extControls.length > 0) {
         return extControls.map((Controls, index) => {
           const extStore = sivState.extStores[Controls.extId]
@@ -36,6 +69,7 @@ const Sidebar = React.createClass({
         return 'No Extensions To Display'
       }
     }
+
     const classNames = (() => {
       if (sivState.filesShown) {
         return {
@@ -58,35 +92,20 @@ const Sidebar = React.createClass({
       )
     }
 
-    return React.createElement(
-      'div',
-      { className: 'Sidebar' },
-      React.createElement(
-        'div',
-        { className: 'Sidebar-toggle-container', onClick: showHideFiles },
-        React.createElement(
-          'div',
-          { className: 'Sidebar-toggle-icon' },
-          React.createElement('img', { className: classNames.toggleIcon,
-            src: 'icons/ic_chevron_left_black_24px.svg' })
-        ),
-        React.createElement(
-          'div',
-          { className: 'Sidebar-toggle-title' },
-          'files'
-        )
-      ),
-      React.createElement(
-        'div',
-        { className: classNames.filesContainer },
-        renderFiles()
-      ),
-      React.createElement(
-        'div',
-        { className: classNames.extContainer },
-        renderExtControls()
-      )
-    )
+    const div = React.DOM.div
+    const img = React.DOM.img
+    return div({ className: 'Sidebar' },
+               div({ className: 'Sidebar-toggle-container',
+                     onClick: showHideFiles },
+                   div({ className: 'Sidebar-toggle-icon' },
+                       img({ className: classNames.toggleIcon,
+                             src: 'icons/ic_chevron_right_black_24px.svg'})),
+                   div({ className: 'Sidebar-toggle-title' },
+                       'files')),
+               div({ className: classNames.filesContainer },
+                   renderFiles()),
+               div({ className: classNames.extContainer },
+                   renderControls()))
   }
 })
 

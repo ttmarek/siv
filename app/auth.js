@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const spawn = require('child_process').spawn
-const request = require('request')
+const https = require('https')
 
 let ykinfo, ykchalresp
 
@@ -26,21 +26,31 @@ function getUserObject () {
 function requestUserObj (credentials) {
   return new Promise((resolve, reject) => {
     const options = {
-      url: `https://siv-server.herokuapp.com/user/${credentials.id}`,
+      hostname: 'siv-server.herokuapp.com',
+      path: `/user/${credentials.id}`,
+      method: 'GET',
       headers: {
         authorization: credentials.hashedId
       }
     }
-    request(options, (err, resp, body) => {
-      if (!err && resp.statusCode === 200) {
-        const user = JSON.parse(body)
-        resolve(user)
-      } else {
-        resolve({
-          id: 'no-connection',
-          extensions: []
-        })
-      }
+    const req = https.request(options, res => {
+      // continuously update stream with data
+      let body = ''
+      res.on('data', data => {
+        body += data
+      })
+      res.on('end', () => {
+        if (res.statusCode === 200) {
+          resolve(JSON.parse(body))
+        } else {                // something is wrong with the server
+          resolve({id: 'no-connection', extensions: []})
+        }
+      })
+    })
+    req.end()
+    req.on('error', err => {
+      // The user doesn't have internet access
+      resolve({id: 'no-connection', extensions: []})
     })
   })
 }
@@ -67,7 +77,7 @@ function getSerialInfo () {
 
 function sendChallenge (serialNum) {
   if (serialNum === 'guest') {
-    return Promise.resolve({id: 'guest'})
+    return Promise.resolve({id: 'guest', hashedId: ''})
   }
   return new Promise((resolve, reject) => {
     const getResp = spawn(ykchalresp, ['-2', serialNum])
@@ -85,6 +95,7 @@ function sendChallenge (serialNum) {
 }
 
 module.exports = {
+  requestUserObj,
   getUserObject,
   getSerialInfo
 }

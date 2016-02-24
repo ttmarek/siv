@@ -2,7 +2,9 @@
 const ImageLayer = require('./image')
 const sivActions = require('./siv-actions')
 const initialState = {
-  currentImg: undefined,
+  currentImg: '',
+  fileBoxes: [],
+  currentFileBox: 0,
   user: null,
   filesShown: true,
   filePaths: {hierarchy: [], pathsList: []},
@@ -20,6 +22,34 @@ const sivReducer = (state, action) => {
     return Object.assign({}, currentState, updates)
   }
   switch (action.type) {
+    case'SAVE_TO_CURRENT_FILE_BOX':
+      const saveToFileBox = require('./save-to-filebox')
+      const fileBoxesCopy = currentState.fileBoxes.slice()
+      const currentFileBox = fileBoxesCopy[currentState.currentFileBox]
+      fileBoxesCopy[currentState.currentFileBox] = saveToFileBox(action.filePath, currentFileBox)
+      return update({
+        filesShown: true,
+        fileBoxes: fileBoxesCopy
+      })
+    case 'SET_CURRENT_FILE_BOX':
+      return update({
+        currentFileBox: action.Id
+      })
+    case 'CLEAR_FILE_BOXES':
+      return update({
+        fileBoxes: [],
+        currentFileBox: 0
+      })
+    case 'CLOSE_FILE_BOX':
+      return update({
+        fileBoxes: currentState.fileBoxes.filter((val, index) => index !== action.index),
+        currentFileBox: 0
+      })
+    case 'ADD_NEW_FILE_BOX':
+      return update({
+        fileBoxes: currentState.fileBoxes.concat(action.fileBox),
+        currentFileBox: currentState.fileBoxes.length
+      })
     case sivActions.CLOSE_EXTENSION:
       const extId = action.extId
       return update({

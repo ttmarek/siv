@@ -1,191 +1,127 @@
 'use strict'
 const electron = require('electron')
-const minimist = require('minimist')
-const Table = require('cli-table2')
-const path = require('path')
-const fs = require('fs')
-const auth = require('./auth')
-const exts = require('./extensions')
-const expandDirs = require('./expand-dirs')
-const sivWindow = require('./siv-window')
-const menuBar = require('./menu-bar')
+const handleInput = require('./handle-input')
 
-function logHelp () {
-  const version = `SIV v${electron.app.getVersion()}\n`
-  const usage = `Usage: "" (options) path1 path2 ...\n`
-  const description = [`SIV accepts paths to folders or image files. To open`,
-                       `multiple paths enter them one after another`,
-                       `with a space between each path.`].join('\n')
-  const options = new Table({
-    head: ['Options', 'Description'],
-    colWidths: [15, 50],
-    chars: {
-      'top': '-', 'top-mid': '+', 'top-left': '+', 'top-right': '+',
-      'bottom': '-', 'bottom-mid': '+', 'bottom-left': '+', 'bottom-right': '+',
-      'left': '|', 'left-mid': '+', 'mid': '-', 'mid-mid': '+',
-      'right': '|', 'right-mid': '+', 'middle': '|'
-    }
-  })
-  options.push(['--help', 'Show this message and exit.'],
-               ['--singleFile', ["Opens all image files under the path's folder.",
-                                 'Ignores all but the first provided path.'].join('\n')],
-               ['--login', "Start SIV, log in, don't open any windows."],
-               ['--devTools', 'Open dev tools in each window.'],
-               ['--dev', 'Run SIV in dev mode.'],
-               ['--pass=[pass]', 'Password required for --dev and --devTools.'])
-  process.stdout.write(version)
-  process.stdout.write(usage)
-  process.stdout.write('\n')
-  process.stdout.write(description)
-  process.stdout.write('\n\n')
-  process.stdout.write(options.toString())
-  process.stdout.write('\n')
-  electron.app.quit()
-}
-
-function devToolsAuthorized (pass) {
-  return pass === 'marek8'
-}
-
-// Anything added to the appState shouldn't get garbage collected
-const appState = {
-  userId: null,                 // for checkForKey
-  trayIcon: null,
-  downloadedExts: []
-}
-
-function logError (err) {
-  // The logger should only be 'required' if there's an error.
-  require('./logger').error(err)
-}
-
-function makeTrayIcon (userId) {
-  const contextMenu = electron.Menu.buildFromTemplate([
-    {type: 'normal', label: 'Shutdown SIV', click: () => electron.app.quit()},
-    {type: 'separator'},
-    {type: 'normal', label: `User: ${userId}`}
-  ])
-
-  const trayIcon = new electron.Tray(path.join(__dirname, 'icons', 'siv-icon-32x32.png'))
-  trayIcon.setToolTip('SIV Image Viewer')
-  trayIcon.setContextMenu(contextMenu)
-  appState.trayIcon = trayIcon
-}
-
-function checkForKey () {
-  auth.getSerialInfo()
-    .then(serialNum => {
-      electron.BrowserWindow.getAllWindows().forEach(win => {
-        const keyFound = serialNum === appState.userId
-        win.webContents.send('access-key-checked', keyFound)
-      })
-    })
-}
-
-const existingInstance = electron.app.makeSingleInstance((argv) => {
-  const sivCLI = minimist(argv.slice(2), {boolean: true})
-  if (sivCLI.help) logHelp()
-  const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
-  const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
-  // CREATE AND OPEN THE NTH SIV WINDOW
-  sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
-                 devToolsAuthorized(sivCLI.pass))
-    .then(browserWindow => {
-      expandDirs(pathsToOpen)
-        .then(filePaths => {
-          browserWindow.webContents.send('file-paths-prepared', {
-            filePaths,
-            currentImg
-          })
-        })
-        .catch(logError)
-      browserWindow.webContents.send('extensions-downloaded', appState.downloadedExts)
-    })
+const shouldQuit = electron.app.makeSingleInstance(argv => {
+  handleInput(argv)
+  return true
 })
 
-if (existingInstance) {
+if (shouldQuit) {
   electron.app.quit()
-}
+} else {
+  const path = require('path')
+  const fs = require('fs')
+  const auth = require('./auth')
+  const menuBar = require('./menu-bar')
+  const exts = require('./extensions')
 
-const sivCLI = minimist(process.argv.slice(2), {boolean: true})
-if (sivCLI.help) logHelp()
-const pathsToOpen = sivCLI.singleFile ? [path.dirname(sivCLI._[0])] : sivCLI._
-const currentImg = sivCLI.singleFile ? sivCLI._[0] : undefined
+  electron.app.sivWindow = null
+  electron.app.userId = null      // for checkForKey
+  electron.app.trayIcon = null
+  electron.app.downloadedExts = []
 
-electron.app.on('ready', () => {
-  electron.Menu.setApplicationMenu(menuBar)
-  if (sivCLI.login) {
+  electron.app.on('ready', () => {
+    // PREPARE SIV WINDOW
+    electron.Menu.setApplicationMenu(menuBar)
+    electron.app.sivWindow = new electron.BrowserWindow({
+      title: 'SIV',
+      width: 1260,
+      height: 800,
+      show: false
+    })
+    electron.app.sivWindow.on('close', event => {
+      event.preventDefault()
+      electron.app.sivWindow.webContents.send('clear-file-paths')
+      electron.app.sivWindow.hide()
+    })
+    electron.app.sivWindow.loadURL(`file://${__dirname}/siv.html`)
+    // SEND FILE PATHS AND OPEN SIV IF APPLICABLE
+    handleInput(process.argv)
+    // SIGN IN AND DOWNLOAD EXTENSIONS
     auth.getUserObject()
       .then(userObj => {
-        if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
-          appState.userId = userObj.id
-          setInterval(checkForKey, 3000)
-        }
-        makeTrayIcon(userObj.id)
-        return exts.download(userObj)
-      })
-      .then(downloadedExts => {
-        appState.downloadedExts = downloadedExts
-      })
-      .catch(logError)
-  } else {
-    // CREATE AND OPEN THE FIRST SIV WINDOW
-    sivWindow.open((sivCLI.dev || sivCLI.devTools) &&
-                   devToolsAuthorized(sivCLI.pass))
-      .then(browserWindow => {
-        expandDirs(pathsToOpen)
-          .then(filePaths => {
-            browserWindow.webContents.send('file-paths-prepared', {
-              filePaths,
-              currentImg
-            })
-          })
-          .catch(logError)
-
-        if (sivCLI.dev) {
-          const user = {
+        if (electron.app.devMode) {
+          userObj = {
             id: 'developer',
             extensions: [{name: 'caliper', id: 'GyMG'},
                          {name: 'sccir', id: 'G9Wd'}]
           }
-          makeTrayIcon(user.id)
-          exts.download(user)
-            .then(downloadedExts => {
-              browserWindow.webContents.send('extensions-downloaded', downloadedExts)
-              appState.downloadedExts = downloadedExts
-            })
-        } else {
-          auth.getUserObject()
-            .then(userObj => {
-              if (userObj.id !== 'guest' && userObj.id !== 'no-connection') {
-                appState.userId = userObj.id
-                setInterval(checkForKey, 3000)
-              }
-              makeTrayIcon(userObj.id)
-              return exts.download(userObj)
-            })
-            .then(downloadedExts => {
-              browserWindow.webContents.send('extensions-downloaded', downloadedExts)
-              appState.downloadedExts = downloadedExts
-            })
-            .catch(logError)
         }
+        electron.app.userId = userObj.id
+        setInterval(checkForKey, 3000)
+        makeTrayIcon(userObj.id)
+        return userObj
       })
-  }
-})
+      .then(exts.download)
+      .then(downloadedExts => {
+        const siv = electron.app.sivWindow.webContents
+        const sendSIVExtensions = () => {
+          siv.send('extensions-downloaded', downloadedExts)
+        }
+        if (siv.isLoading()) {
+          siv.on('did-finish-load', sendSIVExtensions)
+        } else {
+          sendSIVExtensions()
+        }
+        electron.app.downloadedExts = downloadedExts
+      })
+      .catch(err => {
+        console.log('Error signing in or downloading extensions', err)
+      })
+  })
 
-electron.app.on('quit', () => {
-  if (!sivCLI.dev) {            // keep in mind that
-    // when you are in dev mode you don't want to
-    // remove your working files when SIV shuts down
-    appState.downloadedExts.forEach(extObj => {
-      fs.unlinkSync(extObj.path)
-    })
-  }
-})
+  electron.app.on('quit', () => {
+    if (!electron.app.devMode) {            // keep in mind that
+      // when you are in dev mode you don't want to
+      // remove your working files when SIV shuts down
+      electron.app.downloadedExts.forEach(extObj => {
+        fs.unlinkSync(extObj.path)
+      })
+    }
+  })
 
-electron.app.on('window-all-closed', (event) => {
-  // The following prevents the app from quiting when all its windows
-  // are closed:
-  event.preventDefault()
-})
+  electron.app.on('window-all-closed', (event) => {
+    // The following prevents the app from quiting when all its windows
+    // are closed:
+    event.preventDefault()
+  })
+
+  function makeTrayIcon (userId) {
+    const contextMenu = electron.Menu.buildFromTemplate([
+      {
+        type: 'normal',
+        label: 'Shutdown SIV',
+        click () {
+          electron.app.sivWindow.destroy()
+          electron.app.quit()
+        }
+      },
+      {type: 'separator'},
+      {type: 'normal', label: `User: ${userId}`}
+    ])
+
+    const trayIcon = new electron.Tray(path.join(__dirname, 'icons', 'siv-icon-32x32.png'))
+    trayIcon.setContextMenu(contextMenu)
+    electron.app.trayIcon = trayIcon // ensures it doesn't get garbage collected
+  }
+
+  function checkForKey () {
+    switch (electron.app.userId) {
+      case 'guest':
+        return
+      case 'developer':
+        return
+      case 'no-connection':
+        return
+      default:
+        auth.getSerialInfo()
+          .then(serialNum => {
+            electron.BrowserWindow.getAllWindows().forEach(win => {
+              const keyFound = serialNum === electron.app.userId
+              win.webContents.send('access-key-checked', keyFound)
+            })
+          })
+    }
+  }
+}
