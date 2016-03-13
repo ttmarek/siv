@@ -46,18 +46,6 @@ module.exports = {
       dimensions: boundingClientRect
     }
   },
-  moveToNextImg () {
-    return {
-      type: sivActions.NAVIGATE_TO_IMG,
-      navigateTo: 'next'
-    }
-  },
-  moveToPrevImg () {
-    return {
-      type: sivActions.NAVIGATE_TO_IMG,
-      navigateTo: 'prev'
-    }
-  },
   setFilePaths (filePaths) {
     return {
       type: sivActions.SET_FILE_PATHS,
