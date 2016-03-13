@@ -1,6 +1,7 @@
 'use strict'
 const ImageLayer = require('./image')
 const sivActions = require('./siv-actions')
+const moveElement = require('move-element')
 const initialState = {
   currentImg: '',
   fileBoxes: [],
@@ -71,23 +72,16 @@ const sivReducer = (state, action) => {
         })
       })
     case sivActions.ACTIVATE_LAYER:
-      const layers = currentState.layers.slice() // make a copy
-      const index = layers.findIndex(layer => {
-        return layer.extId === action.extId
-      })
-      const layer = layers.splice(index, 1)[0]
-      layers.push(layer)
-      // -------------------------------------
-      const extControls = currentState.extControls.slice() // make a copy
-      const index2 = extControls.findIndex(Controls => {
-        return Controls.extId === action.extId
-      })
-      const controller = extControls.splice(index2, 1)[0]
-      return update({
-        layers,
-        extControls: [controller].concat(extControls),
-        filesShown: false
-      })
+      // move action.extId's layer to the bottom of the layers array
+      const layers = moveElement(currentState.layers,
+                                 layer => layer.extId === action.extId,
+                                 currentState.layers.length - 1)
+      // move action.extId's controls to the top of the extControls arrray
+      const extControls = moveElement(currentState.extControls,
+                                      controls => controls.extId === action.extId,
+                                      0)
+      // update the state
+      return update({layers, extControls, filesShown: false})
     case sivActions.REGISTER_NEW_EXTENSION:
       const updates = {}
       updates.filesShown = false
