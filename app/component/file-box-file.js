@@ -9,6 +9,12 @@ const FileBoxFile = React.createClass({
     path: React.PropTypes.string.isRequired,
     Id: React.PropTypes.number.isRequired
   },
+  componentDidUpdate() {
+    if (this.props.currentImg === this.props.path) {
+      const imgLink = this.refs.imgLink
+      imgLink.scrollIntoViewIfNeeded()
+    }
+  },
   render () {
     const className = (() => {
       if (this.props.currentImg === this.props.path) {
@@ -26,6 +32,7 @@ const FileBoxFile = React.createClass({
       null,
       React.DOM.a(
         {
+          ref: 'imgLink',
           href: '',
           className,
           'data-file-path': this.props.path,
