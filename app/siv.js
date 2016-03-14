@@ -206,7 +206,13 @@ const SIV = React.createClass({
       this.state.keyFound ? '' : renderKeyNotFoundMsg(),
       React.createElement(Sidebar, {
         sivState: sivState,
-        sivDispatch: sivDispatch
+        sivDispatch: sivDispatch,
+        extControls: sivState.extControls,
+        viewerDimensions: sivState.viewerDimensions,
+        fileBoxes: sivState.fileBoxes,
+        currentImg: sivState.currentImg,
+        extStores: sivState.extStores,
+        filesShown: sivState.filesShown
       }),
       React.DOM.div(
         {
