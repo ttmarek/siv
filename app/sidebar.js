@@ -8,21 +8,25 @@ const fileBoxHeight = require('./file-box-height')
 const Sidebar = React.createClass({
   propTypes: {
     sivDispatch: React.PropTypes.func.isRequired,
-    sivState: React.PropTypes.object.isRequired
+    extControls: React.PropTypes.array.isRequired,
+    viewerDimensions: React.PropTypes.object.isRequired,
+    fileBoxes: React.PropTypes.array.isRequired,
+    currentImg: React.PropTypes.string.isRequired,
+    extStores: React.PropTypes.object.isRequired,
+    filesShown: React.PropTypes.bool.isRequired
   },
 
   render () {
     const sivState = this.props.sivState
-    const extControls = sivState.extControls
-
+    const extControls = this.props.extControls
     const renderFiles = () => {
-      const sidebarHeight = sivState.viewerDimensions.height - 30
-      if (sivState.fileBoxes.length > 0) {
-        return sivState.fileBoxes.map((fileBox, index) => {
+      const sidebarHeight = this.props.viewerDimensions.height - 30
+      if (this.props.fileBoxes.length > 0) {
+        return this.props.fileBoxes.map((fileBox, index) => {
           return React.createElement(FileBox, {
             key: index,
             Id: index,
-            height: fileBoxHeight(sivState.fileBoxes.length, sidebarHeight),
+            height: fileBoxHeight(this.props.fileBoxes.length, sidebarHeight),
             onClose: (id) => {
               this.props.sivDispatch({
                 type: 'CLOSE_FILE_BOX',
@@ -45,7 +49,7 @@ const Sidebar = React.createClass({
                   console.log('Error loading image:', err)
                 })
             },
-            currentImg: sivState.currentImg,
+            currentImg: this.props.currentImg,
             paths: fileBox.hierarchy
           })
         })
@@ -56,7 +60,7 @@ const Sidebar = React.createClass({
     const renderControls = () => {
       if (extControls.length > 0) {
         return extControls.map((Controls, index) => {
-          const extStore = sivState.extStores[Controls.extId]
+          const extStore = this.props.extStores[Controls.extId]
           const isActive = index === 0
           return React.createElement(Controls, { key: index,
             sivState: sivState,
@@ -71,7 +75,7 @@ const Sidebar = React.createClass({
     }
 
     const classNames = (() => {
-      if (sivState.filesShown) {
+      if (this.props.filesShown) {
         return {
           toggleIcon: 'rotate',
           filesContainer: 'files-container visible',
