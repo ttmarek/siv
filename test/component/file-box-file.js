@@ -1,48 +1,38 @@
 'use strict'
 const test = require('tape')
 const React = require('react')
-const ReactTestUtils = require('react-addons-test-utils')
+const DOMServer = require('react-dom/server')
 const FileBoxFile = require('../../app/component/file-box-file')
 
-const renderer = ReactTestUtils.createRenderer()
+const render = (reactElement) => {
+  return DOMServer.renderToStaticMarkup(reactElement)
+}
 
 test('component/file-box-file', assert => {
-  renderer.render(
+  let file
+  // Inactive image
+  file = render(
     React.createElement(
       FileBoxFile,
       {
-        Id: 0,
         path: '/path/to/img1.jpg',
-        currentImg: '/path/to/img2.jpg',
-        onImgClick (path) {
-          return path
-        }
+        currentImg: '/path/to/img2.jpg'
       }
     )
   )
-
-  const testInactive = renderer.getRenderOutput()
-
-  assert.equal(testInactive.type, 'li',
-               'Returns a list (<li>) element.')
-
-  renderer.render(
+  assert.equal(file,
+               '<li><a href="" class="" data-file-path="/path/to/img1.jpg">img1</a></li>')
+  // Active image
+  file = render(
     React.createElement(
       FileBoxFile,
       {
-        Id: 0,
         path: '/path/to/img10.jpg',
-        currentImg: '/path/to/img10.jpg',
-        onImgClick (path) {
-          return path
-        }
+        currentImg: '/path/to/img10.jpg'
       }
     )
   )
-  const testActive = renderer.getRenderOutput()
-  assert.true(testInactive.props.children.props.className === '' &&
-              testActive.props.children.props.className === 'active',
-              'Adds class "active" when the current image matches the file path')
-
+  assert.equal(file,
+               '<li><a href="" class="active" data-file-path="/path/to/img10.jpg">img10</a></li>')
   assert.end()
 })
