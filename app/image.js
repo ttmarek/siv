@@ -1,5 +1,6 @@
 'use strict'
 const React = require('react')
+const h = require('react-hyperscript')
 
 const ImageLayer = React.createClass({
   extId: 'image',
@@ -132,17 +133,19 @@ const ImageLayer = React.createClass({
         zIndex: this.props.zIndex
       }
     })()
-    return React.createElement('canvas', {
-      ref: 'canvas',
-      'data-extid': this.extId,
-      style: style,
-      width: this.props.sivState.viewerDimensions.width,
-      height: this.props.sivState.viewerDimensions.height,
-      onMouseMove: this.handleMouseMove,
-      onMouseDown: this.handleMouseDown,
-      onMouseUp: this.handleMouseUp,
-      onWheel: this.handleScroll,
-      className: 'Layer' })
+    return (
+      h('canvas.Layer', {
+        ref: 'canvas',
+        'data-extid': this.extId,
+        style: style,
+        width: this.props.sivState.viewerDimensions.width,
+        height: this.props.sivState.viewerDimensions.height,
+        onMouseMove: this.handleMouseMove,
+        onMouseDown: this.handleMouseDown,
+        onMouseUp: this.handleMouseUp,
+        onWheel: this.handleScroll
+      })
+    )
   },
   handleMouseMove (event) {
     if (this.state.mouseDown) {

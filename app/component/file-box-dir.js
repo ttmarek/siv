@@ -1,6 +1,7 @@
 'use strict'
 const Path = require('path')
 const React = require('react')
+const h = require('react-hyperscript')
 const FileBoxFile = require('./file-box-file')
 
 const FileBoxDir = React.createClass({
@@ -23,16 +24,13 @@ const FileBoxDir = React.createClass({
 
     const dirName = this.props.dirObj.dir.split(Path.sep).pop()
     const children = this.props.dirObj.children.map((path, index) => {
-      return React.createElement(
-        FileBoxFile,
-        {
-          key: index,
-          Id: this.props.Id,
-          path,
-          currentImg: this.props.currentImg,
-          onImgClick: this.props.onImgClick
-        }
-      )
+      return h(FileBoxFile, {
+        key: index,
+        Id: this.props.Id,
+        path,
+        currentImg: this.props.currentImg,
+        onImgClick: this.props.onImgClick
+      })
     })
 
     return React.DOM.li(

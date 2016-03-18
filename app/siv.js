@@ -136,22 +136,21 @@ const SIV = React.createClass({
       const msg = `The key used to open SIV can no longer be detected.
           If you'd like to continue using SIV, shut it down from the
           notifications tray and reopen it as a guest.`
-      return React.createElement(
-        'div',
-        { className: 'key-not-found' },
-        msg
-      )
+      return h('div.key-not-found', msg)
     }
     const renderLayers = () => {
       return sivState.layers.map((Layer, index) => {
         const extStore = sivState.extStores[Layer.extId]
-        return React.createElement(Layer, {
-          key: index,
-          zIndex: index + 1,
-          sivState: sivState,
-          sivDispatch: sivDispatch,
-          extState: extStore ? extStore.getState() : undefined,
-          extDispatch: extStore ? extStore.dispatch : undefined })
+        return (
+          h(Layer, {
+            key: index,
+            zIndex: index + 1,
+            sivState: sivState,
+            sivDispatch: sivDispatch,
+            extState: extStore ? extStore.getState() : undefined,
+            extDispatch: extStore ? extStore.dispatch : undefined
+          })
+        )
       })
     }
     const activeLayer = sivState.layers[sivState.layers.length - 1]
@@ -184,12 +183,14 @@ const SIV = React.createClass({
               })
             }
           }
-          return React.createElement(
-            Btn, { key: index,
-                   btnType: 'regular',
-                   btnName: extInfo.name,
-                   onClick: openExtension,
-                   active: activeLayer.extId === extInfo.id }
+          return (
+            h(Btn, {
+              key: index,
+              btnType: 'regular',
+              btnName: extInfo.name,
+              onClick: openExtension,
+              active: activeLayer.extId === extInfo.id
+            })
           )
         })
       } else {
@@ -216,17 +217,16 @@ const SIV = React.createClass({
           h('div#PathInput-control', {
             className: this.state.pathInputShown ? 'open' : '',
             role: 'button',
-            onClick: hideShowPathInput }, [
-              h('img', {
-                src: 'icons/ic_expand_more_black_24px.svg'
-              })
-            ]),
+            onClick: hideShowPathInput
+          }, [
+            h('img', { src: 'icons/ic_expand_more_black_24px.svg' })
+          ]),
           h(PathInput, {
             pathInputShown: this.state.pathInputShown,
             sivState: sivState,
             sivDispatch: sivDispatch
           }),
-          h('div.LayerContainer', [renderLayers()])
+          h('div.LayerContainer', renderLayers())
         ]),
         h('div.Toolbar', [
           h('div.Toolbar-section.FileNav', [
@@ -237,15 +237,12 @@ const SIV = React.createClass({
               btnType: 'blue', btnName: 'next', onClick: this.navigateToImg.bind(null, 'next')
             })
           ]),
-          h('div.Toolbar-section.ExtensionsNav', [renderExtButtons()])
+          h('div.Toolbar-section.ExtensionsNav', renderExtButtons())
         ])
       ])
     )
   }
 })
 
-const sivComponent = React.createElement(SIV, {
-  store: Redux.createStore(sivReducer)
-})
-
+const sivComponent = h(SIV, { store: Redux.createStore(sivReducer) })
 ReactDOM.render(sivComponent, document.getElementById('siv'))
