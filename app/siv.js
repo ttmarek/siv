@@ -107,32 +107,26 @@ const SIV = React.createClass({
     })
     window.addEventListener('keydown', keyPress => {
       const keyIdentifier = {
-        Right: this.moveToNextImg.bind(null, keyPress),
-        Left: this.moveToPrevImg.bind(null, keyPress)
+        Right: this.navigateToImg.bind(null, 'next', keyPress),
+        Left: this.navigateToImg.bind(null, 'prev', keyPress)
       }
       const shortcut = keyIdentifier[keyPress.keyIdentifier]
       if (shortcut) shortcut()
     })
   },
-  moveToNextImg (event) {
-    event.preventDefault()
+  navigateToImg(direction, event) {
+    // The direction param gets passed directly to navigateImages
+    event.preventDefault()      // This prevents the file box from scolling
+    // horizontally when navigating with the arrow keys.
     const sivState = this.props.store.getState()
     const currentImg = sivState.currentImg
     if (sivState.fileBoxes.length > 0) {
       const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
-      const nextPath = navigateImages('next', currentImg, currentFileBox.pathsList)
+      const nextPath = navigateImages(direction, currentImg, currentFileBox.pathsList)
       setImage(nextPath, this.props.store.dispatch)
     }
-  },
-  moveToPrevImg (event) {
-    event.preventDefault()
-    const sivState = this.props.store.getState()
-    const currentImg = sivState.currentImg
-    if (sivState.fileBoxes.length > 0) {
-      const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
-      const nextPath = navigateImages('prev', currentImg, currentFileBox.pathsList)
-      setImage(nextPath, this.props.store.dispatch)
-    }
+    // This logic is here, and not in a NAVIGATE_TO_IMG reducer
+    // because setImage is async.
   },
   render () {
     const sivState = this.props.store.getState()
@@ -254,10 +248,10 @@ const SIV = React.createClass({
             className: 'Toolbar-section FileNav'
           },
           React.createElement(
-            Btn, {btnType: 'blue', btnName: 'prev', onClick: this.moveToPrevImg}
+            Btn, {btnType: 'blue', btnName: 'prev', onClick: this.navigateToImg.bind(null, 'prev')}
           ),
           React.createElement(
-            Btn, {btnType: 'blue', btnName: 'next', onClick: this.moveToNextImg}
+            Btn, {btnType: 'blue', btnName: 'next', onClick: this.navigateToImg.bind(null, 'next')}
           )
         ),
         React.DOM.div(

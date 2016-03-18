@@ -1,6 +1,5 @@
 'use strict'
 const ImageLayer = require('./image')
-const moveElement = require('move-element')
 
 const initialState = {
   currentImg: '',
@@ -72,6 +71,7 @@ const sivReducer = (state, action) => {
         })
       })
     case 'ACTIVATE_LAYER':
+      const moveElement = require('move-element')
       // move action.extId's layer to the bottom of the layers array
       const layers = moveElement(currentState.layers,
                                  layer => layer.extId === action.extId,
