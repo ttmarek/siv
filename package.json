@@ -19,6 +19,7 @@
     "mock-fs": "3.5.0",
     "react-addons-perf": "0.14.3",
     "react-addons-test-utils": "0.14.3",
+    "react-hyperscript": "2.2.2",
     "standard": "5.4.1",
     "tap-spec": "4.1.1",
     "tape": "4.4.0"
