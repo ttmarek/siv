@@ -1,5 +1,6 @@
 'use strict'
 const React = require('react')
+const h = require('react-hyperscript')
 const FileBox = require('./component/file-box')
 const loadImage = require('./loadImage')
 const fileBoxHeight = require('./file-box-height')
@@ -22,35 +23,37 @@ const Sidebar = React.createClass({
       const sidebarHeight = this.props.viewerDimensions.height - 30
       if (this.props.fileBoxes.length > 0) {
         return this.props.fileBoxes.map((fileBox, index) => {
-          return React.createElement(FileBox, {
-            key: index,
-            Id: index,
-            height: fileBoxHeight(this.props.fileBoxes.length, sidebarHeight),
-            onClose: (id) => {
-              this.props.sivDispatch({
-                type: 'CLOSE_FILE_BOX',
-                index: id
-              })
-            },
-            onImgClick: (path, Id) => {
-              loadImage(path)
-                .then(imgSrc => {
-                  this.props.sivDispatch({
-                    type: 'SET_CURRENT_IMG',
-                    imgPath: imgSrc
-                  })
-                  this.props.sivDispatch({
-                    type: 'SET_CURRENT_FILE_BOX',
-                    Id: Id
-                  })
+          return (
+            h(FileBox, {
+              key: index,
+              Id: index,
+              height: fileBoxHeight(this.props.fileBoxes.length, sidebarHeight),
+              onClose: (id) => {
+                this.props.sivDispatch({
+                  type: 'CLOSE_FILE_BOX',
+                  index: id
                 })
-                .catch(err => {
-                  console.log('Error loading image:', err)
-                })
-            },
-            currentImg: this.props.currentImg,
-            paths: fileBox.hierarchy
-          })
+              },
+              onImgClick: (path, Id) => {
+                loadImage(path)
+                  .then(imgSrc => {
+                    this.props.sivDispatch({
+                      type: 'SET_CURRENT_IMG',
+                      imgPath: imgSrc
+                    })
+                    this.props.sivDispatch({
+                      type: 'SET_CURRENT_FILE_BOX',
+                      Id: Id
+                    })
+                  })
+                  .catch(err => {
+                    console.log('Error loading image:', err)
+                  })
+              },
+              currentImg: this.props.currentImg,
+              paths: fileBox.hierarchy
+            })
+          )
         })
       }
       return 'No Files To Display'
@@ -61,12 +64,16 @@ const Sidebar = React.createClass({
         return extControls.map((Controls, index) => {
           const extStore = this.props.extStores[Controls.extId]
           const isActive = index === 0
-          return React.createElement(Controls, { key: index,
-            sivState: sivState,
-            isActive: isActive,
-            sivDispatch: this.props.sivDispatch,
-            extState: extStore ? extStore.getState() : undefined,
-            extDispatch: extStore ? extStore.dispatch : undefined })
+          return (
+            h(Controls, {
+              key: index,
+              sivState: sivState,
+              isActive: isActive,
+              sivDispatch: this.props.sivDispatch,
+              extState: extStore ? extStore.getState() : undefined,
+              extDispatch: extStore ? extStore.dispatch : undefined
+            })
+          )
         })
       } else {
         return 'No Extensions To Display'
@@ -95,20 +102,21 @@ const Sidebar = React.createClass({
       })
     }
 
-    const div = React.DOM.div
-    const img = React.DOM.img
-    return div({ className: 'Sidebar' },
-               div({ className: 'Sidebar-toggle-container',
-                     onClick: showHideFiles },
-                   div({ className: 'Sidebar-toggle-icon' },
-                       img({ className: classNames.toggleIcon,
-                             src: 'icons/ic_chevron_right_black_24px.svg'})),
-                   div({ className: 'Sidebar-toggle-title' },
-                       'files')),
-               div({ className: classNames.filesContainer },
-                   renderFiles()),
-               div({ className: classNames.extContainer },
-                   renderControls()))
+    return (
+      h('div.Sidebar', [
+        h('div.Sidebar-toggle-container', { onClick: showHideFiles }, [
+          h('div.Sidebar-toggle-icon', [
+            h('img', {
+              className: classNames.toggleIcon,
+              src: 'icons/ic_chevron_right_black_24px.svg'
+            })
+          ]),
+          h('div.Sidebar-toggle-title', 'files')
+        ]),
+        h('div', { className: classNames.filesContainer }, renderFiles()),
+        h('div', { className: classNames.extContainer }, renderControls())
+      ])
+    )
   }
 })
 
