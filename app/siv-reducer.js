@@ -1,7 +1,7 @@
 'use strict'
 const ImageLayer = require('./image')
-const sivActions = require('./siv-actions')
 const moveElement = require('move-element')
+
 const initialState = {
   currentImg: '',
   fileBoxes: [],
@@ -23,7 +23,7 @@ const sivReducer = (state, action) => {
     return Object.assign({}, currentState, updates)
   }
   switch (action.type) {
-    case'SAVE_TO_CURRENT_FILE_BOX':
+    case 'SAVE_TO_CURRENT_FILE_BOX':
       const saveToFileBox = require('./save-to-filebox')
       const fileBoxesCopy = currentState.fileBoxes.slice()
       const currentFileBox = fileBoxesCopy[currentState.currentFileBox]
@@ -51,7 +51,7 @@ const sivReducer = (state, action) => {
         fileBoxes: currentState.fileBoxes.concat(action.fileBox),
         currentFileBox: currentState.fileBoxes.length
       })
-    case sivActions.CLOSE_EXTENSION:
+    case 'CLOSE_EXTENSION':
       const extId = action.extId
       return update({
         extStores: Object.assign({}, currentState.extStores, {
@@ -71,7 +71,7 @@ const sivReducer = (state, action) => {
           return canvasExtId !== extId
         })
       })
-    case sivActions.ACTIVATE_LAYER:
+    case 'ACTIVATE_LAYER':
       // move action.extId's layer to the bottom of the layers array
       const layers = moveElement(currentState.layers,
                                  layer => layer.extId === action.extId,
@@ -82,7 +82,7 @@ const sivReducer = (state, action) => {
                                       0)
       // update the state
       return update({layers, extControls, filesShown: false})
-    case sivActions.REGISTER_NEW_EXTENSION:
+    case 'REGISTER_NEW_EXTENSION':
       const updates = {}
       updates.filesShown = false
       updates.openedExts = currentState.openedExts.concat(action.id)
@@ -96,15 +96,15 @@ const sivReducer = (state, action) => {
         })
       }
       return update(updates)
-    case sivActions.SHOW_HIDE_FILES:
+    case 'SHOW_HIDE_FILES':
       return update({
         filesShown: !currentState.filesShown
       })
-    case sivActions.SET_DOWNLOADED_EXTS:
+    case 'SET_DOWNLOADED_EXTS':
       return update({
         downloadedExts: action.downloadedExts
       })
-    case sivActions.ADD_CANVAS_REF:
+    case 'ADD_CANVAS_REF':
       // This is called whenever a layer mounts
       // Keep in mound that layer mounts whenever the layers are re-ordered.
       const filteredArray = currentState.canvasRefs.filter(canvas => {
@@ -117,13 +117,13 @@ const sivReducer = (state, action) => {
       return update({
         canvasRefs: filteredArray.concat(action.canvasRef)
       })
-    case sivActions.SET_VIEWER_DIMENSIONS:
+    case 'SET_VIEWER_DIMENSIONS':
       return update({viewerDimensions: action.dimensions})
-    case sivActions.SET_FILE_PATHS:
+    case 'SET_FILE_PATHS':
       return update({
         filePaths: action.filePaths
       })
-    case sivActions.SET_CURRENT_IMG:
+    case 'SET_CURRENT_IMG':
       return update({
         currentImg: action.imgPath
       })
