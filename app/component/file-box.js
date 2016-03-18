@@ -37,16 +37,19 @@ const FileBox = React.createClass({
       }
     })
 
-    const div = React.DOM.div
-    const img = React.DOM.img
-    const ul = React.DOM.ul
-    return div({ className: 'file-box',
-                 style: {height: this.props.height}},
-               div({className: 'file-box-controls'},
-                   img({ src: 'icons/ic_close_black_18px.svg',
-                         onClick: () => this.props.onClose(this.props.Id)})),
-               div({ className: 'file-box-content' },
-                   ul(null, filesAndDirs)))
+    return (
+      h('div.file-box', { style: { height: this.props.height } }, [
+        h('div.file-box-controls', [
+          h('img', {
+            src: 'icons/ic_close_black_18px.svg',
+            onClick: () => this.props.onClose(this.props.Id)
+          })
+        ]),
+        h('div.file-box-content', [
+          h('ul', filesAndDirs)
+        ])
+      ])
+    )
   }
 })
 

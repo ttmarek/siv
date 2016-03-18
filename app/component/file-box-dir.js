@@ -33,29 +33,18 @@ const FileBoxDir = React.createClass({
       })
     })
 
-    return React.DOM.li(
-      null,
-      React.DOM.img(
-        {
+    return (
+      h('li', [
+        h('img', {
           src: 'icons/ic_arrow_drop_down_black_18px.svg',
           className: this.state.hidden ? 'file-box-dir-hidden' : 'file-box-dir-shown',
           onClick: toggleVisibility
-        }
-      ),
-      React.DOM.a(
-        {
-          href: '',
-          className: 'dir-link',
-          onClick: toggleVisibility
-        },
-        dirName
-      ),
-      React.DOM.ul(
-        {
+        }),
+        h('a.dir-link', { href: '', onClick: toggleVisibility }, dirName),
+        h('ul', {
           className: this.state.hidden ? 'file-box-dir-listing hidden' : 'file-box-dir-listing'
-        },
-        children
-      )
+        }, children)
+      ])
     )
   }
 })
