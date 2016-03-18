@@ -12,7 +12,6 @@ const Sidebar = require('./sidebar')
 const Btn = require('./component/button')
 const PathInput = require('./path-input')
 const sivReducer = require('./siv-reducer')
-const sivEvents = require('./siv-events')
 const setImage = require('./setImage')
 const navigateImages = require('./navigateImages')
 const saveImage = require('./save-image')
@@ -71,9 +70,10 @@ const SIV = React.createClass({
     })
 
     ipcRenderer.on('extensions-downloaded', (event, downloadedExts) => {
-      this.props.store.dispatch(
-        sivEvents.extsDownloaded(downloadedExts)
-      )
+      this.props.store.dispatch({
+        type: 'SET_DOWNLOADED_EXTS',
+        downloadedExts
+      })
     })
 
     ipcRenderer.on('access-key-checked', (event, keyFound) => {
@@ -86,10 +86,10 @@ const SIV = React.createClass({
   componentDidMount () {
     this.props.store.subscribe(() => { this.forceUpdate() })
     const setDimensions = () => {
-      const viewerDimensions = this.refs.viewerNode.getBoundingClientRect()
-      this.props.store.dispatch(
-        sivEvents.setViewerDimensions(viewerDimensions)
-      )
+      this.props.store.dispatch({
+        type: 'SET_VIEWER_DIMENSIONS',
+        dimensions: this.refs.viewerNode.getBoundingClientRect()
+      })
     }
     setDimensions()
     // Set the viewerSize once the window finishes resizing.
@@ -175,18 +175,18 @@ const SIV = React.createClass({
                 }
                 return undefined
               })()
-              sivDispatch(
-                sivEvents.newExtOpened({
-                  id: extInfo.id,
-                  controls: ext.Controls,
-                  layer: ext.Layer,
-                  store: extStore
-                })
-              )
+              sivDispatch({
+                type: 'REGISTER_NEW_EXTENSION',
+                id: extInfo.id,
+                controls: ext.Controls,
+                layer: ext.Layer,
+                store: extStore
+              })
             } else {
-              sivDispatch(
-                sivEvents.activateLayerRequested(extInfo.id)
-              )
+              sivDispatch({
+                type: 'ACTIVATE_LAYER',
+                extId: extInfo.id
+              })
             }
           }
           return React.createElement(

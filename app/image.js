@@ -1,6 +1,6 @@
 'use strict'
 const React = require('react')
-const sivEvents = require('./siv-events')
+
 const ImageLayer = React.createClass({
   extId: 'image',
   layerName: 'image',
@@ -25,9 +25,11 @@ const ImageLayer = React.createClass({
     }
   },
   componentDidMount () {
-    this.props.sivDispatch(
-      sivEvents.layerAdded(this.extId, this.refs.canvas)
-    )
+    this.props.sivDispatch({
+      type: 'ADD_CANVAS_REF',
+      canvasRef: this.refs.canvas,
+      extId: this.extId
+    })
   },
   shouldComponentUpdate (nextProps, nextState) {
     // This component should only render if there is a new image to

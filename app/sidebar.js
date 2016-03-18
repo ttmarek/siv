@@ -1,7 +1,6 @@
 'use strict'
 const React = require('react')
 const FileBox = require('./component/file-box')
-const sivEvents = require('./siv-events')
 const loadImage = require('./loadImage')
 const fileBoxHeight = require('./file-box-height')
 
@@ -91,9 +90,9 @@ const Sidebar = React.createClass({
     })()
 
     const showHideFiles = () => {
-      this.props.sivDispatch(
-        sivEvents.sidebarToggleClicked()
-      )
+      this.props.sivDispatch({
+        type: 'SHOW_HIDE_FILES'
+      })
     }
 
     const div = React.DOM.div
