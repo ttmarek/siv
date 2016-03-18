@@ -23,7 +23,6 @@ if (shouldQuit) {
   electron.app.downloadedExts = []
 
   electron.app.on('ready', () => {
-    // PREPARE SIV WINDOW
     electron.Menu.setApplicationMenu(menuBar)
     electron.app.sivWindow = new electron.BrowserWindow({
       title: 'SIV',
@@ -32,15 +31,19 @@ if (shouldQuit) {
       show: false
     })
 
-    electron.app.sivWindow.on('close', event => {
-      event.preventDefault()
-      electron.app.sivWindow.webContents.send('clear-file-paths')
-      electron.app.sivWindow.hide()
+    const sivBW = electron.app.sivWindow // the browser window (BW)
+    const sivWP = sivBW.webContents      // the web page (WP)
+
+    sivBW.on('close', event => {
+      event.preventDefault()    // don't close the window
+      sivWP.send('clear-file-paths')
+      sivBW.hide()
     })
-    electron.app.sivWindow.loadURL(`file://${__dirname}/siv.html`)
-    // SEND FILE PATHS AND OPEN SIV IF APPLICABLE
+
+    sivBW.loadURL(`file://${__dirname}/siv.html`)
+
     handleInput(process.argv)
-    // SIGN IN AND DOWNLOAD EXTENSIONS
+
     auth.getUserObject()
       .then(userObj => {
         if (electron.app.devMode) {
@@ -57,12 +60,11 @@ if (shouldQuit) {
       })
       .then(exts.download)
       .then(downloadedExts => {
-        const siv = electron.app.sivWindow.webContents
         const sendSIVExtensions = () => {
-          siv.send('extensions-downloaded', downloadedExts)
+          sivWP.send('extensions-downloaded', downloadedExts)
         }
-        if (siv.isLoading()) {
-          siv.on('did-finish-load', sendSIVExtensions)
+        if (sivWP.isLoading()) {
+          sivWP.on('did-finish-load', sendSIVExtensions)
         } else {
           sendSIVExtensions()
         }
