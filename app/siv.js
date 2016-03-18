@@ -8,6 +8,7 @@ process.env.NODE_ENV = 'production'
 const React = require('react')
 const ReactDOM = require('react-dom')
 const Redux = require('redux')
+const h = require('react-hyperscript')
 const Sidebar = require('./sidebar')
 const Btn = require('./component/button')
 const PathInput = require('./path-input')
@@ -198,69 +199,47 @@ const SIV = React.createClass({
     const hideShowPathInput = () => {
       this.setState({ pathInputShown: !this.state.pathInputShown })
     }
-    return React.DOM.div(
-      {
-        className: 'siv'
-      },
-      this.state.keyFound ? '' : renderKeyNotFoundMsg(),
-      React.createElement(Sidebar, {
-        sivState: sivState,
-        sivDispatch: sivDispatch,
-        extControls: sivState.extControls,
-        viewerDimensions: sivState.viewerDimensions,
-        fileBoxes: sivState.fileBoxes,
-        currentImg: sivState.currentImg,
-        extStores: sivState.extStores,
-        filesShown: sivState.filesShown
-      }),
-      React.DOM.div(
-        {
-          className: 'Viewer',
-          ref: 'viewerNode'
-        },
-        React.DOM.div(
-          {
-            id: 'PathInput-control',
+    return (
+      h('div.siv', [
+        this.state.keyFound ? '' : renderKeyNotFoundMsg(),
+        h(Sidebar, {
+          sivState: sivState,
+          sivDispatch: sivDispatch,
+          extControls: sivState.extControls,
+          viewerDimensions: sivState.viewerDimensions,
+          fileBoxes: sivState.fileBoxes,
+          currentImg: sivState.currentImg,
+          extStores: sivState.extStores,
+          filesShown: sivState.filesShown
+        }),
+        h('div.Viewer', { ref: 'viewerNode' }, [
+          h('div#PathInput-control', {
             className: this.state.pathInputShown ? 'open' : '',
             role: 'button',
-            onClick: hideShowPathInput
-          },
-          React.createElement('img', { src: 'icons/ic_expand_more_black_24px.svg' })
-        ),
-        React.createElement(PathInput, {
-          pathInputShown: this.state.pathInputShown,
-          sivState: sivState,
-          sivDispatch: sivDispatch
-        }),
-        React.DOM.div(
-          {
-            className: 'LayerContainer'
-          },
-          renderLayers()
-        )
-      ),
-      React.DOM.div(
-        {
-          className: 'Toolbar'
-        },
-        React.DOM.div(
-          {
-            className: 'Toolbar-section FileNav'
-          },
-          React.createElement(
-            Btn, {btnType: 'blue', btnName: 'prev', onClick: this.navigateToImg.bind(null, 'prev')}
-          ),
-          React.createElement(
-            Btn, {btnType: 'blue', btnName: 'next', onClick: this.navigateToImg.bind(null, 'next')}
-          )
-        ),
-        React.DOM.div(
-          {
-            className: 'Toolbar-section ExtensionsNav'
-          },
-          renderExtButtons()
-        )
-      )
+            onClick: hideShowPathInput }, [
+              h('img', {
+                src: 'icons/ic_expand_more_black_24px.svg'
+              })
+            ]),
+          h(PathInput, {
+            pathInputShown: this.state.pathInputShown,
+            sivState: sivState,
+            sivDispatch: sivDispatch
+          }),
+          h('div.LayerContainer', [renderLayers()])
+        ]),
+        h('div.Toolbar', [
+          h('div.Toolbar-section.FileNav', [
+            h(Btn, {
+              btnType: 'blue', btnName: 'prev', onClick: this.navigateToImg.bind(null, 'prev')
+            }),
+            h(Btn, {
+              btnType: 'blue', btnName: 'next', onClick: this.navigateToImg.bind(null, 'next')
+            })
+          ]),
+          h('div.Toolbar-section.ExtensionsNav', [renderExtButtons()])
+        ])
+      ])
     )
   }
 })
