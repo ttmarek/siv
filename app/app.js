@@ -15,7 +15,8 @@ if (shouldQuit) {
   const auth = require('./auth')
   const menuBar = require('./menu-bar')
   const exts = require('./extensions')
-
+  // Its important that references are kept to these objects so they
+  // don't get garbage collected:
   electron.app.sivWindow = null
   electron.app.userId = null      // for checkForKey
   electron.app.trayIcon = null
@@ -30,6 +31,7 @@ if (shouldQuit) {
       height: 800,
       show: false
     })
+
     electron.app.sivWindow.on('close', event => {
       event.preventDefault()
       electron.app.sivWindow.webContents.send('clear-file-paths')
