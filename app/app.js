@@ -91,7 +91,7 @@ if (shouldQuit) {
     event.preventDefault()
   })
 
-  function makeTrayIcon (userId) {
+  function makeTrayIcon () {
     const contextMenu = electron.Menu.buildFromTemplate([
       {
         type: 'normal',
@@ -100,9 +100,7 @@ if (shouldQuit) {
           electron.app.sivWindow.destroy()
           electron.app.quit()
         }
-      },
-      {type: 'separator'},
-      {type: 'normal', label: `User: ${userId}`}
+      }
     ])
 
     const trayIcon = new electron.Tray(path.join(__dirname, 'icons', 'siv-icon-32x32.png'))
