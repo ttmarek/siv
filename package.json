@@ -25,7 +25,6 @@
     "tape": "4.4.0"
   },
   "dependencies": {
-    "aws-sdk": "2.2.18",
     "cli-table2": "0.1.9",
     "javascript-natural-sort": "0.7.1",
     "minimist": "1.2.0",
