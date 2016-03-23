@@ -19,6 +19,7 @@ if (shouldQuit) {
   electron.app.trayIcon = null
 
   electron.app.on('ready', () => {
+    // Create the sivWindow
     electron.Menu.setApplicationMenu(menuBar)
     electron.app.sivWindow = new electron.BrowserWindow({
       title: 'SIV',
@@ -26,20 +27,19 @@ if (shouldQuit) {
       height: 800,
       show: false
     })
-
     const sivBW = electron.app.sivWindow // the browser window (BW)
     const sivWP = sivBW.webContents      // the web page (WP)
-
+    // Hide the sivWindow when user the presses 'close' and clear the
+    // fileBoxes.
     sivBW.on('close', event => {
       event.preventDefault()    // don't close the window
       sivWP.send('clear-file-paths')
       sivBW.hide()
     })
-
     sivBW.loadURL(`file://${__dirname}/siv.html`)
-
+    // Parse the args for filepaths and options
     handleInput(process.argv)
-
+    // Create a system tray icon
     const contextMenu = electron.Menu.buildFromTemplate([
       {
         type: 'normal',
@@ -50,7 +50,6 @@ if (shouldQuit) {
         }
       }
     ])
-
     const trayIcon = new electron.Tray(path.join(__dirname, 'icons', 'siv-icon-32x32.png'))
     trayIcon.setContextMenu(contextMenu)
     electron.app.trayIcon = trayIcon // ensures it doesn't get garbage collected
