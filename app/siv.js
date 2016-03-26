@@ -68,13 +68,6 @@ const SIV = React.createClass({
         setImage(currentImgPath, this.props.store.dispatch)
       }
     })
-
-    ipcRenderer.on('extensions-downloaded', (event, downloadedExts) => {
-      this.props.store.dispatch({
-        type: 'SET_DOWNLOADED_EXTS',
-        downloadedExts
-      })
-    })
   },
 
   componentDidMount () {
@@ -233,5 +226,15 @@ const SIV = React.createClass({
   }
 })
 
-const sivComponent = h(SIV, { store: Redux.createStore(sivReducer) })
+const sivStore = Redux.createStore(sivReducer)
+const sivComponent = h(SIV, { store: sivStore })
 ReactDOM.render(sivComponent, document.getElementById('siv'))
+
+const fs = require('fs')
+fs.readFile('./package.json', (err, data) => {
+  const config = JSON.parse(data)
+  sivStore.dispatch({
+    type: 'SET_DOWNLOADED_EXTS',
+    downloadedExts: config.extensions
+  })
+})
