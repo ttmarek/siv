@@ -40,6 +40,11 @@
       "name": "Caliper",
       "id": "GyMG",
       "path": "siv-caliper"
+    },
+    {
+      "name": "SCCIR",
+      "id": "G9Wd",
+      "path": "siv-sccir"
     }
   ]
 }
