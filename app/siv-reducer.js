@@ -41,9 +41,16 @@ const sivReducer = (state, action) => {
         currentFileBox: 0
       })
     case 'CLOSE_FILE_BOX':
+      const fileBoxes = currentState.fileBoxes.filter((val, index) => index !== action.index)
       return update({
-        fileBoxes: currentState.fileBoxes.filter((val, index) => index !== action.index),
-        currentFileBox: 0
+        fileBoxes,
+        currentFileBox: 0,
+        currentImg: (() => {
+          if (fileBoxes.length > 0) {
+            return fileBoxes[0].pathsList[0]
+          }
+          return currentState.currentImg
+        })()
       })
     case 'ADD_NEW_FILE_BOX':
       return update({
