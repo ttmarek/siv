@@ -24,7 +24,6 @@ const SIV = React.createClass({
 
   getInitialState () {
     return {
-      keyFound: true,
       pathInputShown: false
     }
   },
@@ -67,19 +66,6 @@ const SIV = React.createClass({
           return prepared.filePaths.pathsList[0]
         })()
         setImage(currentImgPath, this.props.store.dispatch)
-      }
-    })
-
-    ipcRenderer.on('extensions-downloaded', (event, downloadedExts) => {
-      this.props.store.dispatch({
-        type: 'SET_DOWNLOADED_EXTS',
-        downloadedExts
-      })
-    })
-
-    ipcRenderer.on('access-key-checked', (event, keyFound) => {
-      if (keyFound !== this.state.keyFound) {
-        this.setState({keyFound})
       }
     })
   },
@@ -132,12 +118,7 @@ const SIV = React.createClass({
   render () {
     const sivState = this.props.store.getState()
     const sivDispatch = this.props.store.dispatch
-    const renderKeyNotFoundMsg = () => {
-      const msg = `The key used to open SIV can no longer be detected.
-          If you'd like to continue using SIV, shut it down from the
-          notifications tray and reopen it as a guest.`
-      return h('div.key-not-found', msg)
-    }
+
     const renderLayers = () => {
       return sivState.layers.map((Layer, index) => {
         const extStore = sivState.extStores[Layer.extId]
@@ -153,8 +134,10 @@ const SIV = React.createClass({
         )
       })
     }
+
     const activeLayer = sivState.layers[sivState.layers.length - 1]
     const downloadedExts = sivState.downloadedExts
+
     const renderExtButtons = () => {
       if (downloadedExts.length > 0) {
         return downloadedExts.map((extInfo, index) => {
@@ -202,7 +185,6 @@ const SIV = React.createClass({
     }
     return (
       h('div.siv', [
-        this.state.keyFound ? '' : renderKeyNotFoundMsg(),
         h(Sidebar, {
           sivState: sivState,
           sivDispatch: sivDispatch,
@@ -244,5 +226,15 @@ const SIV = React.createClass({
   }
 })
 
-const sivComponent = h(SIV, { store: Redux.createStore(sivReducer) })
+const sivStore = Redux.createStore(sivReducer)
+const sivComponent = h(SIV, { store: sivStore })
 ReactDOM.render(sivComponent, document.getElementById('siv'))
+
+const fs = require('fs')
+fs.readFile('./package.json', (err, data) => {
+  const config = JSON.parse(data)
+  sivStore.dispatch({
+    type: 'SET_DOWNLOADED_EXTS',
+    downloadedExts: config.extensions
+  })
+})
