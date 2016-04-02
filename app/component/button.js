@@ -1,4 +1,5 @@
 const React = require('react')
+const h = require('react-hyperscript')
 
 const Button = React.createClass({
   propTypes: {
@@ -18,12 +19,11 @@ const Button = React.createClass({
     if (this.props.active) {
       classes.push('btn-active')
     }
-    return React.DOM.button(
-      {
+    return (
+      h('button', {
         className: classes.join(' '),
         onClick: this.props.onClick
-      },
-      this.props.btnName
+      }, this.props.btnName)
     )
   }
 })

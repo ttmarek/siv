@@ -12,12 +12,6 @@ function handleInput (cliArgs) {
     electron.app.sivWindow.destroy()
     electron.app.quit()
   } else {
-    if (parsedArgs.dev) {
-      // When SIV quits it deletes all extensions that were
-      // downloaded.  This boolean is needed to prevent SIV from
-      // deleting extensions that you're working on.
-      electron.app.devMode = true
-    }
     if (!parsedArgs.start) {
       const pathsToOpen = parsedArgs.singleFile ? [path.dirname(parsedArgs._[0])] : parsedArgs._
       const currentImg = parsedArgs.singleFile ? parsedArgs._[0] : undefined
@@ -35,17 +29,11 @@ function handleInput (cliArgs) {
         sendSIVPaths()
       }
       electron.app.sivWindow.show()
-      // Open dev tools if required and authorized
-      if ((parsedArgs.dev || parsedArgs.devTools)  &&
-          parsedArgs.pass && devToolsAuthorized(parsedArgs.pass)) {
+      if (parsedArgs.devTools) {
         electron.app.sivWindow.openDevTools()
       }
     }
   }
-}
-
-function devToolsAuthorized (pass) {
-  return pass === 'marek8'
 }
 
 module.exports = handleInput

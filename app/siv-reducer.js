@@ -1,6 +1,6 @@
 'use strict'
 const ImageLayer = require('./image')
-const sivActions = require('./siv-actions')
+
 const initialState = {
   currentImg: '',
   fileBoxes: [],
@@ -22,7 +22,7 @@ const sivReducer = (state, action) => {
     return Object.assign({}, currentState, updates)
   }
   switch (action.type) {
-    case'SAVE_TO_CURRENT_FILE_BOX':
+    case 'SAVE_TO_CURRENT_FILE_BOX':
       const saveToFileBox = require('./save-to-filebox')
       const fileBoxesCopy = currentState.fileBoxes.slice()
       const currentFileBox = fileBoxesCopy[currentState.currentFileBox]
@@ -41,16 +41,23 @@ const sivReducer = (state, action) => {
         currentFileBox: 0
       })
     case 'CLOSE_FILE_BOX':
+      const fileBoxes = currentState.fileBoxes.filter((val, index) => index !== action.index)
       return update({
-        fileBoxes: currentState.fileBoxes.filter((val, index) => index !== action.index),
-        currentFileBox: 0
+        fileBoxes,
+        currentFileBox: 0,
+        currentImg: (() => {
+          if (fileBoxes.length > 0) {
+            return fileBoxes[0].pathsList[0]
+          }
+          return currentState.currentImg
+        })()
       })
     case 'ADD_NEW_FILE_BOX':
       return update({
         fileBoxes: currentState.fileBoxes.concat(action.fileBox),
         currentFileBox: currentState.fileBoxes.length
       })
-    case sivActions.CLOSE_EXTENSION:
+    case 'CLOSE_EXTENSION':
       const extId = action.extId
       return update({
         extStores: Object.assign({}, currentState.extStores, {
@@ -70,25 +77,19 @@ const sivReducer = (state, action) => {
           return canvasExtId !== extId
         })
       })
-    case sivActions.ACTIVATE_LAYER:
-      const layers = currentState.layers.slice() // make a copy
-      const index = layers.findIndex(layer => {
-        return layer.extId === action.extId
-      })
-      const layer = layers.splice(index, 1)[0]
-      layers.push(layer)
-      // -------------------------------------
-      const extControls = currentState.extControls.slice() // make a copy
-      const index2 = extControls.findIndex(Controls => {
-        return Controls.extId === action.extId
-      })
-      const controller = extControls.splice(index2, 1)[0]
-      return update({
-        layers,
-        extControls: [controller].concat(extControls),
-        filesShown: false
-      })
-    case sivActions.REGISTER_NEW_EXTENSION:
+    case 'ACTIVATE_LAYER':
+      const moveElement = require('move-element')
+      // move action.extId's layer to the bottom of the layers array
+      const layers = moveElement(currentState.layers,
+                                 layer => layer.extId === action.extId,
+                                 currentState.layers.length - 1)
+      // move action.extId's controls to the top of the extControls arrray
+      const extControls = moveElement(currentState.extControls,
+                                      controls => controls.extId === action.extId,
+                                      0)
+      // update the state
+      return update({layers, extControls, filesShown: false})
+    case 'REGISTER_NEW_EXTENSION':
       const updates = {}
       updates.filesShown = false
       updates.openedExts = currentState.openedExts.concat(action.id)
@@ -102,15 +103,15 @@ const sivReducer = (state, action) => {
         })
       }
       return update(updates)
-    case sivActions.SHOW_HIDE_FILES:
+    case 'SHOW_HIDE_FILES':
       return update({
         filesShown: !currentState.filesShown
       })
-    case sivActions.SET_DOWNLOADED_EXTS:
+    case 'SET_DOWNLOADED_EXTS':
       return update({
         downloadedExts: action.downloadedExts
       })
-    case sivActions.ADD_CANVAS_REF:
+    case 'ADD_CANVAS_REF':
       // This is called whenever a layer mounts
       // Keep in mound that layer mounts whenever the layers are re-ordered.
       const filteredArray = currentState.canvasRefs.filter(canvas => {
@@ -123,35 +124,13 @@ const sivReducer = (state, action) => {
       return update({
         canvasRefs: filteredArray.concat(action.canvasRef)
       })
-    case sivActions.SET_VIEWER_DIMENSIONS:
+    case 'SET_VIEWER_DIMENSIONS':
       return update({viewerDimensions: action.dimensions})
-    case sivActions.NAVIGATE_TO_IMG:
-      const currentImg = currentState.currentImg
-      const pathsList = currentState.filePaths.pathsList
-      if (currentImg && pathsList.length > 0) {
-        const currIndex = pathsList.indexOf(currentImg)
-        if (currIndex === -1) {
-          return update({
-            currentImg: pathsList[0]
-          })
-        }
-        const maxIndex = pathsList.length - 1
-        let index = 0
-        if (action.navigateTo === 'next') {
-          currIndex === maxIndex ? index = 0 : index = currIndex + 1
-        } else if (action.navigateTo === 'prev') {
-          currIndex === 0 ? index = maxIndex : index = currIndex - 1
-        }
-        return update({
-          currentImg: pathsList[index]
-        })
-      }
-      return currentState
-    case sivActions.SET_FILE_PATHS:
+    case 'SET_FILE_PATHS':
       return update({
         filePaths: action.filePaths
       })
-    case sivActions.SET_CURRENT_IMG:
+    case 'SET_CURRENT_IMG':
       return update({
         currentImg: action.imgPath
       })

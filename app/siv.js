@@ -1,13 +1,18 @@
 'use strict'
+
 const ipcRenderer = require('electron').ipcRenderer
+// Setting NODE_ENV to production improves React's
+// performance. Comment out the line if you want to see React's
+// warning messages.
+process.env.NODE_ENV = 'production'
 const React = require('react')
 const ReactDOM = require('react-dom')
 const Redux = require('redux')
+const h = require('react-hyperscript')
 const Sidebar = require('./sidebar')
 const Btn = require('./component/button')
 const PathInput = require('./path-input')
 const sivReducer = require('./siv-reducer')
-const sivEvents = require('./siv-events')
 const setImage = require('./setImage')
 const navigateImages = require('./navigateImages')
 const saveImage = require('./save-image')
@@ -19,7 +24,6 @@ const SIV = React.createClass({
 
   getInitialState () {
     return {
-      keyFound: true,
       pathInputShown: false
     }
   },
@@ -64,27 +68,15 @@ const SIV = React.createClass({
         setImage(currentImgPath, this.props.store.dispatch)
       }
     })
-
-    ipcRenderer.on('extensions-downloaded', (event, downloadedExts) => {
-      this.props.store.dispatch(
-        sivEvents.extsDownloaded(downloadedExts)
-      )
-    })
-
-    ipcRenderer.on('access-key-checked', (event, keyFound) => {
-      if (keyFound !== this.state.keyFound) {
-        this.setState({keyFound})
-      }
-    })
   },
 
   componentDidMount () {
     this.props.store.subscribe(() => { this.forceUpdate() })
     const setDimensions = () => {
-      const viewerDimensions = this.refs.viewerNode.getBoundingClientRect()
-      this.props.store.dispatch(
-        sivEvents.setViewerDimensions(viewerDimensions)
-      )
+      this.props.store.dispatch({
+        type: 'SET_VIEWER_DIMENSIONS',
+        dimensions: this.refs.viewerNode.getBoundingClientRect()
+      })
     }
     setDimensions()
     // Set the viewerSize once the window finishes resizing.
@@ -102,60 +94,50 @@ const SIV = React.createClass({
     })
     window.addEventListener('keydown', keyPress => {
       const keyIdentifier = {
-        Right: this.moveToNextImg.bind(null, keyPress),
-        Left: this.moveToPrevImg.bind(null, keyPress)
+        Right: this.navigateToImg.bind(null, 'next', keyPress),
+        Left: this.navigateToImg.bind(null, 'prev', keyPress)
       }
       const shortcut = keyIdentifier[keyPress.keyIdentifier]
       if (shortcut) shortcut()
     })
   },
-  moveToNextImg (event) {
-    event.preventDefault()
+  navigateToImg(direction, event) {
+    // The direction param gets passed directly to navigateImages
+    event.preventDefault()      // This prevents the file box from scolling
+    // horizontally when navigating with the arrow keys.
     const sivState = this.props.store.getState()
     const currentImg = sivState.currentImg
     if (sivState.fileBoxes.length > 0) {
       const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
-      const nextPath = navigateImages('next', currentImg, currentFileBox.pathsList)
+      const nextPath = navigateImages(direction, currentImg, currentFileBox.pathsList)
       setImage(nextPath, this.props.store.dispatch)
     }
-  },
-  moveToPrevImg (event) {
-    event.preventDefault()
-    const sivState = this.props.store.getState()
-    const currentImg = sivState.currentImg
-    if (sivState.fileBoxes.length > 0) {
-      const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
-      const nextPath = navigateImages('prev', currentImg, currentFileBox.pathsList)
-      setImage(nextPath, this.props.store.dispatch)
-    }
+    // This logic is here, and not in a NAVIGATE_TO_IMG reducer
+    // because setImage is async.
   },
   render () {
     const sivState = this.props.store.getState()
     const sivDispatch = this.props.store.dispatch
-    const renderKeyNotFoundMsg = () => {
-      const msg = `The key used to open SIV can no longer be detected.
-          If you'd like to continue using SIV, shut it down from the
-          notifications tray and reopen it as a guest.`
-      return React.createElement(
-        'div',
-        { className: 'key-not-found' },
-        msg
-      )
-    }
+
     const renderLayers = () => {
       return sivState.layers.map((Layer, index) => {
         const extStore = sivState.extStores[Layer.extId]
-        return React.createElement(Layer, {
-          key: index,
-          zIndex: index + 1,
-          sivState: sivState,
-          sivDispatch: sivDispatch,
-          extState: extStore ? extStore.getState() : undefined,
-          extDispatch: extStore ? extStore.dispatch : undefined })
+        return (
+          h(Layer, {
+            key: index,
+            zIndex: index + 1,
+            sivState: sivState,
+            sivDispatch: sivDispatch,
+            extState: extStore ? extStore.getState() : undefined,
+            extDispatch: extStore ? extStore.dispatch : undefined
+          })
+        )
       })
     }
+
     const activeLayer = sivState.layers[sivState.layers.length - 1]
     const downloadedExts = sivState.downloadedExts
+
     const renderExtButtons = () => {
       if (downloadedExts.length > 0) {
         return downloadedExts.map((extInfo, index) => {
@@ -170,26 +152,28 @@ const SIV = React.createClass({
                 }
                 return undefined
               })()
-              sivDispatch(
-                sivEvents.newExtOpened({
-                  id: extInfo.id,
-                  controls: ext.Controls,
-                  layer: ext.Layer,
-                  store: extStore
-                })
-              )
+              sivDispatch({
+                type: 'REGISTER_NEW_EXTENSION',
+                id: extInfo.id,
+                controls: ext.Controls,
+                layer: ext.Layer,
+                store: extStore
+              })
             } else {
-              sivDispatch(
-                sivEvents.activateLayerRequested(extInfo.id)
-              )
+              sivDispatch({
+                type: 'ACTIVATE_LAYER',
+                extId: extInfo.id
+              })
             }
           }
-          return React.createElement(
-            Btn, { key: index,
-                   btnType: 'regular',
-                   btnName: extInfo.name,
-                   onClick: openExtension,
-                   active: activeLayer.extId === extInfo.id }
+          return (
+            h(Btn, {
+              key: index,
+              btnType: 'regular',
+              btnName: extInfo.name,
+              onClick: openExtension,
+              active: activeLayer.extId === extInfo.id
+            })
           )
         })
       } else {
@@ -199,69 +183,58 @@ const SIV = React.createClass({
     const hideShowPathInput = () => {
       this.setState({ pathInputShown: !this.state.pathInputShown })
     }
-    return React.DOM.div(
-      {
-        className: 'siv'
-      },
-      this.state.keyFound ? '' : renderKeyNotFoundMsg(),
-      React.createElement(Sidebar, {
-        sivState: sivState,
-        sivDispatch: sivDispatch
-      }),
-      React.DOM.div(
-        {
-          className: 'Viewer',
-          ref: 'viewerNode'
-        },
-        React.DOM.div(
-          {
-            id: 'PathInput-control',
+    return (
+      h('div.siv', [
+        h(Sidebar, {
+          sivState: sivState,
+          sivDispatch: sivDispatch,
+          extControls: sivState.extControls,
+          viewerDimensions: sivState.viewerDimensions,
+          fileBoxes: sivState.fileBoxes,
+          currentImg: sivState.currentImg,
+          extStores: sivState.extStores,
+          filesShown: sivState.filesShown
+        }),
+        h('div.Viewer', { ref: 'viewerNode' }, [
+          h('div#PathInput-control', {
             className: this.state.pathInputShown ? 'open' : '',
             role: 'button',
             onClick: hideShowPathInput
-          },
-          React.createElement('img', { src: 'icons/ic_expand_more_black_24px.svg' })
-        ),
-        React.createElement(PathInput, {
-          pathInputShown: this.state.pathInputShown,
-          sivState: sivState,
-          sivDispatch: sivDispatch
-        }),
-        React.DOM.div(
-          {
-            className: 'LayerContainer'
-          },
-          renderLayers()
-        )
-      ),
-      React.DOM.div(
-        {
-          className: 'Toolbar'
-        },
-        React.DOM.div(
-          {
-            className: 'Toolbar-section FileNav'
-          },
-          React.createElement(
-            Btn, {btnType: 'blue', btnName: 'prev', onClick: this.moveToPrevImg}
-          ),
-          React.createElement(
-            Btn, {btnType: 'blue', btnName: 'next', onClick: this.moveToNextImg}
-          )
-        ),
-        React.DOM.div(
-          {
-            className: 'Toolbar-section ExtensionsNav'
-          },
-          renderExtButtons()
-        )
-      )
+          }, [
+            h('img', { src: 'icons/ic_expand_more_black_24px.svg' })
+          ]),
+          h(PathInput, {
+            pathInputShown: this.state.pathInputShown,
+            sivState: sivState,
+            sivDispatch: sivDispatch
+          }),
+          h('div.LayerContainer', renderLayers())
+        ]),
+        h('div.Toolbar', [
+          h('div.Toolbar-section.FileNav', [
+            h(Btn, {
+              btnType: 'blue', btnName: 'prev', onClick: this.navigateToImg.bind(null, 'prev')
+            }),
+            h(Btn, {
+              btnType: 'blue', btnName: 'next', onClick: this.navigateToImg.bind(null, 'next')
+            })
+          ]),
+          h('div.Toolbar-section.ExtensionsNav', renderExtButtons())
+        ])
+      ])
     )
   }
 })
 
-const sivComponent = React.createElement(SIV, {
-  store: Redux.createStore(sivReducer)
-})
-
+const sivStore = Redux.createStore(sivReducer)
+const sivComponent = h(SIV, { store: sivStore })
 ReactDOM.render(sivComponent, document.getElementById('siv'))
+
+const fs = require('fs')
+fs.readFile('./package.json', (err, data) => {
+  const config = JSON.parse(data)
+  sivStore.dispatch({
+    type: 'SET_DOWNLOADED_EXTS',
+    downloadedExts: config.extensions
+  })
+})

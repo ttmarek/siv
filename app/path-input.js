@@ -1,5 +1,6 @@
 'use strict'
 const React = require('react')
+const h = require('react-hyperscript')
 const setImage = require('./setImage')
 
 const PathInput = React.createClass({
@@ -25,19 +26,18 @@ const PathInput = React.createClass({
       this.setState({value: ''})
     }
     const currentImg = this.props.sivState.currentImg
-    return React.createElement(
-      'div',
-      { id: 'PathInput',
-        className: this.props.pathInputShown ? 'open' : '' },
-      React.createElement(
-        'form',
-        { onSubmit: handlePathInputSubmit },
-        React.createElement('input', { type: 'text',
-          name: 'pathInput',
-          placeholder: 'Image path...',
-          value: this.state.value || currentImg,
-          onChange: this.updateValue })
-      )
+    return (
+      h('div#PathInput', { className: this.props.pathInputShown ? 'open' : ''}, [
+        h('form', { onSubmit: handlePathInputSubmit }, [
+          h('input', {
+            type: 'text',
+            name: 'pathInput',
+            placeholder: 'Image path...',
+            value: this.state.value || currentImg,
+            onChange: this.updateValue
+          })
+        ])
+      ])
     )
   }
 })
