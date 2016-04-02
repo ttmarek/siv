@@ -1,5 +1,5 @@
 const loadImage = require('./loadImage')
-const sivEvents = require('./siv-events')
+
 module.exports = setImage
 
 /**
@@ -10,9 +10,10 @@ module.exports = setImage
 function setImage (src, sivDispatch) {
   loadImage(src)
     .then(imgSrc => {
-      sivDispatch(
-        sivEvents.setCurrentImg(imgSrc)
-      )
+      sivDispatch({
+        type: 'SET_CURRENT_IMG',
+        imgPath: imgSrc
+      })
     })
     .catch(err => {
       console.log('Error loading image', err)

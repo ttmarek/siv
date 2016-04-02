@@ -58,12 +58,11 @@ test('saveToFileBox', assert => {
       'path/to/dir2/image-b.jpg'
     ]
   }
-
+  // Adds new saved folder correctly
   assert.deepEqual(updatedFilePaths1,
-                   saveToFileBox(savedFile1, filePaths),
-                   'Adds new saved folder correctly')
+                   saveToFileBox(savedFile1, filePaths))
+  // Adds the next saved image correctly
   assert.deepEqual(updatedFilePaths2,
-                   saveToFileBox(savedFile2, updatedFilePaths1),
-                   'Adds second saved image correctly')
+                   saveToFileBox(savedFile2, updatedFilePaths1))
   assert.end()
 })

@@ -1,6 +1,7 @@
 'use strict'
 const React = require('react')
-const sivEvents = require('./siv-events')
+const h = require('react-hyperscript')
+
 const ImageLayer = React.createClass({
   extId: 'image',
   layerName: 'image',
@@ -25,9 +26,11 @@ const ImageLayer = React.createClass({
     }
   },
   componentDidMount () {
-    this.props.sivDispatch(
-      sivEvents.layerAdded(this.extId, this.refs.canvas)
-    )
+    this.props.sivDispatch({
+      type: 'ADD_CANVAS_REF',
+      canvasRef: this.refs.canvas,
+      extId: this.extId
+    })
   },
   shouldComponentUpdate (nextProps, nextState) {
     // This component should only render if there is a new image to
@@ -130,17 +133,19 @@ const ImageLayer = React.createClass({
         zIndex: this.props.zIndex
       }
     })()
-    return React.createElement('canvas', {
-      ref: 'canvas',
-      'data-extid': this.extId,
-      style: style,
-      width: this.props.sivState.viewerDimensions.width,
-      height: this.props.sivState.viewerDimensions.height,
-      onMouseMove: this.handleMouseMove,
-      onMouseDown: this.handleMouseDown,
-      onMouseUp: this.handleMouseUp,
-      onWheel: this.handleScroll,
-      className: 'Layer' })
+    return (
+      h('canvas.Layer', {
+        ref: 'canvas',
+        'data-extid': this.extId,
+        style: style,
+        width: this.props.sivState.viewerDimensions.width,
+        height: this.props.sivState.viewerDimensions.height,
+        onMouseMove: this.handleMouseMove,
+        onMouseDown: this.handleMouseDown,
+        onMouseUp: this.handleMouseUp,
+        onWheel: this.handleScroll
+      })
+    )
   },
   handleMouseMove (event) {
     if (this.state.mouseDown) {

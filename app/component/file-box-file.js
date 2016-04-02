@@ -1,6 +1,7 @@
 'use strict'
 const Path = require('path')
 const React = require('react')
+const h = require('react-hyperscript')
 
 const FileBoxFile = React.createClass({
   propTypes: {
@@ -8,6 +9,12 @@ const FileBoxFile = React.createClass({
     currentImg: React.PropTypes.string.isRequired,
     path: React.PropTypes.string.isRequired,
     Id: React.PropTypes.number.isRequired
+  },
+  componentDidUpdate() {
+    if (this.props.currentImg === this.props.path) {
+      const imgLink = this.refs.imgLink
+      imgLink.scrollIntoViewIfNeeded()
+    }
   },
   render () {
     const className = (() => {
@@ -22,17 +29,16 @@ const FileBoxFile = React.createClass({
       this.props.onImgClick(this.props.path, this.props.Id)
     }
 
-    return React.DOM.li(
-      null,
-      React.DOM.a(
-        {
+    return (
+      h('li', [
+        h('a', {
+          ref: 'imgLink',
           href: '',
           className,
           'data-file-path': this.props.path,
           onClick: handleFileClick
-        },
-        Path.basename(this.props.path, Path.extname(this.props.path))
-      )
+        }, Path.basename(this.props.path, Path.extname(this.props.path)))
+      ])
     )
   }
 })
