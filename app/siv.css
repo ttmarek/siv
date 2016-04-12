@@ -73,7 +73,7 @@ input:disabled {
 }
 
 .Sidebar-toggle-icon img {
-    transition: transform 0.5s ease;
+    transition: transform 0.25s ease;
 }
 
 .Sidebar-toggle-icon img.rotate {
@@ -94,7 +94,7 @@ input:disabled {
 .files-container {
     float: left;
     height: calc(100% -  30px);
-    transition: width 0.5s ease;
+    transition: width 0.15s ease;
     width: 0px;
     overflow: hidden;
     white-space: nowrap;
