@@ -2,7 +2,6 @@
 const React = require('react')
 const h = require('react-hyperscript')
 const FileBox = require('./component/file-box')
-const loadImage = require('./loadImage')
 const fileBoxHeight = require('./file-box-height')
 
 const Sidebar = React.createClass({
