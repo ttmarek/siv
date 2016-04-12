@@ -261,61 +261,6 @@ input:disabled {
     width: calc(100% - 240px);
 }
 
-#PathInput {
-    position: absolute;
-    top: 0;
-    left: 30px;
-    height: 0px;
-    transition: height 0.25s ease;
-    width: calc(100% - 30px);
-    overflow: hidden;
-    z-index: 100;
-    background: #f1f1f1;
-}
-
-#PathInput input[type=text] {
-    float: left;
-    width: 100%;
-    height: 30px;
-    padding-left: 10px;
-    background: transparent;
-    border: none;
-    outline: none;
-    border-right: 1px solid #f1f1f1;
-    color: inherit;
-    font: inherit;
-}
-
-#PathInput.open {
-    height: 30px;
-}
-
-#PathInput-control {
-    background-color: #5D5D5D;
-    font-size: 27px;
-    left: 0;
-    padding-top: 3px;
-    position: absolute;
-    text-align: center;
-    top: 0;
-    height: 30px;
-    width: 30px;
-    z-index: 11;
-}
-
-#PathInput-control:hover {
-    background-color: #F1F1F1;
-    cursor: pointer;
-}
-
-#PathInput-control img {
-    transition: transform 0.5s ease;
-}
-
-#PathInput-control.open img {
-    transform: rotate(-180deg);
-}
-
 .LayerContainer {
     height: 100%;
 }

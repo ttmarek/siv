@@ -11,7 +11,6 @@ const Redux = require('redux')
 const h = require('react-hyperscript')
 const Sidebar = require('./sidebar')
 const Btn = require('./component/button')
-const PathInput = require('./path-input')
 const sivReducer = require('./siv-reducer')
 const navigateImages = require('./navigateImages')
 const saveImage = require('./save-image')
@@ -19,12 +18,6 @@ const saveImage = require('./save-image')
 const SIV = React.createClass({
   propTypes: {
     store: React.PropTypes.object.isRequired
-  },
-
-  getInitialState () {
-    return {
-      pathInputShown: false
-    }
   },
   componentWillMount () {
     ipcRenderer.on('save-image', (event, filePath) => {
@@ -185,9 +178,6 @@ const SIV = React.createClass({
         return ''
       }
     }
-    const hideShowPathInput = () => {
-      this.setState({ pathInputShown: !this.state.pathInputShown })
-    }
     return (
       h('div.siv', [
         h(Sidebar, {
@@ -201,18 +191,6 @@ const SIV = React.createClass({
           filesShown: sivState.filesShown
         }),
         h('div.Viewer', { ref: 'viewerNode' }, [
-          h('div#PathInput-control', {
-            className: this.state.pathInputShown ? 'open' : '',
-            role: 'button',
-            onClick: hideShowPathInput
-          }, [
-            h('img', { src: 'icons/ic_expand_more_black_24px.svg' })
-          ]),
-          h(PathInput, {
-            pathInputShown: this.state.pathInputShown,
-            sivState: sivState,
-            sivDispatch: sivDispatch
-          }),
           h('div.LayerContainer', renderLayers())
         ]),
         h('div.Toolbar', [
