@@ -133,7 +133,7 @@ const SIV = React.createClass({
       })
     }
 
-    // const activeLayer = sivState.layers[sivState.layers.length - 1]
+    const activeLayer = sivState.layers[sivState.layers.length - 1]
     const extensions = sivState.availableExtensions
 
     const renderExtButtons = () => {
@@ -141,7 +141,7 @@ const SIV = React.createClass({
         return extensions.map((extInfo, index) => {
           const openExtension = () => {
             if (sivState.openedExts.indexOf(extInfo.id) === -1) {
-              const ext = require('../extensions/' + extInfo.path) // TODO Make Platform agnostic
+              const ext = require('../extensions/' + extInfo.path)
               const extStore = (() => {
                 if (ext.reducer) {
                   const newStore = Redux.createStore(ext.reducer)
@@ -169,8 +169,8 @@ const SIV = React.createClass({
               key: index,
               btnType: 'regular',
               btnName: extInfo.name,
-              onClick: openExtension
-              // active: activeLayer.extId === extInfo.id
+              onClick: openExtension,
+              active: activeLayer ? activeLayer.extId === extInfo.id : false
             })
           )
         })
@@ -211,13 +211,26 @@ const SIV = React.createClass({
 
 const sivStore = Redux.createStore(sivReducer)
 const sivComponent = h(SIV, { store: sivStore })
-ReactDOM.render(sivComponent, document.getElementById('siv'))
+const siv = ReactDOM.render(sivComponent, document.getElementById('siv'))
 
 const fs = require('fs')
 fs.readFile('./package.json', (err, data) => {
   const config = JSON.parse(data)
+  const firstExtension = require('../extensions/' + config.extensions[0].path)
+  const extStore = (() => {
+    if (firstExtension.reducer) {
+      const newStore = Redux.createStore(firstExtension.reducer)
+      newStore.subscribe(siv.forceUpdate.bind(siv))
+      return newStore
+    }
+    return undefined
+  })()
   sivStore.dispatch({
     type: 'SET_AVAILABLE_EXTENSIONS',
-    availableExtensions: config.extensions
+    availableExtensions: config.extensions,
+    id: config.extensions[0].id,
+    controls: firstExtension.Controls,
+    layer: firstExtension.Layer,
+    store: extStore
   })
 })

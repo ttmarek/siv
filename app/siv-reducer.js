@@ -117,6 +117,12 @@ const sivReducer = (state, action) => {
 
     case 'SET_AVAILABLE_EXTENSIONS':
       return update({
+        extControls: [action.controls].concat(currentState.extControls),
+        layers: currentState.layers.concat(action.layer),
+        extStores: Object.assign({}, currentState.extStores, {
+          [action.id]: action.store
+        }),
+        openedExts: currentState.openedExts.concat(action.id),
         availableExtensions: action.availableExtensions
       })
 
