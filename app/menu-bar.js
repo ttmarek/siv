@@ -1,6 +1,7 @@
 'use strict'
 const electron = require('electron')
 const expandDirs = require('./expand-dirs')
+const calculatorWindow = require('./calculator/window')
 
 const menuBar = electron.Menu.buildFromTemplate([
   {
@@ -64,6 +65,17 @@ const menuBar = electron.Menu.buildFromTemplate([
             }
           }
         ]
+      }
+    ]
+  },
+  {
+    label: 'Tools',
+    submenu: [
+      {
+        label: 'Calculator',
+        click () {
+          calculatorWindow.open()
+        }
       }
     ]
   }

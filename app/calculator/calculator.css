@@ -1,0 +1,78 @@
+/* BORDER BOX EVERYWHERE */
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* PAGE SETUP */
+html, body {
+    height: 100%;
+}
+
+body {
+    color: #f1f1f1;
+    font-family: Arial;
+    background-color: #212121;
+    margin: 0;
+}
+
+/* DISPLAY */
+#display {
+    height: calc(100% - 60px);
+    border-bottom: 1px solid #545454;
+    padding: 15px;
+    overflow: auto;
+}
+
+.calculation {
+    border-left: 1px dotted #545454;
+    padding: 5px 0px 5px 15px;
+    margin-bottom: 10px;
+}
+
+.display-input {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.display-result {
+    margin: 0px 0px 0px 15px;
+    font-size: 20px;
+    color: #84BD00;
+}
+
+.display-result.error {
+    color: #D43535;
+}
+
+/* INPUT */
+input {
+    outline: none;
+    background: inherit;
+    color: inherit;
+    border: none;
+    height: 60px;
+    display: block;
+    float: left;
+}
+
+input[type="text"] {
+    width: calc(100% - 100px);
+    padding-left: 15px;
+    font-size: 30px;
+}
+
+input[type="submit"] {
+    font-size: 20px;
+    border-left: 1px solid #545454;
+    width: 100px;
+}
+
+input[type="submit"]:hover {
+    color: #212121;
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
