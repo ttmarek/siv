@@ -5,6 +5,7 @@ const ipcRenderer = require('electron').ipcRenderer
 // performance. Comment out the line if you want to see React's
 // warning messages.
 process.env.NODE_ENV = 'production'
+const Path = require('path')
 const React = require('react')
 const ReactDOM = require('react-dom')
 const Redux = require('redux')
@@ -214,23 +215,27 @@ const sivComponent = h(SIV, { store: sivStore })
 const siv = ReactDOM.render(sivComponent, document.getElementById('siv'))
 
 const fs = require('fs')
-fs.readFile('./package.json', (err, data) => {
-  const config = JSON.parse(data)
-  const firstExtension = require('../extensions/' + config.extensions[0].path)
-  const extStore = (() => {
-    if (firstExtension.reducer) {
-      const newStore = Redux.createStore(firstExtension.reducer)
-      newStore.subscribe(siv.forceUpdate.bind(siv))
-      return newStore
-    }
-    return undefined
-  })()
-  sivStore.dispatch({
-    type: 'SET_AVAILABLE_EXTENSIONS',
-    availableExtensions: config.extensions,
-    id: config.extensions[0].id,
-    controls: firstExtension.Controls,
-    layer: firstExtension.Layer,
-    store: extStore
-  })
+fs.readFile(Path.join(__dirname, 'package.json'), (err, data) => {
+  if (err) {
+    console.log('There was a problem reading package.json: ', err)
+  } else {
+    const config = JSON.parse(data)
+    const firstExtension = require('../extensions/' + config.extensions[0].path)
+    const extStore = (() => {
+      if (firstExtension.reducer) {
+        const newStore = Redux.createStore(firstExtension.reducer)
+        newStore.subscribe(siv.forceUpdate.bind(siv))
+        return newStore
+      }
+      return undefined
+    })()
+    sivStore.dispatch({
+      type: 'SET_AVAILABLE_EXTENSIONS',
+      availableExtensions: config.extensions,
+      id: config.extensions[0].id,
+      controls: firstExtension.Controls,
+      layer: firstExtension.Layer,
+      store: extStore
+    })
+  }
 })
