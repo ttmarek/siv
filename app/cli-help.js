@@ -23,10 +23,9 @@ function logHelp (versionNumber) {
                ['--singleFile', ["Opens all image files under the path's folder.",
                                  'Ignores all but the first provided path.'].join('\n')],
                ['--start', "Start SIV, log in, don't open any windows."],
+               ['--calc', "Open SIV's calculator."],
                ['--quit', "Shutdown SIV"],
-               ['--devTools', 'Open dev tools in each window.'],
-               ['--dev', 'Run SIV in dev mode.'],
-               ['--pass=[pass]', 'Password required for --dev and --devTools.'])
+               ['--devTools', 'Open dev tools in each window.'])
   process.stdout.write(version)
   process.stdout.write(usage)
   process.stdout.write('\n')
