@@ -11,6 +11,8 @@ function handleInput (cliArgs) {
   } else if (parsedArgs.quit) {
     electron.app.sivWindow.destroy()
     electron.app.quit()
+  } else if (parsedArgs.calc) {
+    require('./calculator/window').open()
   } else {
     if (!parsedArgs.start) {
       const pathsToOpen = parsedArgs.singleFile ? [path.dirname(parsedArgs._[0])] : parsedArgs._

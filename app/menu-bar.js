@@ -1,6 +1,7 @@
 'use strict'
 const electron = require('electron')
 const expandDirs = require('./expand-dirs')
+const calculatorWindow = require('./calculator/window')
 
 const menuBar = electron.Menu.buildFromTemplate([
   {
@@ -24,22 +25,56 @@ const menuBar = electron.Menu.buildFromTemplate([
         }
       },
       {
-        label: 'Open Folder',
-        accelerator: 'CmdOrCtrl+O',
-        click (item, focusedWindow) {
-          electron.dialog.showOpenDialog(
-            {
-              title: 'Open a Folder of Images',
-              properties: ['openDirectory', 'multiSelections']
-            },
-            dirsToOpen => {
-              if (dirsToOpen) { // dirsToOpen is undefined on Cancel
-                focusedWindow.webContents.send('file-paths-prepared', {
-                  filePaths: expandDirs(dirsToOpen)
-                })
-              }
+        label: 'Open',
+        submenu: [
+          {
+            label: 'Image(s)',
+            click (item, focusedWindow) {
+              electron.dialog.showOpenDialog(
+                {
+                  title: 'Open an Image',
+                  filters: [{ name: 'Images', extensions: ['jpg', 'jpeg', 'png'] }],
+                  properties: ['openFile', 'multiSelections']
+                },
+                imgsToOpen => {
+                  if (imgsToOpen) { // imgsToOpen is undefined on Cancel
+                    focusedWindow.webContents.send('file-paths-prepared', {
+                      filePaths: expandDirs(imgsToOpen)
+                    })
+                  }
+                }
+              )
             }
-          )
+          },
+          {
+            label: 'Folder(s)',
+            click (item, focusedWindow) {
+              electron.dialog.showOpenDialog(
+                {
+                  title: 'Open a Folder',
+                  properties: ['openDirectory', 'multiSelections']
+                },
+                dirsToOpen => {
+                  if (dirsToOpen) { // dirsToOpen is undefined on Cancel
+                    focusedWindow.webContents.send('file-paths-prepared', {
+                      filePaths: expandDirs(dirsToOpen)
+                    })
+                  }
+                }
+              )
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    label: 'Tools',
+    submenu: [
+      {
+        label: 'Calculator',
+        click () {
+          calculatorWindow.open()
         }
       }
     ]

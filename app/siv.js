@@ -5,27 +5,20 @@ const ipcRenderer = require('electron').ipcRenderer
 // performance. Comment out the line if you want to see React's
 // warning messages.
 process.env.NODE_ENV = 'production'
+const Path = require('path')
 const React = require('react')
 const ReactDOM = require('react-dom')
 const Redux = require('redux')
 const h = require('react-hyperscript')
 const Sidebar = require('./sidebar')
 const Btn = require('./component/button')
-const PathInput = require('./path-input')
 const sivReducer = require('./siv-reducer')
-const setImage = require('./setImage')
 const navigateImages = require('./navigateImages')
 const saveImage = require('./save-image')
 
 const SIV = React.createClass({
   propTypes: {
     store: React.PropTypes.object.isRequired
-  },
-
-  getInitialState () {
-    return {
-      pathInputShown: false
-    }
   },
   componentWillMount () {
     ipcRenderer.on('save-image', (event, filePath) => {
@@ -65,7 +58,10 @@ const SIV = React.createClass({
           }
           return prepared.filePaths.pathsList[0]
         })()
-        setImage(currentImgPath, this.props.store.dispatch)
+        this.props.store.dispatch({
+          type: 'SET_CURRENT_IMG',
+          imgPath: currentImgPath
+        })
       }
     })
   },
@@ -110,10 +106,13 @@ const SIV = React.createClass({
     if (sivState.fileBoxes.length > 0) {
       const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
       const nextPath = navigateImages(direction, currentImg, currentFileBox.pathsList)
-      setImage(nextPath, this.props.store.dispatch)
+      this.props.store.dispatch({
+        type: 'SET_CURRENT_IMG',
+        imgPath: nextPath
+      })
     }
     // This logic is here, and not in a NAVIGATE_TO_IMG reducer
-    // because setImage is async.
+    // because setImage is async. TODO: no longer true
   },
   render () {
     const sivState = this.props.store.getState()
@@ -136,14 +135,14 @@ const SIV = React.createClass({
     }
 
     const activeLayer = sivState.layers[sivState.layers.length - 1]
-    const downloadedExts = sivState.downloadedExts
+    const extensions = sivState.availableExtensions
 
     const renderExtButtons = () => {
-      if (downloadedExts.length > 0) {
-        return downloadedExts.map((extInfo, index) => {
+      if (extensions.length > 0) {
+        return extensions.map((extInfo, index) => {
           const openExtension = () => {
             if (sivState.openedExts.indexOf(extInfo.id) === -1) {
-              const ext = require(extInfo.path)
+              const ext = require('../extensions/' + extInfo.path)
               const extStore = (() => {
                 if (ext.reducer) {
                   const newStore = Redux.createStore(ext.reducer)
@@ -172,16 +171,13 @@ const SIV = React.createClass({
               btnType: 'regular',
               btnName: extInfo.name,
               onClick: openExtension,
-              active: activeLayer.extId === extInfo.id
+              active: activeLayer ? activeLayer.extId === extInfo.id : false
             })
           )
         })
       } else {
         return ''
       }
-    }
-    const hideShowPathInput = () => {
-      this.setState({ pathInputShown: !this.state.pathInputShown })
     }
     return (
       h('div.siv', [
@@ -196,18 +192,6 @@ const SIV = React.createClass({
           filesShown: sivState.filesShown
         }),
         h('div.Viewer', { ref: 'viewerNode' }, [
-          h('div#PathInput-control', {
-            className: this.state.pathInputShown ? 'open' : '',
-            role: 'button',
-            onClick: hideShowPathInput
-          }, [
-            h('img', { src: 'icons/ic_expand_more_black_24px.svg' })
-          ]),
-          h(PathInput, {
-            pathInputShown: this.state.pathInputShown,
-            sivState: sivState,
-            sivDispatch: sivDispatch
-          }),
           h('div.LayerContainer', renderLayers())
         ]),
         h('div.Toolbar', [
@@ -228,13 +212,30 @@ const SIV = React.createClass({
 
 const sivStore = Redux.createStore(sivReducer)
 const sivComponent = h(SIV, { store: sivStore })
-ReactDOM.render(sivComponent, document.getElementById('siv'))
+const siv = ReactDOM.render(sivComponent, document.getElementById('siv'))
 
 const fs = require('fs')
-fs.readFile('./package.json', (err, data) => {
-  const config = JSON.parse(data)
-  sivStore.dispatch({
-    type: 'SET_DOWNLOADED_EXTS',
-    downloadedExts: config.extensions
-  })
+fs.readFile(Path.join(__dirname, 'package.json'), (err, data) => {
+  if (err) {
+    console.log('There was a problem reading package.json: ', err)
+  } else {
+    const config = JSON.parse(data)
+    const firstExtension = require('../extensions/' + config.extensions[0].path)
+    const extStore = (() => {
+      if (firstExtension.reducer) {
+        const newStore = Redux.createStore(firstExtension.reducer)
+        newStore.subscribe(siv.forceUpdate.bind(siv))
+        return newStore
+      }
+      return undefined
+    })()
+    sivStore.dispatch({
+      type: 'SET_AVAILABLE_EXTENSIONS',
+      availableExtensions: config.extensions,
+      id: config.extensions[0].id,
+      controls: firstExtension.Controls,
+      layer: firstExtension.Layer,
+      store: extStore
+    })
+  }
 })

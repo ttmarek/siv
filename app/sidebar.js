@@ -2,7 +2,6 @@
 const React = require('react')
 const h = require('react-hyperscript')
 const FileBox = require('./component/file-box')
-const loadImage = require('./loadImage')
 const fileBoxHeight = require('./file-box-height')
 
 const Sidebar = React.createClass({
@@ -35,20 +34,14 @@ const Sidebar = React.createClass({
                 })
               },
               onImgClick: (path, Id) => {
-                loadImage(path)
-                  .then(imgSrc => {
-                    this.props.sivDispatch({
-                      type: 'SET_CURRENT_IMG',
-                      imgPath: imgSrc
-                    })
-                    this.props.sivDispatch({
-                      type: 'SET_CURRENT_FILE_BOX',
-                      Id: Id
-                    })
-                  })
-                  .catch(err => {
-                    console.log('Error loading image:', err)
-                  })
+                this.props.sivDispatch({
+                  type: 'SET_CURRENT_IMG',
+                  imgPath: path
+                })
+                this.props.sivDispatch({
+                  type: 'SET_CURRENT_FILE_BOX',
+                  Id: Id
+                })
               },
               currentImg: this.props.currentImg,
               paths: fileBox.hierarchy
