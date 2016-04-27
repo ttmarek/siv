@@ -2,7 +2,7 @@ const test = require('tape')
 const expandDirs = require('../app/expand-dirs.js')
 const mock = require('mock-fs')
 
-test('expandDirs', (assert) => {
+test('expandDirs', assert => {
   assert.deepEqual(expandDirs([]), { hierarchy: [], pathsList: [] })
   // Mock filesytem tests
   mock({
