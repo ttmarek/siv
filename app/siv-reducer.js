@@ -6,7 +6,6 @@ const initialState = {
   currentFileBox: 0,
   user: null,
   filesShown: true,
-  filePaths: {hierarchy: [], pathsList: []},
   viewerDimensions: {width: 0, height: 0, top: 0, left: 0},
   availableExtensions: [],
   openedExts: [],
