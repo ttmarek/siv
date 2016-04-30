@@ -10,7 +10,7 @@ const FileBoxFile = React.createClass({
     path: React.PropTypes.string.isRequired,
     Id: React.PropTypes.number.isRequired
   },
-  componentDidUpdate() {
+  componentDidUpdate () {
     if (this.props.currentImg === this.props.path) {
       const imgLink = this.refs.imgLink
       imgLink.scrollIntoViewIfNeeded()

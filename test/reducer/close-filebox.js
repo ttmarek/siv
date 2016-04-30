@@ -2,9 +2,9 @@ const test = require('tape')
 const sivReducer = require('../../app/siv-reducer')
 
 test('CLOSE_FILE_BOX', assert => {
-  const test1 = "The closed filebox is removed and " +
-          "the top-most image in the sidebar is set " +
-          "as the current image."
+  const test1 = 'The closed filebox is removed and ' +
+          'the top-most image in the sidebar is set ' +
+          'as the current image.'
 
   const input1 = {
     state: {
@@ -33,16 +33,16 @@ test('CLOSE_FILE_BOX', assert => {
     ]
   }
 
-  assert.deepEqual(result1,expectedState1, test1)
+  assert.deepEqual(result1, expectedState1, test1)
 
-  const test2 = "When the last filebox is closed the current image stays put."
+  const test2 = 'When the last filebox is closed the current image stays put.'
 
   const input2 = {
     state: {
       currentImg: 'img1.3',
       currentFileBox: 0,
       fileBoxes: [
-        { pathsList: ['img1.1', 'img1.2', 'img1.3'] },
+        { pathsList: ['img1.1', 'img1.2', 'img1.3'] }
       ]
     },
     action: {
