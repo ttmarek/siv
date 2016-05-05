@@ -4,14 +4,14 @@ const ipcRenderer = require('electron').ipcRenderer
 // Setting NODE_ENV to production improves React's
 // performance. Comment out the line if you want to see React's
 // warning messages.
-process.env.NODE_ENV = 'production'
+// process.env.NODE_ENV = 'production'
 const Path = require('path')
 const React = require('react')
 const ReactDOM = require('react-dom')
 const Redux = require('redux')
 const h = require('react-hyperscript')
 const Sidebar = require('./sidebar')
-const Btn = require('./component/button')
+const Btn = require('siv-components').btn
 const sivReducer = require('./siv-reducer')
 const navigateImages = require('./navigateImages')
 const saveImage = require('./save-image')
@@ -179,6 +179,7 @@ const SIV = React.createClass({
         return ''
       }
     }
+
     return (
       h('div.siv', [
         h(Sidebar, {

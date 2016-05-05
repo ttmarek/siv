@@ -1,5 +1,4 @@
 'use strict'
-const React = require('react')
 const h = require('react-hyperscript')
 const FileBoxDir = require('./file-box-dir')
 const FileBoxFile = require('./file-box-file')
