@@ -57,15 +57,33 @@ const Sidebar = React.createClass({
         return extControls.map((Controls, index) => {
           const extStore = this.props.extStores[Controls.extId]
           const isActive = index === 0
-          return (
-            h(Controls, {
-              key: index,
-              sivState: sivState,
-              isActive: isActive,
-              sivDispatch: this.props.sivDispatch,
-              extState: extStore ? extStore.getState() : undefined,
-              extDispatch: extStore ? extStore.dispatch : undefined
+          const titleColor = (() => {
+            if (index === 0) {
+              return { color: 'rgb(51, 122, 183)' }
+            }
+            return {}
+          })()
+          const close = () => {
+            this.props.sivDispatch({
+              type: 'CLOSE_EXTENSION',
+              extId: Controls.extId
             })
+          }
+          return (
+            h('div.ext-container', [
+              h('div.ext-title', [
+                h('span', { style: titleColor }, Controls.extName),
+                h('img', { src: 'icons/ic_close_white_18px.svg', onClick: close })
+              ]),
+              h(Controls, {
+                key: index,
+                sivState: sivState,
+                isActive: isActive,
+                sivDispatch: this.props.sivDispatch,
+                extState: extStore ? extStore.getState() : undefined,
+                extDispatch: extStore ? extStore.dispatch : undefined
+              })
+            ])
           )
         })
       } else {
