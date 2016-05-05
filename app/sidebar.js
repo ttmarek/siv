@@ -1,7 +1,7 @@
 'use strict'
 const React = require('react')
 const h = require('react-hyperscript')
-const FileBox = require('siv-components').fileBox
+const FileBox = require('./file-box')
 const fileBoxHeight = require('./file-box-height')
 
 const Sidebar = React.createClass({
