@@ -69,14 +69,21 @@ const SIV = React.createClass({
   },
 
   componentDidMount () {
+    // Render the app whenever its state changes
     this.props.store.subscribe(() => { this.forceUpdate() })
-    const setDimensions = () => {
+    // The next few paragraphs ensure that the viewer dimensions are
+    // saved whenever the app's window gets resized. The viewer
+    // dimensions are used by extensions to set their layer
+    // dimensions. The image extension also uses the information for
+    // drawing an image so it fits into the viewer while maintaining
+    // its aspect ratio.
+    const saveViewerDimensions = () => {
       this.props.store.dispatch({
         type: 'SET_VIEWER_DIMENSIONS',
         dimensions: this.refs.viewerNode.getBoundingClientRect()
       })
     }
-    setDimensions()
+    saveViewerDimensions()
     // Set the viewerSize once the window finishes resizing.
     // I initially wrote:
     // window.addEventListener('resize', this.setViewerDimensions)
@@ -87,9 +94,10 @@ const SIV = React.createClass({
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer)
       resizeTimer = setTimeout(() => {
-        setDimensions()
+        saveViewerDimensions()
       }, 50)
     })
+    // Defining the app's shortcuts
     window.addEventListener('keydown', keyPress => {
       const keyIdentifier = {
         Right: this.navigateToImg.bind(null, 'next', keyPress),
@@ -101,8 +109,9 @@ const SIV = React.createClass({
   },
   navigateToImg(direction, event) {
     // The direction param gets passed directly to navigateImages
-    event.preventDefault()      // This prevents the file box from scolling
-    // horizontally when navigating with the arrow keys.
+    event.preventDefault()      // This prevents the file box from
+                                // scolling horizontally when
+                                // navigating with the arrow keys.
     const sivState = this.props.store.getState()
     const currentImg = sivState.currentImg
     if (sivState.fileBoxes.length > 0) {
@@ -220,7 +229,7 @@ const siv = ReactDOM.render(sivComponent, document.getElementById('siv'))
 const fs = require('fs')
 fs.readFile(Path.join(__dirname, 'package.json'), (err, data) => {
   if (err) {
-    console.log('There was a problem reading package.json: ', err)
+    console.error('There was a problem reading package.json: ', err)
   } else {
     const config = JSON.parse(data)
     const firstExtension = require('../extensions/' + config.extensions[0].path)
