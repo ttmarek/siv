@@ -25,17 +25,19 @@ const SIV = React.createClass({
       // filePath equals undefined on Cancel
       if (filePath) {
         const sivState = this.props.store.getState()
-        const sivDispatch = this.props.store.dispatch
-        const onSave = () => {
-          sivDispatch({
-            type: 'SAVE_TO_CURRENT_FILE_BOX',
-            filePath: filePath
-          })
-        }
         saveImage(filePath,
                   sivState.canvasRefs,
-                  sivState.viewerDimensions,
-                  onSave)
+                  sivState.viewerDimensions)
+          .then(filePath => {
+            this.props.store.dispatch({
+              type: 'SAVE_TO_CURRENT_FILE_BOX',
+              filePath: filePath
+            })
+          })
+          .catch(err => {
+            console
+              .error('There was an error writing the combined image to the file system:', err)
+          })
       }
     })
 
