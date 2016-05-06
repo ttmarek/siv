@@ -4,7 +4,6 @@ const initialState = {
   currentImg: '',
   fileBoxes: [],
   currentFileBox: 0,
-  user: null,
   filesShown: true,
   viewerDimensions: {width: 0, height: 0, top: 0, left: 0},
   availableExtensions: [],
