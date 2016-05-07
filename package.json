@@ -6,11 +6,10 @@
     "node": "5.1.1"
   },
   "scripts": {
-    "make-logfile": "touch ./logs/siv.log",
     "link-config": "ln -s -r -f ./package.json ./app/package.json",
     "download-icons": "wget --input-file=icons.txt --directory-prefix=./app/icons",
     "setup": "mkdir -p ./extensions ./logs ./app/icons",
-    "postsetup": "npm run download-icons && npm run make-logfile && npm run link-config",
+    "postsetup": "npm run download-icons && npm run link-config",
     "test": "tape 'test/**/*.js' | tap-spec",
     "posttest": "standard test/**/*.js app/**/*.js"
   },
@@ -35,8 +34,7 @@
     "react-hyperscript": "2.4.0",
     "redux": "3.3.1",
     "siv-components": "0.0.0",
-    "victor": "1.1.0",
-    "winston": "2.1.1"
+    "victor": "1.1.0"
   },
   "extensions": [
     {
