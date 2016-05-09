@@ -1,0 +1,20 @@
+/* BORDER BOX EVERYWHERE */
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* PAGE SETUP */
+html, body {
+    height: 100%;
+}
+
+body {
+    color: #f1f1f1;
+    font-family: Arial;
+    background-color: #212121;
+    margin: 0;
+}
