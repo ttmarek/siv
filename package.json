@@ -51,6 +51,11 @@
       "name": "SCCIR",
       "id": "G9Wd",
       "path": "siv-sccir"
+    },
+    {
+      "name": "Example",
+      "id": "kd8F",
+      "path": "siv-example"
     }
   ]
 }
