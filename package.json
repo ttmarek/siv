@@ -16,7 +16,8 @@
     "posttest": "standard test/**/*.js app/**/*.js"
   },
   "devDependencies": {
-    "electron-prebuilt": "0.37.6",
+    "devtron": "^1.2.1",
+    "electron-prebuilt": "1.2.3",
     "mock-fs": "3.5.0",
     "react-addons-perf": "15.0.1",
     "react-addons-test-utils": "15.0.1",
