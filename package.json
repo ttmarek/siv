@@ -12,6 +12,7 @@
     "setup": "mkdir -p ./extensions ./logs ./app/icons",
     "postsetup": "npm run download-icons && npm run link-config",
     "test": "tape 'test/**/*.js' | tap-spec",
+    "tape": "tape",
     "posttest": "standard test/**/*.js app/**/*.js"
   },
   "devDependencies": {
