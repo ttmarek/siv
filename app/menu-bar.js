@@ -76,6 +76,12 @@ const menuBar = electron.Menu.buildFromTemplate([
         click () {
           calculatorWindow.open()
         }
+      },
+      {
+        label: 'Extensions Manager',
+        click () {
+          require('./extensions-manager/open-window')()
+        }
       }
     ]
   }

@@ -4,14 +4,14 @@ const ipcRenderer = require('electron').ipcRenderer
 // Setting NODE_ENV to production improves React's
 // performance. Comment out the line if you want to see React's
 // warning messages.
-process.env.NODE_ENV = 'production'
+// process.env.NODE_ENV = 'production'
 const Path = require('path')
 const React = require('react')
 const ReactDOM = require('react-dom')
 const Redux = require('redux')
 const h = require('react-hyperscript')
 const Sidebar = require('./sidebar')
-const Btn = require('./component/button')
+const Btn = require('siv-components').btn
 const sivReducer = require('./siv-reducer')
 const navigateImages = require('./navigateImages')
 const saveImage = require('./save-image')
@@ -25,17 +25,19 @@ const SIV = React.createClass({
       // filePath equals undefined on Cancel
       if (filePath) {
         const sivState = this.props.store.getState()
-        const sivDispatch = this.props.store.dispatch
-        const onSave = () => {
-          sivDispatch({
-            type: 'SAVE_TO_CURRENT_FILE_BOX',
-            filePath: filePath
-          })
-        }
         saveImage(filePath,
                   sivState.canvasRefs,
-                  sivState.viewerDimensions,
-                  onSave)
+                  sivState.viewerDimensions)
+          .then(filePath => {
+            this.props.store.dispatch({
+              type: 'SAVE_TO_CURRENT_FILE_BOX',
+              filePath: filePath
+            })
+          })
+          .catch(err => {
+            console
+              .error('There was an error writing the combined image to the file system:', err)
+          })
       }
     })
 
@@ -67,14 +69,21 @@ const SIV = React.createClass({
   },
 
   componentDidMount () {
+    // Render the app whenever its state changes
     this.props.store.subscribe(() => { this.forceUpdate() })
-    const setDimensions = () => {
+    // The next few paragraphs ensure that the viewer dimensions are
+    // saved whenever the app's window gets resized. The viewer
+    // dimensions are used by extensions to set their layer
+    // dimensions. The image extension also uses the information for
+    // drawing an image so it fits into the viewer while maintaining
+    // its aspect ratio.
+    const saveViewerDimensions = () => {
       this.props.store.dispatch({
         type: 'SET_VIEWER_DIMENSIONS',
         dimensions: this.refs.viewerNode.getBoundingClientRect()
       })
     }
-    setDimensions()
+    saveViewerDimensions()
     // Set the viewerSize once the window finishes resizing.
     // I initially wrote:
     // window.addEventListener('resize', this.setViewerDimensions)
@@ -85,9 +94,10 @@ const SIV = React.createClass({
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer)
       resizeTimer = setTimeout(() => {
-        setDimensions()
+        saveViewerDimensions()
       }, 50)
     })
+    // Defining the app's shortcuts
     window.addEventListener('keydown', keyPress => {
       const keyIdentifier = {
         Right: this.navigateToImg.bind(null, 'next', keyPress),
@@ -99,8 +109,9 @@ const SIV = React.createClass({
   },
   navigateToImg(direction, event) {
     // The direction param gets passed directly to navigateImages
-    event.preventDefault()      // This prevents the file box from scolling
-    // horizontally when navigating with the arrow keys.
+    event.preventDefault()      // This prevents the file box from
+                                // scolling horizontally when
+                                // navigating with the arrow keys.
     const sivState = this.props.store.getState()
     const currentImg = sivState.currentImg
     if (sivState.fileBoxes.length > 0) {
@@ -179,6 +190,7 @@ const SIV = React.createClass({
         return ''
       }
     }
+
     return (
       h('div.siv', [
         h(Sidebar, {
@@ -217,7 +229,7 @@ const siv = ReactDOM.render(sivComponent, document.getElementById('siv'))
 const fs = require('fs')
 fs.readFile(Path.join(__dirname, 'package.json'), (err, data) => {
   if (err) {
-    console.log('There was a problem reading package.json: ', err)
+    console.error('There was a problem reading package.json: ', err)
   } else {
     const config = JSON.parse(data)
     const firstExtension = require('../extensions/' + config.extensions[0].path)

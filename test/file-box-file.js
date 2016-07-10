@@ -2,7 +2,7 @@
 const test = require('tape')
 const React = require('react')
 const DOMServer = require('react-dom/server')
-const FileBoxFile = require('../../app/component/file-box-file')
+const FileBoxFile = require('../file-box-file')
 
 const render = (reactElement) => {
   return DOMServer.renderToStaticMarkup(reactElement)
