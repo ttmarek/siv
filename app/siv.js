@@ -153,7 +153,7 @@ const SIV = React.createClass({
         return extensions.map((extInfo, index) => {
           const openExtension = () => {
             if (sivState.openedExts.indexOf(extInfo.id) === -1) {
-              const ext = require('../extensions/' + extInfo.path)
+              const ext = require(extInfo.path)
               const extStore = (() => {
                 if (ext.reducer) {
                   const newStore = Redux.createStore(ext.reducer)
@@ -232,7 +232,7 @@ fs.readFile(Path.join(__dirname, 'package.json'), (err, data) => {
     console.error('There was a problem reading package.json: ', err)
   } else {
     const config = JSON.parse(data)
-    const firstExtension = require('../extensions/' + config.extensions[0].path)
+    const firstExtension = require(config.extensions[0].path)
     const extStore = (() => {
       if (firstExtension.reducer) {
         const newStore = Redux.createStore(firstExtension.reducer)
