@@ -227,12 +227,12 @@ const sivComponent = h(SIV, { store: sivStore })
 const siv = ReactDOM.render(sivComponent, document.getElementById('siv'))
 
 const fs = require('fs')
-fs.readFile(Path.join(__dirname, 'package.json'), (err, data) => {
+fs.readFile(Path.resolve(`${__dirname}/../extensions.json`), (err, data) => {
   if (err) {
-    console.error('There was a problem reading package.json: ', err)
+    console.error('There was a problem reading extensions.json: ', err)
   } else {
-    const config = JSON.parse(data)
-    const firstExtension = require(config.extensions[0].path)
+    const extensions = JSON.parse(data)
+    const firstExtension = require(extensions[0].path)
     const extStore = (() => {
       if (firstExtension.reducer) {
         const newStore = Redux.createStore(firstExtension.reducer)
@@ -243,8 +243,8 @@ fs.readFile(Path.join(__dirname, 'package.json'), (err, data) => {
     })()
     sivStore.dispatch({
       type: 'SET_AVAILABLE_EXTENSIONS',
-      availableExtensions: config.extensions,
-      id: config.extensions[0].id,
+      availableExtensions: extensions,
+      id: extensions[0].id,
       controls: firstExtension.Controls,
       layer: firstExtension.Layer,
       store: extStore
