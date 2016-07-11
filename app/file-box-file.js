@@ -1,32 +1,34 @@
 'use strict'
+
 const Path = require('path')
 const React = require('react')
 const h = require('react-hyperscript')
 
-const FileBoxFile = React.createClass({
-  propTypes: {
-    onImgClick: React.PropTypes.func.isRequired,
-    currentImg: React.PropTypes.string.isRequired,
-    path: React.PropTypes.string.isRequired,
-    Id: React.PropTypes.number.isRequired
-  },
+const FileBoxFile = {
   componentDidUpdate () {
-    if (this.props.currentImg === this.props.path) {
-      const imgLink = this.refs.imgLink
-      imgLink.scrollIntoViewIfNeeded()
+    const {
+      path,
+      currentImg,
+    } = this.props
+
+    if (currentImg === path) {
+      this.refs.imgLink.scrollIntoViewIfNeeded()
     }
   },
-  render () {
-    const className = (() => {
-      if (this.props.currentImg === this.props.path) {
-        return 'active'
-      }
-      return ''
-    })()
 
-    const handleFileClick = (click) => {
-      click.preventDefault()
-      this.props.onImgClick(this.props.path, this.props.Id)
+  render () {
+    const {
+      Id,
+      path,
+      currentImg,
+      onImgClick,
+    } = this.props
+
+    const className = currentImg === path ? 'active' : ''
+
+    const handleFileClick = event => {
+      event.preventDefault()
+      onImgClick(path, Id)
     }
 
     return (
@@ -35,12 +37,19 @@ const FileBoxFile = React.createClass({
           ref: 'imgLink',
           href: '',
           className,
-          'data-file-path': this.props.path,
+          'data-file-path': path,
           onClick: handleFileClick
-        }, Path.basename(this.props.path, Path.extname(this.props.path)))
+        }, Path.basename(path, Path.extname(path)))
       ])
     )
   }
-})
+}
 
-module.exports = FileBoxFile
+FileBoxFile.propTypes = {
+  onImgClick: React.PropTypes.func.isRequired,
+  currentImg: React.PropTypes.string.isRequired,
+  path: React.PropTypes.string.isRequired,
+  Id: React.PropTypes.number.isRequired
+}
+
+module.exports = React.createClass(FileBoxFile)
