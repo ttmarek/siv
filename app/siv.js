@@ -146,7 +146,7 @@ const SIV = React.createClass({
     }
 
     const activeLayer = sivState.layers[sivState.layers.length - 1]
-    const extensions = sivState.availableExtensions
+    const extensions = sivState.installedExtensions
 
     const renderExtButtons = () => {
       if (extensions.length > 0) {
@@ -229,7 +229,7 @@ fs.readFile(Path.resolve(`${__dirname}/../extensions.json`), (err, data) => {
     firstExtension.store.subscribe(siv.forceUpdate.bind(siv))
     sivStore.dispatch({
       type: 'SET_AVAILABLE_EXTENSIONS',
-      availableExtensions: extensions,
+      installedExtensions: extensions,
       id: extensions[0].id,
       controls: firstExtension.Controls,
       layer: firstExtension.Layer,
