@@ -154,13 +154,14 @@ const SIV = React.createClass({
           const openExtension = () => {
             if (sivState.openedExts.indexOf(extInfo.id) === -1) {
               const ext = require(extInfo.path)
-              ext.store.subscribe(this.forceUpdate.bind(this))
+              const extStore = Redux.createStore(ext.reducer)
+              extStore.subscribe(this.forceUpdate.bind(this))
               sivDispatch({
                 type: 'REGISTER_NEW_EXTENSION',
                 id: extInfo.id,
                 controls: ext.Controls,
                 layer: ext.Layer,
-                store: ext.store,
+                store: extStore,
               })
             } else {
               sivDispatch({
@@ -226,14 +227,15 @@ fs.readFile(Path.resolve(`${__dirname}/../extensions.json`), (err, data) => {
   } else {
     const extensions = JSON.parse(data)
     const firstExtension = require(extensions[0].path)
-    firstExtension.store.subscribe(siv.forceUpdate.bind(siv))
+    const firstExtensionStore = Redux.createStore(firstExtension.reducer)
+    firstExtensionStore.subscribe(siv.forceUpdate.bind(siv))
     sivStore.dispatch({
       type: 'SET_AVAILABLE_EXTENSIONS',
       installedExtensions: extensions,
       id: extensions[0].id,
       controls: firstExtension.Controls,
       layer: firstExtension.Layer,
-      store: firstExtension.store,
+      store: firstExtensionStore,
     })
   }
 })
