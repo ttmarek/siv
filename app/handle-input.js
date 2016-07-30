@@ -19,18 +19,22 @@ function handleInput (cliArgs) {
       const currentImg = parsedArgs.singleFile ? parsedArgs._[0] : undefined
       const filePaths = expandDirs(pathsToOpen)
       const siv = electron.app.sivWindow.webContents
+
       const sendSIVPaths = () => {
         siv.send('file-paths-prepared', {
           filePaths,
           currentImg
         })
       }
+
       if (siv.isLoading()) {
         siv.on('did-finish-load', sendSIVPaths)
       } else {
         sendSIVPaths()
       }
+
       electron.app.sivWindow.show()
+
       if (parsedArgs.devTools) {
         electron.app.sivWindow.openDevTools()
       }

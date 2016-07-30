@@ -6,7 +6,8 @@ const initialState = {
   currentFileBox: 0,
   filesShown: true,
   viewerDimensions: {width: 0, height: 0, top: 0, left: 0},
-  availableExtensions: [],
+  openedExtensions: [],
+  installedExtensions: [],
   openedExts: [],
   extControls: [],
   extStores: {},
@@ -121,7 +122,7 @@ const sivReducer = (state, action) => {
           [action.id]: action.store
         }),
         openedExts: currentState.openedExts.concat(action.id),
-        availableExtensions: action.availableExtensions
+        installedExtensions: action.installedExtensions
       })
 
     case 'ADD_CANVAS_REF':

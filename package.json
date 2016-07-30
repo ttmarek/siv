@@ -7,6 +7,7 @@
   },
   "scripts": {
     "start": "electron app",
+    "webpack": "webpack",
     "link-config": "ln -s -r -f ./package.json ./app/package.json",
     "download-icons": "wget --input-file=icons.txt --directory-prefix=./app/icons",
     "setup": "mkdir -p ./app/icons",
@@ -17,7 +18,7 @@
   },
   "devDependencies": {
     "devtron": "^1.2.1",
-    "electron-prebuilt": "1.2.3",
+    "electron-prebuilt": "1.2.7",
     "enzyme": "^2.4.1",
     "mock-fs": "3.5.0",
     "react-addons-perf": "15.0.1",
@@ -26,6 +27,7 @@
     "standard": "5.4.1",
     "tap-spec": "4.1.1",
     "tape": "4.4.0",
+    "webpack": "^1.13.1"
   },
   "dependencies": {
     "cli-table2": "0.1.9",

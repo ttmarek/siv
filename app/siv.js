@@ -146,21 +146,22 @@ const SIV = React.createClass({
     }
 
     const activeLayer = sivState.layers[sivState.layers.length - 1]
-    const extensions = sivState.availableExtensions
+    const extensions = sivState.installedExtensions
 
     const renderExtButtons = () => {
       if (extensions.length > 0) {
         return extensions.map((extInfo, index) => {
           const openExtension = () => {
             if (sivState.openedExts.indexOf(extInfo.id) === -1) {
-              const ext = require(extInfo.path)
-              ext.store.subscribe(this.forceUpdate.bind(this))
+              const ext = dynamicRequire(extInfo.path)(React, h)
+              const extStore = Redux.createStore(ext.reducer)
+              extStore.subscribe(this.forceUpdate.bind(this))
               sivDispatch({
                 type: 'REGISTER_NEW_EXTENSION',
                 id: extInfo.id,
                 controls: ext.Controls,
                 layer: ext.Layer,
-                store: ext.store,
+                store: extStore,
               })
             } else {
               sivDispatch({
@@ -225,15 +226,16 @@ fs.readFile(Path.resolve(`${__dirname}/../extensions.json`), (err, data) => {
     console.error('There was a problem reading extensions.json: ', err)
   } else {
     const extensions = JSON.parse(data)
-    const firstExtension = require(extensions[0].path)
-    firstExtension.store.subscribe(siv.forceUpdate.bind(siv))
+    const firstExtension = dynamicRequire(extensions[0].path)(React, h)
+    const firstExtensionStore = Redux.createStore(firstExtension.reducer)
+    firstExtensionStore.subscribe(siv.forceUpdate.bind(siv))
     sivStore.dispatch({
       type: 'SET_AVAILABLE_EXTENSIONS',
-      availableExtensions: extensions,
+      installedExtensions: extensions,
       id: extensions[0].id,
       controls: firstExtension.Controls,
       layer: firstExtension.Layer,
-      store: firstExtension.store,
+      store: firstExtensionStore,
     })
   }
 })
