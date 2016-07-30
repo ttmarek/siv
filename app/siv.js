@@ -153,7 +153,7 @@ const SIV = React.createClass({
         return extensions.map((extInfo, index) => {
           const openExtension = () => {
             if (sivState.openedExts.indexOf(extInfo.id) === -1) {
-              const ext = require(extInfo.path)
+              const ext = dynamicRequire(extInfo.path)(React, h)
               const extStore = Redux.createStore(ext.reducer)
               extStore.subscribe(this.forceUpdate.bind(this))
               sivDispatch({
@@ -226,7 +226,7 @@ fs.readFile(Path.resolve(`${__dirname}/../extensions.json`), (err, data) => {
     console.error('There was a problem reading extensions.json: ', err)
   } else {
     const extensions = JSON.parse(data)
-    const firstExtension = require(extensions[0].path)
+    const firstExtension = dynamicRequire(extensions[0].path)(React, h)
     const firstExtensionStore = Redux.createStore(firstExtension.reducer)
     firstExtensionStore.subscribe(siv.forceUpdate.bind(siv))
     sivStore.dispatch({
