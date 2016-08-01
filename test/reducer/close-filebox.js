@@ -1,5 +1,5 @@
 const test = require('tape')
-const sivReducer = require('../../app/siv-reducer')
+const sivReducer = require('../../app/siv/siv-reducer')
 
 test('CLOSE_FILE_BOX', assert => {
   const test1 = 'The closed filebox is removed and ' +

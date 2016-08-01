@@ -1,6 +1,6 @@
 'use strict'
 const test = require('tape')
-const saveToFileBox = require('../app/save-to-filebox')
+const saveToFileBox = require('../app/siv/save-to-filebox')
 
 test('saveToFileBox', assert => {
   // adds new saved folder for the first exported image

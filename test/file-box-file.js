@@ -3,7 +3,7 @@ const test = require('tape')
 const React = require('react')
 const { shallow } = require('enzyme')
 const h = require('react-hyperscript');
-const FileBoxFile = require('../app/file-box-file')
+const FileBoxFile = require('../app/siv/file-box-file')
 
 test('component/file-box-file', assert => {
   assert.plan(2)
