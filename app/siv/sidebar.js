@@ -73,7 +73,7 @@ const Sidebar = React.createClass({
             h('div.ext-container', [
               h('div.ext-title', [
                 h('span', { style: titleColor }, Controls.extName),
-                h('img', { src: 'icons/ic_close_white_18px.svg', onClick: close })
+                h('img', { src: '../icons/ic_close_white_18px.svg', onClick: close })
               ]),
               h(Controls, {
                 key: index,
@@ -119,7 +119,7 @@ const Sidebar = React.createClass({
           h('div.Sidebar-toggle-icon', [
             h('img', {
               className: classNames.toggleIcon,
-              src: 'icons/ic_chevron_right_black_24px.svg'
+              src: '../icons/ic_chevron_right_black_24px.svg'
             })
           ]),
           h('div.Sidebar-toggle-title', 'files')

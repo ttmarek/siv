@@ -1,9 +1,9 @@
 const webpack = require('webpack')
 
 module.exports = {
-  entry: './app/siv.js',
+  entry: './app/siv/siv.js',
   output: {
-    path: `./app`,
+    path: `./app/siv/`,
     filename: 'siv.bundle.js',
   },
   target: 'electron',

@@ -1,6 +1,6 @@
 'use strict'
 const test = require('tape')
-const navigateImages = require('../app/navigateImages')
+const navigateImages = require('../app/siv/navigateImages')
 
 test('navigateImages', assert => {
   const paths = ['/path/to/img1.jpg',

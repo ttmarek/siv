@@ -31,7 +31,7 @@ const FileBox = (props) => {
     h('div.file-box', { style: { height: props.height } }, [
       h('div.file-box-controls', [
         h('img', {
-          src: 'icons/ic_close_black_18px.svg',
+          src: '../icons/ic_close_black_18px.svg',
           onClick: () => props.onClose(props.Id)
         })
       ]),
