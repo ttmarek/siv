@@ -13,7 +13,7 @@ const h = require('react-hyperscript')
 const Sidebar = require('./sidebar')
 const Btn = require('siv-components').btn
 const sivReducer = require('./siv-reducer')
-const navigateImages = require('./navigateImages')
+const navigateImages = require('./navigate-images')
 const saveImage = require('./save-image')
 
 const SIV = React.createClass({
