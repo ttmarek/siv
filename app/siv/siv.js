@@ -221,7 +221,7 @@ const sivComponent = h(SIV, { store: sivStore })
 const siv = ReactDOM.render(sivComponent, document.getElementById('siv'))
 
 const fs = require('fs')
-fs.readFile(Path.resolve(`${__dirname}/../extensions.json`), (err, data) => {
+fs.readFile(Path.resolve(`${__dirname}/../../extensions.json`), (err, data) => {
   if (err) {
     console.error('There was a problem reading extensions.json: ', err)
   } else {

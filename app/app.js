@@ -36,7 +36,7 @@ if (shouldQuit) {
       sivWP.send('clear-file-paths')
       sivBW.hide()
     })
-    sivBW.loadURL(`file://${__dirname}/siv.html`)
+    sivBW.loadURL(`file://${__dirname}/siv/siv.html`)
     // Parse the args for filepaths and options
     handleInput(process.argv)
     // Create a system tray icon
