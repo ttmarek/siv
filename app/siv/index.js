@@ -12,7 +12,7 @@ const Redux = require('redux')
 const h = require('react-hyperscript')
 const Sidebar = require('./sidebar')
 const Btn = require('siv-components').btn
-const sivReducer = require('./siv-reducer')
+const sivReducer = require('./reducer')
 const navigateImages = require('./navigate-images')
 const saveImage = require('./save-image')
 
