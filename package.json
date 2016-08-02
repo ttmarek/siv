@@ -17,6 +17,9 @@
     "posttest": "standard test/**/*.js app/**/*.js"
   },
   "devDependencies": {
+    "babel-core": "^6.11.4",
+    "babel-loader": "^6.2.4",
+    "babel-preset-react": "^6.11.1",
     "devtron": "^1.2.1",
     "electron-prebuilt": "1.2.7",
     "enzyme": "^2.4.1",
