@@ -129,89 +129,89 @@ const SIV = React.createClass({
     const sivState = this.props.store.getState()
     const sivDispatch = this.props.store.dispatch
 
-    const renderLayers = () => {
-      return sivState.layers.map((Layer, index) => {
-        const extStore = sivState.extStores[Layer.extId]
-        return (
-          h(Layer, {
-            key: index,
-            zIndex: index + 1,
-            sivState: sivState,
-            sivDispatch: sivDispatch,
-            extState: extStore ? extStore.getState() : undefined,
-            extDispatch: extStore ? extStore.dispatch : undefined
-          })
-        )
-      })
-    }
+    const layers = sivState.layers.map((Layer, index) => {
+      const extStore = sivState.extStores[Layer.extId]
+      return (
+        <Layer
+          key={index}
+          zIndex={index + 1}
+          sivState={sivState}
+          sivDispatch={sivDispatch}
+          extState={extStore ? extStore.getState() : undefined}
+          extDispatch={extStore ? extStore.dispatch : undefined}
+        />
+      )
+    })
 
     const activeLayer = sivState.layers[sivState.layers.length - 1]
     const extensions = sivState.installedExtensions
 
-    const renderExtButtons = () => {
-      if (extensions.length > 0) {
-        return extensions.map((extInfo, index) => {
-          const openExtension = () => {
-            if (sivState.openedExts.indexOf(extInfo.id) === -1) {
-              const ext = dynamicRequire(extInfo.path)(React, h)
-              const extStore = Redux.createStore(ext.reducer)
-              extStore.subscribe(this.forceUpdate.bind(this))
-              sivDispatch({
-                type: 'REGISTER_NEW_EXTENSION',
-                id: extInfo.id,
-                controls: ext.Controls,
-                layer: ext.Layer,
-                store: extStore,
-              })
-            } else {
-              sivDispatch({
-                type: 'ACTIVATE_LAYER',
-                extId: extInfo.id
-              })
-            }
-          }
-          return (
-            h(Btn, {
-              key: index,
-              btnType: 'regular',
-              btnName: extInfo.name,
-              onClick: openExtension,
-              active: activeLayer ? activeLayer.extId === extInfo.id : false
-            })
-          )
-        })
-      } else {
-        return ''
+    const extensionButtons = extensions.map((extInfo, index) => {
+      const openExtension = () => {
+        if (sivState.openedExts.indexOf(extInfo.id) === -1) {
+          const ext = dynamicRequire(extInfo.path)(React, h)
+          const extStore = Redux.createStore(ext.reducer)
+          extStore.subscribe(this.forceUpdate.bind(this))
+          sivDispatch({
+            type: 'REGISTER_NEW_EXTENSION',
+            id: extInfo.id,
+            controls: ext.Controls,
+            layer: ext.Layer,
+            store: extStore,
+          })
+        } else {
+          sivDispatch({
+            type: 'ACTIVATE_LAYER',
+            extId: extInfo.id
+          })
+        }
       }
-    }
+      return (
+        <Btn
+          key={index}
+          btnType={'regular'}
+          btnName={extInfo.name}
+          onClick={openExtension}
+          active={activeLayer ? activeLayer.extId === extInfo.id : false}
+        />
+      )
+    })
 
     return (
-      h('div.siv', [
-        h(Sidebar, {
-          sivState: sivState,
-          sivDispatch: sivDispatch,
-          extControls: sivState.extControls,
-          viewerDimensions: sivState.viewerDimensions,
-          fileBoxes: sivState.fileBoxes,
-          currentImg: sivState.currentImg,
-          extStores: sivState.extStores,
-          filesShown: sivState.filesShown
-        }),
-        h('div.Viewer', { ref: 'viewerNode' }, [
-          h('div.LayerContainer', renderLayers())
-        ]),
-        h('div.Toolbar', [
-          h('div.Toolbar-section.FileNav', [
-            h(Btn, {
-              btnType: 'blue', btnName: 'prev', onClick: this.navigateToImg.bind(null, 'prev')
-            }),
-            h(Btn, {
-              btnType: 'blue', btnName: 'next', onClick: this.navigateToImg.bind(null, 'next')
-            })
-          ]),
-          h('div.Toolbar-section.ExtensionsNav', renderExtButtons())
-        ])
-      ])
+      <div className="siv">
+        <Sidebar
+          sivState={sivState}
+          sivDispatch={sivDispatch}
+          extControls={sivState.extControls}
+          viewerDimensions={sivState.viewerDimensions}
+          fileBoxes={sivState.fileBoxes}
+          currentImg={sivState.currentImg}
+          extStores={sivState.extStores}
+          filesShown={sivState.filesShown}
+        />
+        <div className="Viewer" ref="viewerNode">
+          <div className="LayerContainer">
+            {layers}
+          </div>
+        </div>
+        <div className="Toolbar">
+          <div className="Toolbar-section FileNav">
+            <Btn
+              btnType="blue"
+              btnName="prev"
+              onClick={this.navigateToImg.bind(null, 'prev')}
+            />
+            <Btn
+              btnType="blue"
+              btnName="next"
+              onClick={this.navigateToImg.bind(null, 'next')}
+            />
+          </div>
+          <div className="Toolbar-section ExtensionsNav">
+            {extensionButtons}
+          </div>
+        </div>
+      </div>
     )
   }
 })
