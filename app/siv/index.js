@@ -1,76 +1,76 @@
-'use strict'
+'use strict';
 
-const ipcRenderer = require('electron').ipcRenderer
+const ipcRenderer = require('electron').ipcRenderer;
 // Setting NODE_ENV to production improves React's
 // performance. Comment out the line if you want to see React's
 // warning messages.
 // process.env.NODE_ENV = 'production'
-const Path = require('path')
-const React = require('react')
-const ReactDOM = require('react-dom')
-const Redux = require('redux')
-const h = require('react-hyperscript')
-const Sidebar = require('./sidebar')
-const Btn = require('siv-components').btn
-const sivReducer = require('./reducer')
-const navigateImages = require('./navigate-images')
-const saveImage = require('./save-image')
+const Path = require('path');
+const React = require('react');
+const ReactDOM = require('react-dom');
+const h = require('react-hyperscript'); // pass down to exts
+const Redux = require('redux');
+const Sidebar = require('./sidebar');
+const Btn = require('siv-components').btn;
+const sivReducer = require('./reducer');
+const navigateImages = require('./navigate-images');
+const saveImage = require('./save-image');
 
 const SIV = React.createClass({
   propTypes: {
-    store: React.PropTypes.object.isRequired
+    store: React.PropTypes.object.isRequired,
   },
-  componentWillMount () {
+  componentWillMount() {
     ipcRenderer.on('save-image', (event, filePath) => {
       // filePath equals undefined on Cancel
       if (filePath) {
-        const sivState = this.props.store.getState()
+        const sivState = this.props.store.getState();
         saveImage(filePath,
                   sivState.canvasRefs,
                   sivState.viewerDimensions)
           .then(filePath => {
             this.props.store.dispatch({
               type: 'SAVE_TO_CURRENT_FILE_BOX',
-              filePath: filePath
-            })
+              filePath: filePath,
+            });
           })
           .catch(err => {
             console
-              .error('There was an error writing the combined image to the file system:', err)
-          })
+              .error('There was an error writing the combined image to the file system:', err);
+          });
       }
-    })
+    });
 
     ipcRenderer.on('clear-file-paths', () => {
       this.props.store.dispatch({
-        type: 'CLEAR_FILE_BOXES'
-      })
-    })
+        type: 'CLEAR_FILE_BOXES',
+      });
+    });
 
     ipcRenderer.on('file-paths-prepared', (event, prepared) => {
-      const sivState = this.props.store.getState()
+      const sivState = this.props.store.getState();
       if (sivState.fileBoxes.length <= 4) {
         this.props.store.dispatch({
           type: 'ADD_NEW_FILE_BOX',
-          fileBox: prepared.filePaths
-        })
+          fileBox: prepared.filePaths,
+        });
         const currentImgPath = (() => {
           if (prepared.currentImg) {
-            return prepared.currentImg
+            return prepared.currentImg;
           }
-          return prepared.filePaths.pathsList[0]
-        })()
+          return prepared.filePaths.pathsList[0];
+        })();
         this.props.store.dispatch({
           type: 'SET_CURRENT_IMG',
-          imgPath: currentImgPath
-        })
+          imgPath: currentImgPath,
+        });
       }
-    })
+    });
   },
 
-  componentDidMount () {
+  componentDidMount() {
     // Render the app whenever its state changes
-    this.props.store.subscribe(() => { this.forceUpdate() })
+    this.props.store.subscribe(() => { this.forceUpdate(); });
     // The next few paragraphs ensure that the viewer dimensions are
     // saved whenever the app's window gets resized. The viewer
     // dimensions are used by extensions to set their layer
@@ -80,57 +80,57 @@ const SIV = React.createClass({
     const saveViewerDimensions = () => {
       this.props.store.dispatch({
         type: 'SET_VIEWER_DIMENSIONS',
-        dimensions: this.refs.viewerNode.getBoundingClientRect()
-      })
-    }
-    saveViewerDimensions()
+        dimensions: this.refs.viewerNode.getBoundingClientRect(),
+      });
+    };
+    saveViewerDimensions();
     // Set the viewerSize once the window finishes resizing.
     // I initially wrote:
     // window.addEventListener('resize', this.setViewerDimensions)
     // But there was a noticeable amount of image flickering during a
     // window resize. Now, the image stretches with the window, then
     // fits into place once the window is done resizing.
-    let resizeTimer
+    let resizeTimer;
     window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer)
+      clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        saveViewerDimensions()
-      }, 50)
-    })
+        saveViewerDimensions();
+      }, 50);
+    });
     // Defining the app's shortcuts
     window.addEventListener('keydown', keyPress => {
       const keyIdentifier = {
         Right: this.navigateToImg.bind(null, 'next', keyPress),
-        Left: this.navigateToImg.bind(null, 'prev', keyPress)
-      }
-      const shortcut = keyIdentifier[keyPress.keyIdentifier]
-      if (shortcut) shortcut()
-    })
+        Left: this.navigateToImg.bind(null, 'prev', keyPress),
+      };
+      const shortcut = keyIdentifier[keyPress.keyIdentifier];
+      if (shortcut) shortcut();
+    });
   },
   navigateToImg(direction, event) {
     // The direction param gets passed directly to navigateImages
-    event.preventDefault()      // This prevents the file box from
+    event.preventDefault();     // This prevents the file box from
                                 // scolling horizontally when
                                 // navigating with the arrow keys.
-    const sivState = this.props.store.getState()
-    const currentImg = sivState.currentImg
+    const sivState = this.props.store.getState();
+    const currentImg = sivState.currentImg;
     if (sivState.fileBoxes.length > 0) {
-      const currentFileBox = sivState.fileBoxes[sivState.currentFileBox]
-      const nextPath = navigateImages(direction, currentImg, currentFileBox.pathsList)
+      const currentFileBox = sivState.fileBoxes[sivState.currentFileBox];
+      const nextPath = navigateImages(direction, currentImg, currentFileBox.pathsList);
       this.props.store.dispatch({
         type: 'SET_CURRENT_IMG',
-        imgPath: nextPath
-      })
+        imgPath: nextPath,
+      });
     }
     // This logic is here, and not in a NAVIGATE_TO_IMG reducer
     // because setImage is async. TODO: no longer true
   },
-  render () {
-    const sivState = this.props.store.getState()
-    const sivDispatch = this.props.store.dispatch
+  render() {
+    const sivState = this.props.store.getState();
+    const sivDispatch = this.props.store.dispatch;
 
     const layers = sivState.layers.map((Layer, index) => {
-      const extStore = sivState.extStores[Layer.extId]
+      const extStore = sivState.extStores[Layer.extId];
       return (
         <Layer
           key={index}
@@ -140,32 +140,32 @@ const SIV = React.createClass({
           extState={extStore ? extStore.getState() : undefined}
           extDispatch={extStore ? extStore.dispatch : undefined}
         />
-      )
-    })
+      );
+    });
 
-    const activeLayer = sivState.layers[sivState.layers.length - 1]
-    const extensions = sivState.installedExtensions
+    const activeLayer = sivState.layers[sivState.layers.length - 1];
+    const extensions = sivState.installedExtensions;
 
     const extensionButtons = extensions.map((extInfo, index) => {
       const openExtension = () => {
         if (sivState.openedExts.indexOf(extInfo.id) === -1) {
-          const ext = dynamicRequire(extInfo.path)(React, h)
-          const extStore = Redux.createStore(ext.reducer)
-          extStore.subscribe(this.forceUpdate.bind(this))
+          const ext = dynamicRequire(extInfo.path)(React, h);
+          const extStore = Redux.createStore(ext.reducer);
+          extStore.subscribe(this.forceUpdate.bind(this));
           sivDispatch({
             type: 'REGISTER_NEW_EXTENSION',
             id: extInfo.id,
             controls: ext.Controls,
             layer: ext.Layer,
             store: extStore,
-          })
+          });
         } else {
           sivDispatch({
             type: 'ACTIVATE_LAYER',
-            extId: extInfo.id
-          })
+            extId: extInfo.id,
+          });
         }
-      }
+      };
       return (
         <Btn
           key={index}
@@ -174,8 +174,8 @@ const SIV = React.createClass({
           onClick={openExtension}
           active={activeLayer ? activeLayer.extId === extInfo.id : false}
         />
-      )
-    })
+      );
+    });
 
     return (
       <div className="siv">
@@ -212,23 +212,24 @@ const SIV = React.createClass({
           </div>
         </div>
       </div>
-    )
-  }
-})
+    );
+  },
+});
 
-const sivStore = Redux.createStore(sivReducer)
-const sivComponent = h(SIV, { store: sivStore })
-const siv = ReactDOM.render(sivComponent, document.getElementById('siv'))
+const sivStore = Redux.createStore(sivReducer);
+const sivComponent = <SIV store={sivStore} />;
+const siv = ReactDOM.render(sivComponent, document.getElementById('siv'));
 
-const fs = require('fs')
+const fs = require('fs');
+
 fs.readFile(Path.resolve(`${__dirname}/../../extensions.json`), (err, data) => {
   if (err) {
-    console.error('There was a problem reading extensions.json: ', err)
+    console.error('There was a problem reading extensions.json: ', err);
   } else {
-    const extensions = JSON.parse(data)
-    const firstExtension = dynamicRequire(extensions[0].path)(React, h)
-    const firstExtensionStore = Redux.createStore(firstExtension.reducer)
-    firstExtensionStore.subscribe(siv.forceUpdate.bind(siv))
+    const extensions = JSON.parse(data);
+    const firstExtension = dynamicRequire(extensions[0].path)(React, h);
+    const firstExtensionStore = Redux.createStore(firstExtension.reducer);
+    firstExtensionStore.subscribe(siv.forceUpdate.bind(siv));
     sivStore.dispatch({
       type: 'SET_AVAILABLE_EXTENSIONS',
       installedExtensions: extensions,
@@ -236,6 +237,6 @@ fs.readFile(Path.resolve(`${__dirname}/../../extensions.json`), (err, data) => {
       controls: firstExtension.Controls,
       layer: firstExtension.Layer,
       store: firstExtensionStore,
-    })
+    });
   }
-})
+});

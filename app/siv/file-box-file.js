@@ -1,55 +1,58 @@
-'use strict'
+'use strict';
 
-const Path = require('path')
-const React = require('react')
-const h = require('react-hyperscript')
+const React = require('react');
+const {
+  extname,
+  basename,
+} = require('path');
 
-const FileBoxFile = {
-  componentDidUpdate () {
+class FileBoxFile extends React.Component {
+  componentDidUpdate() {
     const {
-      path,
       currentImg,
-    } = this.props
+      filePath,
+    } = this.props;
 
-    if (currentImg === path) {
-      this.refs.imgLink.scrollIntoViewIfNeeded()
+    if (currentImg === filePath) {
+      this.element.scrollIntoViewIfNeeded();
     }
-  },
+  }
 
-  render () {
+  render() {
     const {
-      Id,
-      path,
       currentImg,
-      onImgClick,
-    } = this.props
-
-    const className = currentImg === path ? 'active' : ''
+      fileBoxID,
+      filePath,
+      onClick,
+    } = this.props;
 
     const handleFileClick = event => {
-      event.preventDefault()
-      onImgClick(path, Id)
-    }
+      event.preventDefault();
+      onClick(filePath, fileBoxID);
+    };
+
+    const fileName = basename(filePath, extname(filePath)); // sans extension
 
     return (
-      h('li', [
-        h('a', {
-          ref: 'imgLink',
-          href: '',
-          className,
-          'data-file-path': path,
-          onClick: handleFileClick
-        }, Path.basename(path, Path.extname(path)))
-      ])
-    )
+      <li>
+        <a
+          className={currentImg === path ? 'active' : ''}
+          href=""
+          onClick={handleFileClick}
+          ref={element => this.element = element}
+        >
+          {fileName}
+        </a>
+      </li>
+    );
   }
 }
 
 FileBoxFile.propTypes = {
-  onImgClick: React.PropTypes.func.isRequired,
   currentImg: React.PropTypes.string.isRequired,
-  path: React.PropTypes.string.isRequired,
-  Id: React.PropTypes.number.isRequired
-}
+  fileBoxID: React.PropTypes.number.isRequired,
+  filePath: React.PropTypes.string.isRequired,
+  onClick: React.PropTypes.func.isRequired,
+};
 
-module.exports = React.createClass(FileBoxFile)
+module.exports = FileBoxFile;
