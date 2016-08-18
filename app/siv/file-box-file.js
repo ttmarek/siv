@@ -32,14 +32,16 @@ class FileBoxFile extends React.Component {
     };
 
     const fileName = basename(filePath, extname(filePath)); // sans extension
+    const fileLinkStyle = currentImg === filePath ? 'active' : '';
+    const saveElementRef = element => this.element = element;
 
     return (
       <li>
         <a
-          className={currentImg === path ? 'active' : ''}
+          className={fileLinkStyle}
           href=""
           onClick={handleFileClick}
-          ref={element => this.element = element}
+          ref={saveElementRef}
         >
           {fileName}
         </a>

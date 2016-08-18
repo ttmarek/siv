@@ -1,0 +1,21 @@
+exports[`<FileBoxFile /> Renders correctly: Active state 1`] = `
+<li>
+  <a
+    className="active"
+    href=""
+    onClick={[Function anonymous]}>
+    img
+  </a>
+</li>
+`;
+
+exports[`<FileBoxFile /> Renders correctly: Inactive state 1`] = `
+<li>
+  <a
+    className=""
+    href=""
+    onClick={[Function anonymous]}>
+    img
+  </a>
+</li>
+`;
