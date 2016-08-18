@@ -1,7 +1,8 @@
-'use strict'
-const electron = require('electron')
-const expandDirs = require('./expand-dirs')
-const calculatorWindow = require('./calculator/window')
+'use strict';
+
+const electron = require('electron');
+const expandDirs = require('./expand-dirs');
+const calculatorWindow = require('./calculator/window');
 
 const menuBar = electron.Menu.buildFromTemplate([
   {
@@ -18,10 +19,10 @@ const menuBar = electron.Menu.buildFromTemplate([
             filePath => {
               // filePath will be undefined if the user cancels out of the save dialog:
               if (filePath) {
-                focusedWindow.webContents.send('save-image', filePath)
+                focusedWindow.webContents.send('save-image', filePath);
               }
             }
-          )
+          );
         }
       },
       {
@@ -40,10 +41,10 @@ const menuBar = electron.Menu.buildFromTemplate([
                   if (imgsToOpen) { // imgsToOpen is undefined on Cancel
                     focusedWindow.webContents.send('file-paths-prepared', {
                       filePaths: expandDirs(imgsToOpen)
-                    })
+                    });
                   }
                 }
-              )
+              );
             }
           },
           {
@@ -58,10 +59,10 @@ const menuBar = electron.Menu.buildFromTemplate([
                   if (dirsToOpen) { // dirsToOpen is undefined on Cancel
                     focusedWindow.webContents.send('file-paths-prepared', {
                       filePaths: expandDirs(dirsToOpen)
-                    })
+                    });
                   }
                 }
-              )
+              );
             }
           }
         ]
@@ -74,17 +75,17 @@ const menuBar = electron.Menu.buildFromTemplate([
       {
         label: 'Calculator',
         click () {
-          calculatorWindow.open()
+          calculatorWindow.open();
         }
       },
       {
         label: 'Extensions Manager',
         click () {
-          require('./extensions-manager/open-window')()
+          require('./extensions-manager/open-window')();
         }
       }
     ]
   }
-])
+]);
 
-module.exports = menuBar
+module.exports = menuBar;

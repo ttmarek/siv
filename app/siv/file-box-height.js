@@ -1,9 +1,9 @@
-'use strict'
+'use strict';
 
-function fileBoxHeight (numFileBoxes, sidebarHeight) {
-  const fileBoxMargin = 10
+function fileBoxHeight(numFileBoxes, sidebarHeight) {
+  const fileBoxMargin = 10;
   return Math.round((sidebarHeight - ((numFileBoxes + 1) * fileBoxMargin)) /
-                    numFileBoxes)
+                    numFileBoxes);
 }
 
-module.exports = fileBoxHeight
+module.exports = fileBoxHeight;

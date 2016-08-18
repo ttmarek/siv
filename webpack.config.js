@@ -1,4 +1,4 @@
-const webpack = require('webpack')
+const webpack = require('webpack');
 
 module.exports = {
   entry: './app/siv/index.js',
@@ -23,4 +23,4 @@ module.exports = {
       },
     ],
   },
-}
+};
