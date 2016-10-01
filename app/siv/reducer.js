@@ -5,16 +5,16 @@ const moveElement = require('move-element');
 const initialState = {
   currentImg: '',
   fileBoxes: [],
-  currentFileBox: 0,
-  filesShown: true,
+  currentFileBox: 0, // TODO: set when setting currentImg
+  filesShown: true, // TODO: rename to filesAreShown
   viewerDimensions: { width: 0, height: 0, top: 0, left: 0 },
-  openedExtensions: [],
+  openedExtensions: [], // TODO: rename to openExtensions
   installedExtensions: [],
-  openedExts: [],
-  extControls: [],
-  extStores: {},
-  canvasRefs: [],
-  layers: [],
+  openedExts: [], // TODO: move to extensions-store
+  extControls: [], // TODO: move to extensions-store
+  extStores: {}, // TODO: move to extensions-store
+  canvasRefs: [], // TODO: move to extensions-store
+  layers: [], // TODO: move to extensions-store
 };
 
 const sivReducer = (state, action) => {

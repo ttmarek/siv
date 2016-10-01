@@ -13,7 +13,7 @@
     "start": "electron app",
     "webpack": "webpack",
     "lint": "eslint ./app/**/*.js --ignore-path .gitignore || true",
-    "test": "jest"
+    "test": "jest || true"
   },
   "devDependencies": {
     "babel-core": "^6.11.4",

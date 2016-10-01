@@ -1,10 +1,6 @@
 'use strict';
 
 const ipcRenderer = require('electron').ipcRenderer;
-// Setting NODE_ENV to production improves React's
-// performance. Comment out the line if you want to see React's
-// warning messages.
-// process.env.NODE_ENV = 'production'
 const Path = require('path');
 const React = require('react');
 const ReactDOM = require('react-dom');
@@ -15,6 +11,7 @@ const Btn = require('siv-components').btn;
 const sivReducer = require('./reducer');
 const navigateImages = require('./navigate-images');
 const saveImage = require('./save-image');
+const actions = require('./actions');
 
 const SIV = React.createClass({
   propTypes: {
@@ -128,6 +125,28 @@ const SIV = React.createClass({
   render() {
     const sivState = this.props.store.getState();
     const sivDispatch = this.props.store.dispatch;
+    const dispatch = sivDispatch;
+
+    const {
+      store,
+    } = this.props;
+
+    const {
+      layers,
+      openedExtensions,
+    } = store.getState();
+
+    const closeFileBox = (fileBoxID) =>
+      dispatch(actions.closeFileBox(fileBoxID));
+
+    const setCurrentImg = (path) =>
+      dispatch(actions.setCurrentImg(path));
+
+    const closeExtension = (extensionID) =>
+      dispatch(actions.closeExtension(extensionID));
+
+    const toggleFilesShown = () =>
+      dispatch(actions.toggleFilesShown());
 
     const layers = sivState.layers.map((Layer, index) => {
       const extStore = sivState.extStores[Layer.extId];
@@ -179,7 +198,7 @@ const SIV = React.createClass({
 
     return (
       <div className="siv">
-        <Sidebar
+      <Sidebar
           sivState={sivState}
           sivDispatch={sivDispatch}
           extControls={sivState.extControls}
@@ -188,6 +207,11 @@ const SIV = React.createClass({
           currentImg={sivState.currentImg}
           extStores={sivState.extStores}
           filesShown={sivState.filesShown}
+          extensionsControls={sivState.extControls}
+          onExtensionClose={closeExtension}
+          onFileBoxClose={closeFileBox}
+          onFileClick={setCurrentImg}
+          onFilesToggleClick={toggleFilesShown}
         />
         <div className="Viewer" ref="viewerNode">
           <div className="LayerContainer">
