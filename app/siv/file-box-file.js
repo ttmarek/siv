@@ -21,19 +21,18 @@ class FileBoxFile extends React.Component {
   render() {
     const {
       currentImg,
-      fileBoxID,
       filePath,
       onClick,
     } = this.props;
 
     const handleFileClick = event => {
       event.preventDefault();
-      onClick(filePath, fileBoxID);
+      onClick(filePath);
     };
 
     const fileName = basename(filePath, extname(filePath)); // sans extension
     const fileLinkStyle = currentImg === filePath ? 'active' : '';
-    const saveElementRef = element => this.element = element;
+    const saveElementRef = element => { this.element = element; };
 
     return (
       <li>
@@ -52,7 +51,6 @@ class FileBoxFile extends React.Component {
 
 FileBoxFile.propTypes = {
   currentImg: React.PropTypes.string.isRequired,
-  fileBoxID: React.PropTypes.number.isRequired,
   filePath: React.PropTypes.string.isRequired,
   onClick: React.PropTypes.func.isRequired,
 };
