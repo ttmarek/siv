@@ -4,53 +4,69 @@ const Path = require('path');
 const React = require('react');
 const FileBoxFile = require('./file-box-file');
 
-const FileBoxDir = React.createClass({
-  propTypes: {
-    Id: React.PropTypes.number.isRequired,
-    currentImg: React.PropTypes.string.isRequired,
-    dirObj: React.PropTypes.object.isRequired,
-    onImgClick: React.PropTypes.func.isRequired,
-  },
-  getInitialState() {
-    return {
-      hidden: false,
+class FileBoxDir extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      isDirHidden: false,
     };
-  },
+  }
+
   render() {
-    const toggleVisibility = (click) => {
-      click.preventDefault();
-      this.setState({ hidden: !this.state.hidden });
+    const {
+      isDirHidden,
+    } = this.state;
+
+    const {
+      currentImg,
+      directory,
+      onFileClick,
+    } = this.props;
+
+    const handleDirNameClick = event => {
+      event.preventDefault();
+      this.setState({ isDirHidden: !isDirHidden });
     };
 
-    const dirName = this.props.dirObj.dir.split(Path.sep).pop();
-    const children = this.props.dirObj.children.map((path, index) =>
+    const dirName = directory.dir.split(Path.sep).pop();
+    const fileList = directory.children.map((filePath, index) =>
       <FileBoxFile
-        currentImg={this.props.currentImg}
-        fileBoxID={this.props.id}
-        filePath={path}
+        currentImg={currentImg}
+        filePath={filePath}
         key={index}
-        onClick={this.props.onImgClick}
+        onClick={onFileClick}
       />
     );
+
+    const arrowStyle = isDirHidden ? 'file-box-dir-hidden' : 'file-box-dir-shown';
+    const fileListStyle = isDirHidden ? 'file-box-dir-listing hidden' : 'file-box-dir-listing';
 
     return (
       <li>
         <img
-          className={this.state.hidden ? 'file-box-dir-hidden' : 'file-box-dir-shown'}
-          onClick={toggleVisibility}
+          className={arrowStyle}
+          onClick={handleDirNameClick}
+          role="presentation"
           src="../icons/ic_arrow_drop_down_black_18px.svg"
         />
-        <a className="dir-link" href="" onClick={toggleVisibility}>
+        <a className="dir-link" href="" onClick={handleDirNameClick}>
           {dirName}
         </a>
-        <ul
-          className={this.state.hidden ? 'file-box-dir-listing hidden' : 'file-box-dir-listing'}
-        >
-          {children}
+        <ul className={fileListStyle}>
+          {fileList}
         </ul>
       </li>
     );
-  },
-});
+  }
+}
+
+FileBoxDir.propTypes = {
+  currentImg: React.PropTypes.string.isRequired,
+  directory: React.PropTypes.shape({
+    dir: React.PropTypes.string,
+    children: React.PropTypes.arrayOf(React.PropTypes.string),
+  }).isRequired,
+  onFileClick: React.PropTypes.func.isRequired,
+};
 
 module.exports = FileBoxDir;
